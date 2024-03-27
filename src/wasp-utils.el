@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 's)
+(require 'f)
 (require 'cl-lib)
 (require 'eieio)
 (require 'request)
@@ -11,6 +12,11 @@
   "Name of buffer used to store the log."
   :type '(string)
   :group 'wasp)
+
+(defun w/read-sexp (s)
+  "Read string S into a Lisp form.
+Return nil on error."
+  (condition-case nil (read s) (error nil)))
 
 (defun w/write (text &optional face)
   "Write TEXT to the current buffer and apply FACE."
@@ -29,7 +35,7 @@
   "Write LINE to the log buffer and apply FACE."
   (with-current-buffer (get-buffer-create w/log-buffer)
     (goto-char (point-max))
-    (w/write-line (w/clean-string (format "%s" line)) face)
+    (w/write-line (format "%s" line) face)
     (goto-char (point-max))))
 
 (defmacro w/defstruct (name &rest body)
@@ -116,7 +122,8 @@ Optionally append EXT to the path."
 
 (defun w/devour (start end)
   "Delete and return the region from START to END."
-  (let ((ret (buffer-substring start end)))
+  (w/write-log (format "devouring: %s %s %s" start end (buffer-string)))
+  (let ((ret (decode-coding-string (buffer-substring start end) 'utf-8)))
     (delete-region start end)
     ret))
 
@@ -147,7 +154,39 @@ Otherwise, throw an error."
         (delete-char 1)
         t)
     (error (format "While parsing, expected %c but found %c" c char))))
-    
+
+(defun w/get-stream-primary-window ()
+  "Get the marked primary stream window."
+  (window-at-x-y 0 0))
+
+(defun w/open-link ()
+  "Open URL in the primary stream window."
+  (interactive)
+  (when-let ((url (thing-at-point 'url t)))
+    (select-window (w/get-stream-primary-window))
+    (browse-url url)))
+
+(defun w/prevent-focus-frame (e)
+  "Prevent focus from reaching popup frame E."
+  (not (frame-parameter (cadr e) 'wasp-prevent-focus)))
+
+(defconst w/asset-base-path (f-canonical "./assets/"))
+(defun w/asset (path)
+  "Return the absolute path given an asset path PATH."
+  (f-join w/asset-base-path path))
+
+(defun w/image-text (path &optional text)
+  "Return TEXT propertized with the image at PATH.
+If TEXT is nil, use the empty string instead."
+  (propertize
+   (or text "i")
+   'display
+   (create-image path)
+   'rear-nonsticky t))
+
+(defsubst w/saget (k a)
+  "Retrieve the value for string key K in alist A."
+  (alist-get k a nil nil #'s-equals?))
 
 (provide 'wasp-utils)
 ;;; wasp-utils.el ends here

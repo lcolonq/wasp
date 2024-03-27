@@ -107,5 +107,5 @@
    :filter #'w/process-filter)
   (w/sub-all))
 
-(provide 'wasp-network)
+(provide 'wasp-bus)
 ;;; wasp-bus.el ends here
