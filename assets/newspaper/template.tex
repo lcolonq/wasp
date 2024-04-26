@@ -1,0 +1,69 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{fontspec}
+
+\usepackage{newspaper}
+
+\date{\today}
+\currentvolume{1}
+\currentissue{FIG_EDITION}
+
+%% [LianTze] The newspaper package also provides 
+%% these commands to set various metadata:
+
+%% The banner headline on the first page
+%%   (The colon after s: is to get a more
+%%   modern majuscule s in this font instead of 
+%%   the medieval tall s. For anyone interested 
+%%   in the history: 
+%%  http://medievalwriting.50megs.com/scripts/letters/historys.htm)
+\SetPaperName{The Effort Post}
+
+%% The name used in the running header after
+%% the first page
+\SetHeaderName{The Effort Post}
+
+%% and also...
+\SetPaperLocation{\#cyberspace}
+\SetPaperSlogan{FIG_SLOGAN}
+\SetPaperPrice{FIG_PRICE}
+
+
+% [LianTze] times (the package not the font) is rather outdated now; use newtx (see later)
+% \usepackage{times}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\usepackage{picinpar}
+%uasage of picinpar:
+%\begin{window}[1,l,\includegraphics{},caption]xxxxx\end{window}
+
+
+%% [LianTze] Contains some modifications
+\usepackage{newspaper-mod}
+%%... so now you can redefine the headline and byline style if you want to.
+%% These can be issued just before any
+%% byline or headline in the paper, to
+%% individually style each article
+%%
+% \renewcommand{\headlinestyle}{\itshape\Large\lsstyle}
+% \renewcommand{\bylinestyle}{\bfseries\Large\raggedright}
+
+
+%%%%%%%%%  Front matter   %%%%%%%%%%
+
+\usepackage{lipsum}
+
+\begin{document}
+\maketitle
+
+\begin{multicols}{3}
+\setmainfont{NoticiaText-Regular}[Path=/home/llll/src/fig/assets/newspaper/fonts/, Extension=.ttf, RawFeature={mode=harf}]
+\newfontfamily\figemote{Noto Color Emoji}[Path=/home/llll/src/fig/assets/newspaper/fonts/, Extension=.ttf, RawFeature={mode=harf}]
+FIG_ARTICLES
+\end{multicols}
+
+\end{document}
