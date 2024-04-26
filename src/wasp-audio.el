@@ -37,6 +37,7 @@
 (defvar w/current-stream-transcribe-process nil)
 (defvar w/last-stream-transcription "")
 (defvar w/stream-keep-transcribing t)
+(defvar w/stream-transcribe-voice-commands nil)
 
 (defun w/tts (msg)
   "Use TTS to say MSG."
@@ -105,7 +106,10 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
       (lambda (_ _)
         (setq w/current-stream-transcribe-process nil)
         (with-current-buffer (get-buffer-create w/stream-transcribe-buffer)
-          (setq w/last-stream-transcription (buffer-string)))
+          (setq w/last-stream-transcription (buffer-string))
+          (--each w/stream-transcribe-voice-commands
+            (when (s-contains? (car it) (s-downcase w/last-stream-transcription))
+              (funcall (cdr it)))))
         (when w/stream-keep-transcribing
           (w/handle-stream-transcribe)))))))
 

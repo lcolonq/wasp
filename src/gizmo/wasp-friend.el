@@ -130,7 +130,7 @@ AUTHOR was a contributing author btw."
 ;;        (fig//update-db-number "LCOLONQ" :amzn-price (lambda (_) cur))
 ;;        (funcall k (> cur prev))))))
 
-(defvar w/friend-tastes " You love eating ectoplasm and blood and stuff and assorted other spooky things because you are currently a ghost.")
+(defvar w/friend-tastes " You love eating cranberries and lemons.")
 ;; (fig//get-friend-expensive-tastes
 ;;  (lambda (expensive)
 ;;    (let ((moon (car (lunar-phase-for-date (calendar-current-date)))))
@@ -203,7 +203,7 @@ AUTHOR was a contributing author btw."
              (push (cons call (s-trim new)) w/friend-message-cache)
              (funcall k resp)))))
      (s-concat
-      "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. Given an emotional state and a description of an event that happened to you, please respond with a new emotional state and a short message in response considering your emotional state. The message should only be one clause. You like people, video games, emojis, learning, and food."
+      "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. Given an emotional state and a description of an event that happened to you, please respond with a new emotional state and a short message in response considering your emotional state. The message should only be one clause. You like people, video games, emojis, learning, and food. Today is April Fool's day, so you can try playing fun pranks! "
       "The theme of LCOLONQ's stream today is " (s-trim (w/slurp "~/today.txt")) " "
       "The title of LCOLONQ's stream today is " w/twitch-current-stream-title " "
       w/friend-tastes
@@ -313,7 +313,7 @@ If K is specified, call it after the response."
 ;;    (lambda (sum)
 ;;      (w/friend-respond (format "%s asks you to react to the Wikipedia page for %s. The page summary is: %s" user page sum)))))
 
-(defun w/callout-flycheck-error ()
+(defun w/friend-callout-flycheck-error ()
   "Call to respond to a random Flycheck error in the current buffer."
   (when-let* ((errs (--filter (eq (flycheck-error-level it) 'error) flycheck-current-errors))
               (err (nth (random (length errs)) errs)))
@@ -322,9 +322,9 @@ If K is specified, call it after the response."
       "LCOLONQ made an error while programming: "
       (flycheck-error-message err)))))
 
-(defun w/callout-holiday ()
+(defun w/friend-callout-holiday ()
   "Call to respond to the current holiday."
-  (w/friend-respond "It's currently that weird period between Christmas and New Years! Say something about it please!"))
+  (w/friend-respond "It's currently the LCOLONQ shareholders meeting and you're an executive! Say something about it please!"))
 
 ;; (defun fig//callout-hexamedia ()
 ;;   "Call to respond to a random recent chatter's Hexamedia card collection."
@@ -448,14 +448,14 @@ If K is specified, call it after the response."
 (defun w/friend-random-event ()
   "Activate a random \"friend\" event."
   (cl-case (random 10)
-    ;; (0 (fig//callout-flycheck-error))
+    (0 (w/friend-callout-flycheck-error))
     ;; (1 (fig//callout-gcp))
     ;; (2 (fig//callout-hexamedia))
     ;; (3 (fig//callout-uwoomfie))
     ;; (4 (fig//callout-shindaggers))
     ;; (5 (fig//callout-copfish))
-    ;; (6 (fig//callout-resolution))
-    ;; (29 (fig/ldq))
+    ;;(6 (fig//callout-resolution))
+    (29 (w/friend-callout-holiday))
     (t (w/friend-set-state 'jumping))))
 
 (defun w/update-friend ()

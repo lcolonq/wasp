@@ -76,11 +76,12 @@ If not, return nil."
     (insert data)
     (set-marker (process-mark proc) (point))
     (goto-char (point-min))
-    (condition-case err
-        (while (w/db-parse-response))
-      (error
-       (w/write-chat-event (format "Database crashed, error: %s" err))
-       (w/db-disconnect)))))
+    (when (s-suffix? "\r\n" (buffer-string))
+      (condition-case err
+          (while (w/db-parse-response))
+        (error
+         (w/write-chat-event (format "Database crashed, error: %s" err))
+         (w/db-disconnect))))))
 
 (defun w/db-encode (x)
   "Encode X for Redis."

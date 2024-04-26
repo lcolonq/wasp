@@ -159,23 +159,24 @@ Pass the path of the generated PDF to K."
   (interactive)
   (w/db-get
    "newspaper:edition"
-   (lambda (edition)
-     (w/newspaper-pdf
-      (w/newspaper-tex
-       (w/make-newspaper
-        :slogan (w/pick-random w/newspaper-slogans) :price (w/pick-random w/newspaper-prices)
-        :edition (string-to-number edition)
-        :articles
-        w/newspaper-todays-articles))
-      (lambda (path)
-        (make-process
-         :name "fig-newspaper-publish"
-         :command (list "scp" path (format "llll@pub.colonq.computer:~/public_html/news/%03d.pdf" edition))
-         :sentinel
-         (lambda (_ _)
-           (w/db-set "newspaper:edition" (number-to-string (1+ (string-to-number edition))))
-           (browse-url (format "https://pub.colonq.computer/~llll/news/%03d.pdf" edition))
-           )))))))
+   (lambda (edstr)
+     (let ((edition (string-to-number edstr)))
+       (w/newspaper-pdf
+        (w/newspaper-tex
+         (w/make-newspaper
+          :slogan (w/pick-random w/newspaper-slogans) :price (w/pick-random w/newspaper-prices)
+          :edition edition
+          :articles
+          w/newspaper-todays-articles))
+        (lambda (path)
+          (make-process
+           :name "fig-newspaper-publish"
+           :command (list "scp" path (format "llll@pub.colonq.computer:~/public_html/news/%03d.pdf" edition))
+           :sentinel
+           (lambda (_ _)
+             (w/db-set "newspaper:edition" (number-to-string (1+ edition)))
+             (browse-url (format "https://pub.colonq.computer/~llll/news/%03d.pdf" edition))
+             ))))))))
 
 (provide 'wasp-newspaper)
 ;;; wasp-newspaper.el ends here

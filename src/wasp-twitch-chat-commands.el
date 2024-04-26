@@ -1,10 +1,11 @@
-;;; wasp-twitch-chat-commands --- Twitch redeems -*- lexical-binding: t; -*-
+;;; wasp-twitch-chat-commands --- Twitch chat commands -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
 (require 'soundboard)
 (require 'wasp-twitch)
 (require 'wasp-ai)
+(require 'wasp-8ball)
 
 ;; gizmos
 (require 'wasp-pronunciation)
@@ -27,8 +28,18 @@
   ;; (cons "heart" (lambda (_ _) (fig/increment-heartrate-counter)))
   ;; (cons "bpm" (lambda (_ _) (fig/increment-heartrate-counter)))
   ;; (cons "BPM" (lambda (_ _) (fig/increment-heartrate-counter)))
-  (cons "discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
-  (cons "Discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "!discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "discord IRC" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "discord irc" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "Discord IRC" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "Discord irc" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
+  (cons "Joel" (lambda (_ _) (cl-incf w/chat-joel-count) (w/chat-update-header-line)))
+  (cons "+2" (lambda (_ _) (cl-incf w/chat-plus2-count) (w/chat-update-header-line)))
+  (cons "-2" (lambda (_ _) (cl-incf w/chat-minus2-count) (w/chat-update-header-line)))
+  (cons "ICANT" (lambda (_ _) (cl-incf w/chat-icant-count) (w/chat-update-header-line)))
+  (cons "bpm" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "BPM" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "heartrate" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "!irc" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
   (cons "IRC" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
 
@@ -39,11 +50,13 @@
      (w/twitch-say (shell-command-to-string "fishing"))))
   (cons "!nc" (lambda (_ _) (w/twitch-say "try: \"nc colonq.computer 31340\", if nc doesn't work try ncat or telnet")))
   (cons "!oomfie" (lambda (_ _) (w/twitch-say "hi!!!!!!!")))
+  (cons "!helloiloveyou" (lambda (_ _) (w/twitch-say "hello i love you")))
   (cons "!pronunciation" (lambda (_ _) (w/twitch-say (w/pronuciation))))
   ;; (cons "!jetsWave" (lambda (_ _) (fig//twitch-say (fig/slurp "jetsWave.txt"))))
   ;; (cons "!forth" (lambda (_ _) (fig//twitch-say "https://github.com/lcolonq/giving")))
   (cons "!oub" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
   (cons "!game" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
+  (cons "!voidstranger" (lambda (_ _) (w/twitch-say "https://store.steampowered.com/app/2121980/Void_Stranger/")))
   (cons "!pubnix" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!ring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!webring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
@@ -81,17 +94,30 @@
       "ITEM"
       "Ring of Favor and Protection - A ring symbolizing the favor and protection of the goddess Fina, known in legend to possess fateful beauty.")))
   ;; (cons "!geisercounter" (lambda (_ _) (fig//twitch-say (format "The Geiser counter beeps %s times" (fig//geiser-counter)))))
-  ;; (cons "!8ball"
-  ;;       (lambda (user inp)
-  ;;         (let ((trimmed (s-trim (s-replace "!8ball" "" inp))))
-  ;;           (fig//8ball
-  ;;            trimmed
-  ;;            (lambda (answer)
-  ;;              (fig//twitch-say (format "@%s 8ball says: %s" user answer)))))))
-  ;; (cons "!bookrec"
-  ;;       (lambda (_ _)
-  ;;         (let ((choice (nth (random (length fig/recommended-books)) fig/recommended-books)))
-  ;;           (fig//twitch-say (format "%s (recommended by %s)" (car choice) (cdr choice))))))
+  (cons
+   "!8ball"
+   (lambda (user inp)
+     (let ((trimmed (s-trim (s-replace "!8ball" "" inp))))
+       (w/8ball
+        trimmed
+        (lambda (answer)
+          (w/twitch-say (format "@%s 8ball says: %s" user answer)))))))
+  (cons
+   "!bookrec"
+   (lambda (_ _)
+     (w/user-get
+      "__books__"
+      (lambda (books)
+        (let ((choice (w/pick-random books)))
+          (w/twitch-say (format "%s (recommended by %s)" (car choice) (cdr choice))))))))
+  (cons
+   "!quote"
+   (lambda (_ _)
+     (w/user-get
+      "__quotes__"
+      (lambda (books)
+        (let ((choice (w/pick-random books)))
+          (w/twitch-say (format "%s: %s" (cdr choice) (car choice))))))))
   ;; (cons "!addbookrec"
   ;;       (lambda (user inp)
   ;;         (let ((trimmed (s-trim (s-replace "!addbookrec" "" inp))))

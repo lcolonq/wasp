@@ -30,11 +30,17 @@
 (require 'wasp-biblicality)
 (require 'wasp-newspaper)
 (require 'wasp-friend)
+(require 'wasp-fakechat)
+(require 'wasp-dna)
+(require 'wasp-heartrate)
+(require 'wasp-8ball)
 
 ;; configuration
 (require 'wasp-user-whitelist)
+(require 'wasp-fake-chatters)
 (require 'wasp-twitch-chat-commands)
 (require 'wasp-twitch-redeems)
+(require 'wasp-voice-commands)
 (require 'wasp-event-handlers)
 
 ;; user contrib

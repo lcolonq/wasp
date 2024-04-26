@@ -6,13 +6,30 @@
 (require 's)
 (require 'evil)
 (require 'wasp-utils)
+(require 'wasp-user)
 
 (defcustom w/chat-buffer "*wasp-chat*"
   "Name of buffer used to store the chat log."
   :type '(string)
   :group 'wasp)
 
+(defvar w/chat-joel-count 0)
+(defvar w/chat-plus2-count 0)
+(defvar w/chat-minus2-count 0)
+(defvar w/chat-icant-count 0)
+(defvar w/chat-bpm-count 0)
+
 (defvar w/chat-header-line "")
+
+(defun w/chat-update-header-line ()
+  "Update `w/chat-header-line'."
+  (setf
+   w/chat-header-line
+   (s-concat
+    "  Joel: " (format "%s" w/chat-joel-count)
+    " | ICANT: " (format "%s" w/chat-icant-count)
+    " | +2: " (format "%s" w/chat-plus2-count)
+    " | -2: " (format "%s" w/chat-minus2-count))))
 
 (define-derived-mode w/chat-overlay-mode special-mode "ClonkHead Stats"
   "Major mode for displaying chatter statistics."
@@ -57,15 +74,41 @@
        (format "%s %s" (car dinfo) e)
        'face (list :foreground (cadr dinfo)))
     "O.O unknown?"))
-
 (defun w/chat-overlay-render (user)
   "Render the stats buffer for USER."
-  (with-current-buffer (w/get-chat-overlay-buffer user)
-    (let* ((inhibit-read-only t))
-      (erase-buffer)
-      (w/write-line user 'w/chat-overlay-title)
-      (w/write-line "N/A")
-      (goto-char (point-min)))))
+  (w/user-get
+   user
+   (lambda (db)
+     (with-current-buffer (w/get-chat-overlay-buffer user)
+       (let* ((inhibit-read-only t)
+              (faction (alist-get :faction db))
+              (element (alist-get :element db))
+              (boosts (alist-get :boost db)))
+         (erase-buffer)
+         (w/write-line user 'w/chat-overlay-title)
+         (w/write
+          (format
+           "Faction: %s"
+           (propertize
+            (format "%s" (or faction "EXEMPT"))
+            'face
+            (list
+             :foreground
+             (cl-case faction
+               (nate "pink")
+               (lever "lightblue")
+               (tony "lightgreen")
+               (t "white"))))))
+         (w/write-line
+          (cond
+           ((not boosts) " (objector)")
+           ((> boosts 0) (format " (boost %s)" boosts))
+           (t (format " (%s tsoob)" boosts))))
+         (w/write-line
+          (format
+           "Element: %s"
+           (w/chat-overlay-display-element element)))
+         (goto-char (point-min)))))))
 
 (defvar w/chat-overlay-frame nil)
 (defvar w/chat-overlay-cur nil)
@@ -205,6 +248,7 @@ Optionally, return the buffer NM in chat mode."
     ("pal" . "pokemon")
     ("Pal" . "Pokemon")
     ("PAL" . "POKEMON")
+    ("darkrai" . "*******")
     ("hunter2" . "*******")
     ("*******" . "hunter2")))
 

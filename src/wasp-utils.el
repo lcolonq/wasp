@@ -4,9 +4,11 @@
 
 (require 's)
 (require 'f)
+(require 'rx)
 (require 'cl-lib)
 (require 'eieio)
 (require 'request)
+(require 'ef-themes)
 
 (defcustom w/log-buffer "*wasp-log*"
   "Name of buffer used to store the log."
@@ -71,6 +73,10 @@ Optionally append EXT to the path."
   (let ((path (s-concat (make-temp-file prefix) (or ext ""))))
     (with-temp-file path (insert str))
     path))
+
+(defun w/message-ping (msg)
+  "Given MSG, extract a user pinged."
+  (cadr (s-match (rx "@" (group (one-or-more (any alnum "_")))) msg)))
 
 (defun w/decode-string (s)
   "Decode the base64 UTF-8 string S."
@@ -187,6 +193,27 @@ If TEXT is nil, use the empty string instead."
 (defsubst w/saget (k a)
   "Retrieve the value for string key K in alist A."
   (alist-get k a nil nil #'s-equals?))
+
+(defun w/change-theme (theme)
+  "Change the current theme to THEME."
+  (ef-themes-select theme)
+  (ef-themes-with-colors
+    (setenv "COLONQ_BGCOLOR" bg-main)
+    (set-face-attribute
+     'vertical-border nil
+     :foreground bg-alt
+     :background bg-alt)
+    (set-face-attribute
+     'fringe nil
+     :foreground bg-alt
+     :background bg-alt))
+  (ef-themes-with-colors
+    (set-face-attribute
+     'eshell-prompt nil
+     :foreground fg-main
+     :background bg-alt
+     :weight 'bold
+     :extend t)))
 
 (provide 'wasp-utils)
 ;;; wasp-utils.el ends here

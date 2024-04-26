@@ -130,6 +130,16 @@
   "caram3lnuke"
   "TheCoppinger"
   "DerMarkus1982"
+  "fartieartie"
+  "windowsmilleniumedition"
+  "Sampie159"
+  "nilptrderef"
+  "vesdev"
+  "mimeyu"
+  "emmytea"
+  "ZeikJT"
+  "zaaaff"
+  "b0rkeey"
   ))
 
 (provide 'wasp-user-whitelist)

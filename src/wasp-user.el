@@ -70,5 +70,19 @@ Save it back to the database after K returns."
      (cl-decf (alist-get :boost d 0))
      (w/user-set user d))))
 
+(defun w/user-add-bookrec (user book)
+  "Add a recommendation for BOOK from USER."
+  (w/user-get
+   "__books__"
+   (lambda (b)
+     (w/user-set "__books__" (cons (cons book user) b)))))
+
+(defun w/user-add-quote (user q)
+  "Add a recommendation for BOOK from USER."
+  (w/user-get
+   "__quotes__"
+   (lambda (qs)
+     (w/user-set "__quotes__" (cons (cons q user) qs)))))
+
 (provide 'wasp-user)
 ;;; wasp-user.el ends here

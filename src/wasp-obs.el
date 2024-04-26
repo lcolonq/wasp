@@ -48,6 +48,15 @@
   "Toggle the explosion effect."
   (w/pub '(monitor obs toggle) (list "Explosion" "Explosion Video")))
 
+(defun w/obs-toggle-total-clarity ()
+  "Toggle the total clarity effect."
+  (w/pub '(monitor obs toggle) (list "Total Clarity" "Total Clarity Video"))
+  (w/pub '(monitor obs toggle) (list "Main" "Mic")))
+
+(defun w/obs-toggle-activate-nixos ()
+  "Toggle the explosion effect."
+  (w/pub '(monitor obs toggle) (list "Main" "Activate NixOS")))
+
 (defun w/obs-set-clickbait-text (msg)
   "Change the clickbait text to MSG."
   (w/pub '(monitor obs set-text) (list "Red Arrow Text" (w/encode-string (s-trim msg)))))
@@ -62,6 +71,10 @@ Optionally, change text to MSG."
 (defun w/obs-toggle-chase-dreams ()
   "Toggle the Chasing Dreams effect."
   (w/pub '(monitor obs toggle) (list "Chasing Dreams" "Dreams")))
+
+(defun w/obs-toggle-brazil ()
+  "Toggle the MODCLONK panel."
+  (w/pub '(monitor obs toggle) (list "Main" "Brazil")))
 
 (w/defstruct
  w/obs-toggle
@@ -85,6 +98,8 @@ Optionally, change text to MSG."
    (cons 'critical-hit (w/make-obs-toggle :toggle #'w/obs-toggle-critical-hit :reset 3))
    (cons 'clickbait (w/make-obs-toggle :toggle #'w/obs-toggle-clickbait :reset 31))
    (cons 'chase-dreams (w/make-obs-toggle :toggle #'w/obs-toggle-chase-dreams :reset 31))
+   (cons 'total-clarity (w/make-obs-toggle :toggle #'w/obs-toggle-total-clarity :reset 10))
+   (cons 'activate-nixos (w/make-obs-toggle :toggle #'w/obs-toggle-activate-nixos :reset 31))
    ))
 
 (defun w/obs-activate-toggle (tnm &rest args)

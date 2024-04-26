@@ -49,6 +49,7 @@
 (defvar w/twitch-emote-frame-timer nil)
 (defvar w/twitch-redeems nil)
 (defvar w/twitch-chat-commands nil)
+(defvar w/twitch-gamer-counter 0)
 
 (defun w/twitch-api-get (loc k)
   "Get LOC from the Twitch API, passing the returned JSON to K."
@@ -397,6 +398,26 @@ CALLBACK will be passed the winner when the poll concludes."
    w/twitch-emote-frame-timer
    (run-with-timer 0.03 nil #'w/twitch-run-emote-frame-timer)))
 
+(defun w/twitch-badges-sigil (badges)
+  "Return the sigil character BADGES for the current user."
+  (let ((equity (alist-get :equity w/user-current)))
+    (apply
+     #'s-concat
+     (-non-nil
+      (list
+       (when (-contains? badges "broadcaster/1") "(it me)")
+       (when (-contains? badges "moderator/1") "⚔")
+       (when (-contains? badges "artist-badge/1") "🖌️")
+       (when (and equity (> equity 0))
+         (cond
+          ((s-equals? (s-downcase w/user-current-name) "bezelea") "♿🔔")
+          ((s-equals? (s-downcase w/user-current-name) "altovt") "📈")
+          ((s-equals? (s-downcase w/user-current-name) "prodzpod") "🎑")
+          ((s-equals? (s-downcase w/user-current-name) "faeliore") "😹")
+          (t "EL.")))
+       (when (-contains? badges "vip/1") "💎")
+       (when (-contains? badges "subscriber/0") "💻"))))))
+
 (defun w/twitch-handle-incoming-chat (msg)
   "Write MSG to the chat buffer, processing any commands."
   (w/write-log (format "%s" msg))
@@ -408,7 +429,7 @@ CALLBACK will be passed the winner when the poll concludes."
               (userid (car (w/saget "user-id" tags)))
               (color (car (w/saget "color" tags)))
               (emotes (car (w/saget "emotes" tags)))
-              ;; (badges (s-split "," (car (w/saget "badges" tags))))
+              (badges (s-split "," (car (w/saget "badges" tags))))
               (text (w/decode-string (caddr msg)))
               (biblicality (w/bible-colorize-sentence text))
               (text-colored-bible (car biblicality))
@@ -424,7 +445,8 @@ CALLBACK will be passed the winner when the poll concludes."
            :id userid
            :text text-with-emotes
            :user-color (when (s-present? color) color)
-           :biblicality (cdr biblicality)))
+           :biblicality (cdr biblicality)
+           :sigil (w/twitch-badges-sigil badges)))
          (--each w/twitch-chat-commands
            (when (s-contains? (car it) text)
              (funcall (cdr it) user text))))))))
@@ -441,7 +463,11 @@ CALLBACK will be passed the winner when the poll concludes."
         (w/user-bind
          user
          (lambda ()
-           (funcall (cadr handler) user input)))
+           (condition-case err
+               (funcall (cadr handler) user input)
+             (error
+              (w/write-chat-event (format "Error during redeem: %s" err))
+              ))))
       (w/write-log (format "Unknown channel point redeem: %S" redeem)))))
 
 (defun w/twitch-handle-redeem-api (r)
