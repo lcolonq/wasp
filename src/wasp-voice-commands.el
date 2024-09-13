@@ -18,6 +18,10 @@
         (lambda ()
           (progn (w/obs-toggle-brazil)
                  (run-with-timer 1 nil #'w/obs-toggle-brazil))))
+  (cons "ruby"
+        (lambda ()
+          (progn (w/obs-toggle-japan)
+                 (run-with-timer 1 nil #'w/obs-toggle-japan))))
   ))
 
 (provide 'wasp-voice-commands)

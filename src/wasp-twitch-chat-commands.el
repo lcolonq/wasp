@@ -23,11 +23,14 @@
   (cons "MRBEAST" (lambda (_ _) (soundboard//play-clip "mrbeast.mp3")))
   (cons "NICECOCK" (lambda (_ _) (soundboard//play-clip "pantsintoashes.mp3")))
   (cons "hexadiCoding" (lambda (_ _) (soundboard//play-clip "developers.ogg")))
-  (cons "roguelike" (lambda (user _) (w/twitch-say (format "@%s that's not a roguelike" user))))
+  (cons
+   "roguelike"
+   (lambda (user _)
+     (w/twitch-say
+      (if (= 0 (random 20))
+          (format "@%s that is a roguelike :3" user)
+        (format "@%s that's not a roguelike" user)))))
   (cons "arch btw" (lambda (_ _) (w/twitch-say "I use nix btw")))
-  ;; (cons "heart" (lambda (_ _) (fig/increment-heartrate-counter)))
-  ;; (cons "bpm" (lambda (_ _) (fig/increment-heartrate-counter)))
-  ;; (cons "BPM" (lambda (_ _) (fig/increment-heartrate-counter)))
   (cons "!discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
   (cons "discord IRC" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
   (cons "discord irc" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
@@ -44,12 +47,17 @@
   (cons "IRC" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
 
   (cons "!today" (lambda (_ _) (w/twitch-say (s-trim (w/slurp "~/today.txt")))))
+  (cons "!bingo" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~prod/toy/bingo/")))
   (cons
    "!fish"
    (lambda (_ _)
      (w/twitch-say (shell-command-to-string "fishing"))))
   (cons "!nc" (lambda (_ _) (w/twitch-say "try: \"nc colonq.computer 31340\", if nc doesn't work try ncat or telnet")))
-  (cons "!oomfie" (lambda (_ _) (w/twitch-say "hi!!!!!!!")))
+  (cons
+   "!oomfie"
+   (lambda (_ _)
+      (soundboard//play-clip "oomfie.ogg")
+      (w/twitch-say "hi!!!!!!!")))
   (cons "!helloiloveyou" (lambda (_ _) (w/twitch-say "hello i love you")))
   (cons "!pronunciation" (lambda (_ _) (w/twitch-say (w/pronuciation))))
   ;; (cons "!jetsWave" (lambda (_ _) (fig//twitch-say (fig/slurp "jetsWave.txt"))))
@@ -61,6 +69,7 @@
   (cons "!ring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!webring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!animeguide" (lambda (_ _) (w/twitch-say "https://nixos-and-flakes.thiscute.world/introduction")))
+  (cons "!tsuki" (lambda (_ _) (w/twitch-say "https://forum.tsuki.games")))
   (cons "!sponsor" (lambda (_ _) (w/twitch-say "Like what you see? Don't forget to download GNU Emacs at https://www.gnu.org/software/emacs/?code=LCOLONQ")))
   (cons "!specs" (lambda (_ _) (w/twitch-say "Editor: evil-mode, WM: EXWM, OS: NixOS, hardware: shit laptop")))
   (cons "!coverage" (lambda (_ _) (w/twitch-say (format "Test coverage: %s%%" (random 100)))))
@@ -118,6 +127,28 @@
       (lambda (books)
         (let ((choice (w/pick-random books)))
           (w/twitch-say (format "%s: %s" (cdr choice) (car choice))))))))
+  (cons
+   "!leaderboard"
+   (lambda (_ _)
+     (let* ((user-scores (-filter #'cdr (--map (when (and (listp it) (listp (cdr it))) (cons (car it) (alist-get :boost (cdr it)))) (ht->alist w/user-cache))))
+            (sorted (-sort (-on #'> #'cdr) user-scores))
+            (leaders (-take 5 sorted)))
+       (w/twitch-say (s-join ", " (--map (format "%s: %s" (car it) (cdr it)) leaders))))))
+  (cons
+   "draobredael!"
+   (lambda (_ _)
+     (let* ((user-scores (-filter #'cdr (--map (when (and (listp it) (listp (cdr it))) (cons (car it) (alist-get :boost (cdr it)))) (ht->alist w/user-cache))))
+            (sorted (-sort (-on #'< #'cdr) user-scores))
+            (leaders (-take 5 sorted)))
+       (w/twitch-say (s-join ", " (--map (format "%s: %s" (reverse (car it)) (cdr it)) leaders))))))
+  (cons
+   "!resolution"
+   (lambda (user inp)
+     (let ((trimmed (s-trim (s-replace "!resolution" "" inp))))
+       (if (string-empty-p trimmed)
+           (w/write-chat-event "You gotta put what your resolution is.")
+         (w/write-chat-event (format "%s RESOLVES: %s" (s-upcase user) trimmed))
+         (setf (alist-get :resolution w/user-current) trimmed)))))
   ;; (cons "!addbookrec"
   ;;       (lambda (user inp)
   ;;         (let ((trimmed (s-trim (s-replace "!addbookrec" "" inp))))
@@ -132,13 +163,6 @@
   ;;         (let ((trimmed (s-trim (s-replace "!addquote" "" inp))))
   ;;           (fig//write-chat-event (format "%s saves quote: %s" user trimmed))
   ;;           (fig//add-quote user trimmed))))
-  ;; (cons "!resolution"
-  ;;       (lambda (user inp)
-  ;;         (let ((trimmed (s-trim (s-replace "!resolution" "" inp))))
-  ;;           (if (string-empty-p trimmed)
-  ;;               (fig//write-chat-event "You gotta put what your resolution is.")
-  ;;             (fig//write-chat-event (format "%s RESOLVES: %s" (s-upcase user) trimmed))
-  ;;             (fig//set-db-entry user :resolution trimmed)))))
   ;; (cons "!twitter"
   ;;       (lambda (_ _)
   ;;         (fig/ask "How do you feel about Twitter? Should viewers follow LCOLONQ on Twitter?" #'fig/say)
@@ -146,21 +170,6 @@
   ;; ;; (cons "!aoc" (lambda (_ _) (fig//twitch-say "Join our leaderboard: 3307583-b61f237c")))
   ;; (cons "!roll" (lambda (user _) (fig//twitch-say (fig//character-to-string (fig//roll-character user)))))
   ;; (cons
-  ;;  "!leaderboard"
-  ;;  (lambda (_ _)
-  ;;    (let* ((users (fig//all-db-users))
-  ;;           (user-scores (-filter #'cdr (--map (cons it (alist-get :boost (fig//load-db it))) users)))
-  ;;           (sorted (-sort (-on #'> #'cdr) user-scores))
-  ;;           (leaders (-take 5 sorted)))
-  ;;      (fig//twitch-say (s-join ", " (--map (format "%s: %s" (car it) (cdr it)) leaders))))))
-  ;; (cons
-  ;;  "draobredael!"
-  ;;  (lambda (_ _)
-  ;;    (let* ((users (fig//all-db-users))
-  ;;           (user-scores (-filter #'cdr (--map (cons it (alist-get :boost (fig//load-db it))) users)))
-  ;;           (sorted (-sort (-on #'< #'cdr) user-scores))
-  ;;           (leaders (-take 5 sorted)))
-  ;;      (fig//twitch-say (s-join ", " (--map (format "%s: %s" (reverse (car it)) (cdr it)) leaders))))))
   ;; (cons
   ;;  "!vippers"
   ;;  (lambda (_ _)

@@ -63,8 +63,59 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
 (defun w/stop-all-audio ()
   "Stop all audio by killing mpv processes."
   (interactive)
-  (muzak-stop)
   (start-process "pkill" nil "pkill" "mpv"))
+
+(defun w/recorded-chatter-name? (user)
+  "Return non-nil if we've recorded USER's name."
+  (f-exists?
+   (w/asset (s-concat "rats/users/" user ".wav"))))
+(defun w/say-chatter-name (user &optional volume k)
+  "Pronounce USER's name in using mpv.
+Call K when done.
+If VOLUME is specified, use it :)."
+  (w/play-audio (w/asset (s-concat "rats/users/" user ".wav")) k volume))
+
+(defun w/multipart-audio-helper (user rest &optional uservol clipvol)
+  "Player all of the files in REST intercalated with saying USER's name.
+Adjust volumes by USERVOL and CLIPVOL."
+  (when (car rest)
+    (w/play-audio
+     (car rest)
+     (when (cdr rest)
+       (lambda ()
+         (w/say-chatter-name
+          user uservol
+          (lambda () (w/multipart-audio-helper user (cdr rest) uservol clipvol)))))
+     clipvol)))
+
+(defun w/audio-rats-rats-we-are-the-rats (user)
+  "Rats rats we are the rats.
+Celebrating yet another birthday bash.
+USER it's your birthday today."
+  (let ((parts (--map (w/asset (format "rats/rats/rats%d.ogg" (+ it 1))) (-iota 3))))
+    (w/multipart-audio-helper user parts 120 100)))
+(defun w/audio-rambling-sub-thanks (user)
+  "Say the thing about USER."
+  (let ((parts (--map (w/asset (format "rats/new/part%d.wav" it)) (-iota 5))))
+    (w/multipart-audio-helper user parts 120 150)))
+(defun w/thank-sub (user)
+  "Thank USER for their subscription user a randomized thanking technique."
+  (let* ((thankers-named
+          '(w/audio-rats-rats-we-are-the-rats
+            w/audio-rambling-sub-thanks))
+         (thankers-unnamed
+          '((lambda (_) (w/play-audio (w/asset "rats/sam.wav") nil 90))
+            (lambda (_) (w/play-audio (w/asset "rats/tyumici.mp3") nil 150))
+            (lambda (_) (w/play-audio (w/asset "rats/abuffseagull.flac") nil 150))
+            (lambda (_) (w/play-audio (w/asset "rats/unrecorded.wav") nil 150))
+            ))
+         (thanker
+          (w/pick-random
+           (-concat
+            (when (w/recorded-chatter-name? user)
+              thankers-named)
+            thankers-unnamed))))
+    (funcall thanker user)))
 
 (defvar-local w/transcribe-callback nil)
 (defun w/begin-transcribe (k)
@@ -106,6 +157,7 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
       (lambda (_ _)
         (setq w/current-stream-transcribe-process nil)
         (with-current-buffer (get-buffer-create w/stream-transcribe-buffer)
+          (w/daily-log (format "[VOICE]: %s" (buffer-string)))
           (setq w/last-stream-transcription (buffer-string))
           (--each w/stream-transcribe-voice-commands
             (when (s-contains? (car it) (s-downcase w/last-stream-transcription))
@@ -133,7 +185,7 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
   (interactive)
   (setq w/stream-keep-transcribing t)
   (w/handle-stream-transcribe))
-(defun fig/stop-fake-chat-transcribe ()
+(defun w/stop-stream-transcribe ()
   "Stop transcribing speech for fake chatters."
   (interactive)
   (setq w/stream-keep-transcribing nil)

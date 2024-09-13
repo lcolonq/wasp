@@ -12,6 +12,7 @@
 (require 'wasp-audio)
 (require 'wasp-ai)
 (require 'wasp-twitch)
+(require 'wasp-prod)
 
 (defvar w/fake-chatters nil
   "List of all active fake chatters.")
@@ -142,6 +143,13 @@
          0.8
        0.0))))
 
+(defconst w/fake-chatter-profile-prodzpod
+  (w/make-fake-chatter-profile
+   :username "prodzpod"
+   :compute-likeliness #'w/fake-chatter-standard-likeliness
+   :send-message
+   (lambda (st) (w/prod-clone-respond (w/fake-chat-prompt-build st)))))
+
 (defconst w/fake-chatter-profile-forsen
   (w/make-fake-chatter-profile
    :username "forsen"
@@ -158,6 +166,23 @@
       "LCOLONQ: Hey guys, let's have a good day today."
       "forsenC"
       ))))
+
+(defconst w/fake-chatter-profile-eighteyedsixwingedseraph
+  (w/make-fake-chatter-profile
+   :username "eighteyedsixwingedseraph"
+   :color "#777777"
+   :compute-likeliness #'w/fake-chatter-standard-likeliness
+   :send-message
+   (lambda (_)
+     (w/write-chat-event "eighteyedsixwingedseraph is lurking"))))
+
+(defconst w/fake-chatter-profile-nefrayu
+  (w/make-fake-chatter-profile
+   :username "Nefrayu"
+   :compute-likeliness #'w/fake-chatter-standard-likeliness
+   :send-message
+   (lambda (st)
+     (w/fake-chatter-send st "hello"))))
 
 (defconst w/fake-chatter-profile-bigwomenbigfun
   (w/make-fake-chatter-profile

@@ -7,6 +7,7 @@
 (require 'f)
 (require 'wasp-utils)
 (require 'wasp-bus)
+(require 'wasp-model)
 
 (defun w/obs-toggle-modclonk ()
   "Toggle the MODCLONK panel."
@@ -73,14 +74,26 @@ Optionally, change text to MSG."
   (w/pub '(monitor obs toggle) (list "Chasing Dreams" "Dreams")))
 
 (defun w/obs-toggle-brazil ()
-  "Toggle the MODCLONK panel."
+  "Toggle the Brazilian flag."
   (w/pub '(monitor obs toggle) (list "Main" "Brazil")))
+
+(defun w/obs-toggle-japan ()
+  "Toggle the Japanese flag."
+  (w/pub '(monitor obs toggle) (list "Main" "Japan")))
+
+(defun w/obs-set-debate-topic-text (msg)
+  "Change the debate topic text to MSG."
+  (w/pub '(monitor obs set-text) (list "Debate Topic" (w/encode-string (s-trim msg)))))
+
+(defun w/obs-toggle-debate-topic ()
+  "Toggle the debate topic."
+  (w/pub '(monitor obs toggle) (list "Main" "Debate Topic")))
 
 (w/defstruct
  w/obs-toggle
  toggle
  reset
- (timer 0))
+ timer)
 
 (defun w/obs-activate-toggle-helper (toggle &rest args)
   "Pass ARGS to the callback for TOGGLE and start its timer."
@@ -100,7 +113,7 @@ Optionally, change text to MSG."
    (cons 'chase-dreams (w/make-obs-toggle :toggle #'w/obs-toggle-chase-dreams :reset 31))
    (cons 'total-clarity (w/make-obs-toggle :toggle #'w/obs-toggle-total-clarity :reset 10))
    (cons 'activate-nixos (w/make-obs-toggle :toggle #'w/obs-toggle-activate-nixos :reset 31))
-   ))
+   (cons 'pharaohs-curse (w/make-obs-toggle :toggle (lambda () (w/model-toggle "sand")) :reset 20))))
 
 (defun w/obs-activate-toggle (tnm &rest args)
   "Pass ARGS to the callback for toggle symbol TNM and start its timer."

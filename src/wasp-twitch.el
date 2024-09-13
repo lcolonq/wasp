@@ -10,6 +10,10 @@
 (require 'wasp-bus)
 (require 'wasp-chat)
 (require 'wasp-user)
+(require 'wasp-hexamedia)
+(require 'wasp-copfish)
+(require 'wasp-shindaggers)
+(require 'wasp-hex)
 
 ;; gizmos
 (require 'wasp-biblicality)
@@ -41,6 +45,7 @@
 
 (defvar w/twitch-last-response nil)
 (defvar w/twitch-7tv-last-response nil)
+(defconst w/twitch-vip-max 55)
 (defvar w/twitch-vip-list nil)
 (defvar w/twitch-7tv-emote-map nil)
 (defvar w/twitch-chat-history nil)
@@ -50,6 +55,25 @@
 (defvar w/twitch-redeems nil)
 (defvar w/twitch-chat-commands nil)
 (defvar w/twitch-gamer-counter 0)
+
+(defun w/twitch-api-endpoint-test ()
+  "Get LOC from the Twitch API, passing the returned JSON to K."
+  (request
+    "https://api.twitch.tv/helix/users?login=lcolonq"
+    :type "GET"
+    :headers
+    `(("Content-Type" . "application/json"))
+    :parser #'json-parse-buffer
+    :error
+    (cl-function
+     (lambda (&key response &allow-other-keys)
+       (message "error:")
+       (print response)))
+    :success
+    (cl-function
+     (lambda (&key data &allow-other-keys)
+       (message "success:")
+       (print data)))))
 
 (defun w/twitch-api-get (loc k)
   "Get LOC from the Twitch API, passing the returned JSON to K."
@@ -195,13 +219,42 @@ K is called when the download is finished."
             (lambda (_ _)
               (funcall k)))))))))
 
+(defun w/twitch-get-vip-list-handler (data)
+  "Handle VIP list DATA."
+  (let ((inner (ht-get data "data"))
+        (pagi (ht-get data "pagination")))
+    (seq-map (lambda (it) (push (ht-get it "user_login") w/twitch-vip-list)) inner)
+    (when (and pagi (ht-get pagi "cursor"))
+      (w/twitch-api-get
+       (format
+        "/channels/vips?broadcaster_id=%s&after=%s"
+        w/twitch-broadcaster-id
+        (ht-get pagi "cursor"))
+       #'w/twitch-get-vip-list-handler))))
+(defun w/twitch-get-vip-list ()
+  "Fetch current VIP list to `w/twitch-vip-list'."
+  (setq w/twitch-vip-list nil)
+  (w/twitch-api-get
+   (s-concat "/channels/vips?broadcaster_id=" w/twitch-broadcaster-id)
+   #'w/twitch-get-vip-list-handler)
+  t)
+
 (defun w/twitch-add-vip (user)
   "Give VIP status to USER."
-  (w/pub '(monitor twitch vip add) (list user)))
+  (w/pub '(monitor twitch vip add) (list user))
+  (when (> (length w/twitch-vip-list) w/twitch-vip-max)
+    (w/twitch-remove-random-vip)))
 
 (defun w/twitch-remove-vip (user)
   "Remove VIP status from USER."
-  (w/pub '(monitor twitch vip remove) (list user)))
+  (w/pub '(monitor twitch vip remove) (list user))
+  (w/twitch-get-vip-list))
+
+(defun w/twitch-remove-random-vip ()
+  "Remove VIP status from a random user."
+  (let ((user (w/pick-random w/twitch-vip-list)))
+    (w/write-chat-event (format "Randomly removed VIP from %s - autofloor" user))
+    (w/twitch-remove-vip user)))
 
 (defun w/twitch-shoutout (user)
   "Shoutout USER."
@@ -269,6 +322,22 @@ CALLBACK will be passed the winner when the poll concludes."
      `(display
        ,image
        rear-nonsticky t))
+    (buffer-string)))
+
+(defun w/twitch-replace-emotes-randomly (msg paths)
+  "Replace emotes in MSG randomly with images at PATHS."
+  (with-temp-buffer
+    (insert msg)
+    (let ((pos (point-min)))
+      (while pos
+        (let ((end (next-single-property-change pos 'display)))
+          (when-let ((face (get-text-property pos 'display)))
+            (add-text-properties
+             pos (or end (point-max))
+             `(display
+               ,(create-image (w/pick-random paths))
+               rear-nonsticky t)))
+          (setf pos end))))
     (buffer-string)))
 
 (defun w/twitch-emote-path (emoteid)
@@ -409,11 +478,20 @@ CALLBACK will be passed the winner when the poll concludes."
        (when (-contains? badges "moderator/1") "⚔")
        (when (-contains? badges "artist-badge/1") "🖌️")
        (when (and equity (> equity 0))
-         (cond
+         (cond ;; The Equity Lords
           ((s-equals? (s-downcase w/user-current-name) "bezelea") "♿🔔")
           ((s-equals? (s-downcase w/user-current-name) "altovt") "📈")
-          ((s-equals? (s-downcase w/user-current-name) "prodzpod") "🎑")
+          ((s-equals? (s-downcase w/user-current-name) "prodzpod") "🌌🎑")
           ((s-equals? (s-downcase w/user-current-name) "faeliore") "😹")
+          ((s-equals? (s-downcase w/user-current-name) "vasher_1025") "🕴")
+          ((s-equals? (s-downcase w/user-current-name) "leadengin") "💈")
+          ;; ((s-equals? (s-downcase w/user-current-name) "kettlestew") "")
+          ;; ((s-equals? (s-downcase w/user-current-name) "blazynights") "")
+          ;; ((s-equals? (s-downcase w/user-current-name) "must_broke_") "")
+          ;; ((s-equals? (s-downcase w/user-current-name) "bvnanana") "")
+          ((s-equals? (s-downcase w/user-current-name) "venorrak") "📺")
+          ;; ((s-equals? (s-downcase w/user-current-name) "tf_tokyo") "")
+          ;; clone is lord ((s-equals? (s-downcase w/user-current-name) "liquidcake1") "")
           (t "EL.")))
        (when (-contains? badges "vip/1") "💎")
        (when (-contains? badges "subscriber/0") "💻"))))))
@@ -439,7 +517,16 @@ CALLBACK will be passed the winner when the poll concludes."
                  (s-split "/" emotes)
                  text-colored-bible))))
          (push (cons user text) w/twitch-chat-history)
-         (w/write-chat-message
+
+         (w/hexamedia-update-user user)
+         (w/shindaggers-update-user user)
+         (w/copfish-update-user user)
+         (when (s-equals? (s-downcase user) "modclonk")
+           (w/obs-activate-toggle 'modclonk))
+
+         (w/hex-tick user)
+         (w/hex-transform
+          user
           (w/make-chat-message
            :user user
            :id userid

@@ -39,7 +39,7 @@
 
 (defun w/db-parse-value ()
   "Parse a single RESP value from the current buffer."
-  (w/write-log (format "parsing: %S" (buffer-string)))
+  ;; (w/write-log (format "parsing: %S" (buffer-string)))
   (when-let ((c (char-after)))
     (delete-char 1)
     (cl-case c
@@ -93,7 +93,7 @@ If not, return nil."
 
 (defun w/db-send-raw (msg)
   "Send MSG to Redis."
-  (w/write-log (format "sending to redis: %s" msg))
+  ;; (w/write-log (format "sending to redis: %s" msg))
   (process-send-string w/db-process msg))
 
 (defun w/db-cmd (cmd k)
@@ -122,6 +122,12 @@ If not, return nil."
    :service w/db-port
    :filter #'w/db-process-filter))
 
+(defun w/db-keys (pat k)
+  "Retrieve the list of keys matching PAT and pass them to K."
+  (if (stringp pat)
+      (w/db-cmd `("KEYS" ,pat) k)
+    (error "Redis pattern must be string")))
+
 (defun w/db-set (key val)
   "Set KEY to VAL in Redis."
   (if (and (stringp key) (stringp val))
@@ -133,6 +139,10 @@ If not, return nil."
   (if (stringp key)
       (w/db-cmd `("GET" ,key) k)
     (error "Redis key must be string")))
+
+(defun w/db-mget (keys k)
+  "Get KEYS from Redis and pass the corresponding values to K."
+  (w/db-cmd `("MGET" ,@keys) k))
 
 (defun w/db-hset (key hkey val &rest vals)
   "Set HKEY in hash KEY to VAL in Redis."

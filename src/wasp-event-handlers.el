@@ -7,10 +7,34 @@
 (require 'wasp-twitch)
 (require 'wasp-friend)
 (require 'wasp-model)
+(require 'wasp-overlay)
 
 (setf
  w/bus-event-handlers
  (list
+  (cons
+   '(monitor nethack test)
+   (lambda (data)
+     (w/write-chat-event (format "Nethack says hi: %s" data))))
+  (cons
+   '(monitor nethack monster)
+   (lambda (data)
+     (when-let ((sp (s-split " " (car data))))
+       (setf planet/last-monster (cons (s-join " " (cdr sp)) (string-to-number (car sp))))
+       (planet/render-monster-summary))))
+  (cons
+   '(overlay barrage started)
+   (lambda (_)
+     (w/write-chat-event "It begins...")
+     (setf w/overlay-barrage-active t)
+     (w/overlay-update-cursor)))
+  (cons
+   '(overlay barrage ended)
+   (lambda (msg)
+     (cond
+      ((s-equals? (car msg) "won") (w/write-chat-event "Fufufu... I win..."))
+      (t (w/write-chat-event "that it's over")))
+     (setf w/overlay-barrage-active nil)))
   (cons '(monitor twitch chat incoming) #'w/twitch-handle-incoming-chat)
   (cons '(monitor twitch redeem incoming) #'w/twitch-handle-redeem)
   (cons
@@ -35,12 +59,27 @@
    '(monitor twitch follow)
    (lambda (msg)
      (let ((user (car msg)))
-       ;; (soundboard//play-clip "firstblood.mp3")
-       ;; (w/model-region-word "skin" (format "welcome_%s_" user))
+       (soundboard//play-clip "firstblood.mp3")
+       (w/model-region-word "skin" (format "welcome_%s_" user))
        (w/friend-respond (format "%s just followed the stream" user))
-       ;; (w/write-chat-event (format "New follower: %s" user))
-       )
-     ))
+       (w/write-chat-event (format "New follower: %s" user)))))
+  (cons
+   '(monitor twitch subscribe)
+   (lambda (msg)
+     (let ((user (car msg)))
+       ;; (w/thank-sub user)
+       (w/model-region-word "skin" (format "thanks_%s_" user))
+       (w/friend-respond (format "%s just subscribed to the stream" user))
+       (w/write-chat-event (format "New subscriber: %s" user)))))
+  (cons
+   '(monitor twitch gift)
+   (lambda (msg)
+     (let ((user (car msg))
+           (subs (cadr msg)))
+       (w/model-region-word "skin" (format "thanks_%s_" user))
+       (w/friend-respond (format "%s just gifted subscriptions" user))
+       (w/write-chat-event (format "%s gifted %d subs" user subs))
+       (soundboard//play-monsterkill subs))))
   (cons
    '(monitor twitch poll begin)
    (lambda (_)

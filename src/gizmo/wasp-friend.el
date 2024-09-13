@@ -11,6 +11,12 @@
 (require 'wasp-chat)
 (require 'wasp-twitch)
 (require 'wasp-newspaper)
+(require 'wasp-gcp)
+(require 'wasp-aoc)
+(require 'wasp-uwoomfie)
+(require 'wasp-wikipedia)
+(require 'muzak)
+(require 'muzak-wasp)
 
 (defcustom w/friend-buffer "*wasp-friend*"
   "Name of buffer used to display \"friend\"."
@@ -38,7 +44,7 @@
     (format "LCOLONQ: %s" (s-trim w/last-stream-transcription))
     (--map
      (format "%s: %s" (car it) (cdr it))
-     (reverse (-take 5 w/twitch-chat-history))))))
+     (reverse (-take 20 w/twitch-chat-history))))))
 
 (defun w/friend-journalism (author headline)
   "Retrieve \"friend\"'s opinion on current events related to HEADLINE.
@@ -178,7 +184,7 @@ AUTHOR was a contributing author btw."
           (format "You just composed a song about %s called %s! Say something about it!" theme name)
           (lambda ()
             (w/write-chat-event (format "The song is called %s: %s" name song))
-            (muzak//add-song (s-concat "friend's " name) song)
+            (w/add-song (s-concat "friend's " name) song)
             (muzak/play-tracks song))))))
    "Please compose a song about the provided theme. The format for the song is a sequence of characters with meanings as follows: / represents a rest, uppercase letters A through G indicate semitones, octaves are specified with a number following a semitone, ~ extends the duration of a note, square brackets like [] group notes together into a chord. The pipe character | separates tracks. Respond only with the song's name followed by a colon folowed by the song notes. Do not explain yourself. The song should ideally be 20 to 30 notes long."
    (-map #'car w/friend-composition-examples)
@@ -203,7 +209,7 @@ AUTHOR was a contributing author btw."
              (push (cons call (s-trim new)) w/friend-message-cache)
              (funcall k resp)))))
      (s-concat
-      "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. Given an emotional state and a description of an event that happened to you, please respond with a new emotional state and a short message in response considering your emotional state. The message should only be one clause. You like people, video games, emojis, learning, and food. Today is April Fool's day, so you can try playing fun pranks! "
+      "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. Given an emotional state and a description of an event that happened to you, please respond with a new emotional state and a short message in response considering your emotional state. The message should only be one clause. You like people, video games, emojis, learning, and food."
       "The theme of LCOLONQ's stream today is " (s-trim (w/slurp "~/today.txt")) " "
       "The title of LCOLONQ's stream today is " w/twitch-current-stream-title " "
       w/friend-tastes
@@ -244,6 +250,7 @@ AUTHOR was a contributing author btw."
 
 (defun w/friend-say (msg)
   "Have \"friend\" say MSG."
+  (w/daily-log (format "[FRIEND]: %s" msg))
   (w/friend-pronounce-phonemes (w/friend-replace-graphemes msg))
   (w/friend-set-speech msg 10)
   (w/friend-set-state 'chatting 10))
@@ -306,12 +313,12 @@ If K is specified, call it after the response."
      (lambda (msg)
        (w/friend-set-speech msg 6)))))
 
-;; (defun w/friend-react-wikipedia (user page)
-;;   "Call when USER asks \"friend\" to react to PAGE on Wikipedia."
-;;   (w/fetch-wikipedia
-;;    page
-;;    (lambda (sum)
-;;      (w/friend-respond (format "%s asks you to react to the Wikipedia page for %s. The page summary is: %s" user page sum)))))
+(defun w/friend-react-wikipedia (user page)
+  "Call when USER asks \"friend\" to react to PAGE on Wikipedia."
+  (w/fetch-wikipedia
+   page
+   (lambda (sum)
+     (w/friend-respond (format "%s asks you to react to the Wikipedia page for %s. The page summary is: %s" user page sum)))))
 
 (defun w/friend-callout-flycheck-error ()
   "Call to respond to a random Flycheck error in the current buffer."
@@ -326,97 +333,93 @@ If K is specified, call it after the response."
   "Call to respond to the current holiday."
   (w/friend-respond "It's currently the LCOLONQ shareholders meeting and you're an executive! Say something about it please!"))
 
-;; (defun fig//callout-hexamedia ()
-;;   "Call to respond to a random recent chatter's Hexamedia card collection."
-;;   (let* ((users (-filter #'cdr (--map (cons (car it) (fig//load-db-entry (car it) :hexamedia-cards)) (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users)))
-;;          (cards (cdr user))
-;;          (coll (and cards (nth (random (length cards)) cards))))
-;;     (when coll
-;;       (fig//friend-respond
-;;        (format
-;;         "%s has collected %s out of 20 cards in the %s collection. Please mention the collection name and the person collecting."
-;;         (car user)
-;;         (cdr coll)
-;;         (car coll))))))
+(defun w/friend-callout-hexamedia ()
+  "Call to respond to a random recent chatter's Hexamedia card collection."
+  (let* ((users (-filter #'cdr (--map (cons (car it) (alist-get :hexamedia-cards (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
+         (user (and users (nth (random (length users)) users)))
+         (cards (cdr user))
+         (coll (and cards (nth (random (length cards)) cards))))
+    (when coll
+      (w/friend-respond
+       (format
+        "%s has collected %s out of 20 cards in the %s collection. Please mention the collection name and the person collecting."
+        (car user)
+        (cdr coll)
+        (car coll))))))
 
-;; (defun fig//callout-copfish ()
-;;   "Call to respond to a random recent chatter's Copfish ratio."
-;;   (let* ((users (-filter #'cdr (--map (cons (car it) (fig//load-db-entry (car it) :copfish-ratio)) (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users))))
-;;     (when user
-;;       (fig//friend-respond
-;;        (format
-;;         "%s has collected %s out of %s fish in the Copfish fish catching collection. Please mention the collection name and the person collecting."
-;;         (car user)
-;;         (cadr user)
-;;         (cddr user))))))
+(defun w/friend-callout-copfish ()
+  "Call to respond to a random recent chatter's Copfish ratio."
+  (let* ((users (-filter #'cdr (--map (cons (car it) (alist-get :copfish-ratio (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
+         (user (and users (nth (random (length users)) users))))
+    (when user
+      (w/friend-respond
+       (format
+        "%s has collected %s out of %s fish in the Copfish fish catching collection. Please mention the collection name and the person collecting."
+        (car user)
+        (cadr user)
+        (cddr user))))))
 
-;; (defun fig//callout-uwoomfie ()
-;;   "Call to respond to a random recent chatter's Uwoomfie status."
-;;   (let* ((users
-;;           (-filter
-;;            #'cdr
-;;            (--map
-;;             (cons (car it) (fig//get-uwoomfie-status (car it)))
-;;             (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users))))
-;;     (cl-case (cdr user)
-;;       (cool (fig//friend-respond (format "According to uwu_to_owo, %s is a very cool person. Make sure to mention their username." (car user))))
-;;       (honored (fig//friend-respond (format "According to uwu_to_owo, %s is an honorary viewer. Make sure to mention their username." (car user))))
-;;       (t nil))))
+(defun w/friend-callout-uwoomfie ()
+  "Call to respond to a random recent chatter's Uwoomfie status."
+  (let* ((users
+          (-filter
+           #'cdr
+           (--map
+            (cons (car it) (w/uwoomfie-get-status (car it)))
+            (-take 10 w/twitch-chat-history))))
+         (user (and users (nth (random (length users)) users))))
+    (cl-case (cdr user)
+      (cool (w/friend-respond (format "According to UWOSLAB, %s is a very cool person. Make sure to mention their username." (car user))))
+      (honored (w/friend-respond (format "According to UWOSLAB, %s is an honorary viewer. Make sure to mention their username." (car user))))
+      (t nil))))
 
-;; (defun fig//callout-shindaggers ()
-;;   "Call to respond to a random recent chatter's Shindaggers knife collection."
-;;   (let* ((users (-filter #'cdr (--map (cons (car it) (fig//load-db-entry (car it) :shindaggers-knives)) (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users)))
-;;          (knives (cdr user))
-;;          (knife (and knives (nth (random (length knives)) knives))))
-;;     (when knife
-;;       (fig//friend-respond
-;;        (format
-;;         "%s has collected the %s from shindig's Shindaggers knife collection. Please mention the collection name and the person collecting and the knife."
-;;         (car user)
-;;         knife)))))
+(defun w/friend-callout-shindaggers ()
+  "Call to respond to a random recent chatter's Shindaggers knife collection."
+  (let* ((users (-filter #'cdr (--map (cons (car it) (alist-get :shindaggers-knives (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
+         (user (and users (nth (random (length users)) users)))
+         (knives (cdr user))
+         (knife (and knives (nth (random (length knives)) knives))))
+    (when knife
+      (w/friend-respond
+       (format
+        "%s has collected the %s from shindig's Shindaggers knife collection. Please mention the collection name and the person collecting and the knife."
+        (car user)
+        knife)))))
 
-;; (defun fig//callout-aoc ()
-;;   "Call to respond to a random recent chatter's Advent of Code completion."
-;;   (let* ((users (-filter #'cdr (--map (cons (car it) (fig//lookup-aoc-stars (car it))) (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users))))
-;;     (fig//friend-respond
-;;      (format
-;;       "%s has been doing Advent of Code this year, and they've completed %d out of %d problems so far."
-;;       (car user)
-;;       (cdr user)
-;;       (fig//max-aoc-stars)))))
+(defun w/friend-callout-aoc ()
+  "Call to respond to a random recent chatter's Advent of Code completion."
+  (let* ((users (-filter #'cdr (--map (cons (car it) (w/aoc-lookup-stars (car it))) (-take 10 w/twitch-chat-history))))
+         (user (and users (nth (random (length users)) users))))
+    (w/friend-respond
+     (format
+      "%s has been doing Advent of Code this year, and they've completed %d out of %d problems so far."
+      (car user)
+      (cdr user)
+      (w/aoc-max-stars)))))
 
-;; (defun fig//callout-gcp ()
-;;   "Call to respond to the current GCP dot."
-;;   (fig//gcp-dot
-;;    (lambda (d)
-;;      (fig//friend-respond
-;;       (format
-;;        "The Global Consciousness Project indicator is currently as follows: %s"
-;;        (fig//gcp-describe d))))))
+(defun w/friend-callout-gcp ()
+  "Call to respond to the current GCP dot."
+  (w/gcp-dot
+   (lambda (d)
+     (w/friend-respond
+      (format
+       "The Global Consciousness Project indicator is currently as follows: %s"
+       (w/gcp-describe d))))))
 
-;; (defun fig//callout-resolution ()
-;;   "Call to respond to a random recent chatter's resolve."
-;;   (let* ((users (-filter #'cdr (--map (cons (car it) (fig//load-db-entry (car it) :resolution)) (-take 10 fig//incoming-chat-history))))
-;;          (user (and users (nth (random (length users)) users))))
-;;     (if (s-match (rx (one-or-more digit) (zero-or-more space) "x" (zero-or-more space) (one-or-more digit)) (cdr user))
-;;         (fig//friend-respond
-;;          (format
-;;           "%s snarkily said that their New Year's resolution was a screen resolution. What do you think about this?" (car user)))
-;;       (fig//friend-respond
-;;        (format
-;;         "%s made a New Year's resolution to %s. Ask them how it's going!"
-;;         (car user)
-;;         (cdr user))))))
-
-;; (defun fig//callout-dew ()
-;;   "Call to respond to The Dew Situation."
-;;   (fig//friend-respond
-;;    "Someone just gave you a delicious bottle of Mountain Dew and you really like it a lot."))
+(defun w/friend-callout-resolution ()
+  "Call to respond to a random recent chatter's resolve."
+  (when-let*
+      ((users (-filter #'cdr (--map (cons (car it) (alist-get :resolution (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
+       (user (and users (nth (random (length users)) users))))
+    (if (s-match (rx (one-or-more digit) (zero-or-more space) "x" (zero-or-more space) (one-or-more digit)) (cdr user))
+        (w/friend-respond
+         (format
+          "%s snarkily said that their New Year's resolution was a screen resolution. What do you think about this?" (car user)))
+      (w/friend-respond
+       (format
+        "%s made a New Year's resolution to %s. Ask them how it's going!"
+        (car user)
+        (cdr user))))))
 
 (defun w/get-friend-offset ()
   "Return the number of newlines to print before \"friend\"."
@@ -449,12 +452,12 @@ If K is specified, call it after the response."
   "Activate a random \"friend\" event."
   (cl-case (random 10)
     (0 (w/friend-callout-flycheck-error))
-    ;; (1 (fig//callout-gcp))
-    ;; (2 (fig//callout-hexamedia))
-    ;; (3 (fig//callout-uwoomfie))
-    ;; (4 (fig//callout-shindaggers))
-    ;; (5 (fig//callout-copfish))
-    ;;(6 (fig//callout-resolution))
+    (1 (w/friend-callout-gcp))
+    (2 (w/friend-callout-hexamedia))
+    (3 (w/friend-callout-uwoomfie))
+    (4 (w/friend-callout-shindaggers))
+    (5 (w/friend-callout-copfish))
+    (6 (w/friend-callout-resolution))
     (29 (w/friend-callout-holiday))
     (t (w/friend-set-state 'jumping))))
 
@@ -559,8 +562,14 @@ If K is specified, call it after the response."
   "Run the \"friend\" timer."
   (when w/friend-timer
     (cancel-timer w/friend-timer))
-  (w/update-friend)
-  (w/render-friend)
+  (condition-case e
+      (progn
+        (w/update-friend)
+        (w/render-friend))
+    ((debug error)
+     (message "friend error: %s" e)
+     (cancel-timer w/friend-timer)
+     (setq w/friend-timer nil)))
   (setq
    w/friend-timer
    (run-with-timer 1 nil #'w/run-friend-timer)))

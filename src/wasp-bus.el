@@ -4,7 +4,6 @@
 
 (require 'dash)
 (require 's)
-(require 'wasp-utils)
 
 (defgroup wasp nil
   "Pub/sub bus client."
@@ -33,6 +32,10 @@
 (defvar w/bus-event-handlers nil
   "List of pairs of events and handler functions.")
 
+(defun w/bus-clean-string (s)
+  "Remove special characters from S."
+  (replace-regexp-in-string "[^[:print:]]" "" s))
+
 (defun w/handle-message (msg)
   "Handle the message MSG."
   (let* ((ev (car msg))
@@ -40,7 +43,7 @@
          (handler (alist-get ev w/bus-event-handlers nil nil #'equal)))
     (if handler
         (funcall handler body)
-      (w/write-log (format "Unknown incoming event: %S" ev)))))
+      (message (format "Unknown incoming event: %S" ev)))))
 
 (defun w/get-complete-line ()
   "Kill a line followed by a newline if it exists, and nil otherwise."
@@ -54,7 +57,7 @@
   "Call `w/handle-message' on every complete line of the current buffer."
   (let ((l (w/get-complete-line)))
     (when (and l (not (s-blank? l)))
-      (w/handle-message (read (w/clean-string l)))
+      (w/handle-message (read (w/bus-clean-string l)))
       (w/handle-lines))))
 (defun w/process-filter (proc data)
   "Process filter for pub/sub bus connection on PROC and DATA."
@@ -86,7 +89,7 @@
 (defun w/sub-all ()
   "Subscribe to all events in `w/bus-event-handlers'."
   (--each w/bus-event-handlers
-    (w/write-log (format "Subscribing to: %S" (car it)))
+    (message (format "Subscribing to: %S" (car it)))
     (w/sub (car it))))
 
 (defun w/disconnect ()

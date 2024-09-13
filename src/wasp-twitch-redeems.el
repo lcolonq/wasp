@@ -13,11 +13,19 @@
 (require 'wasp-friend)
 (require 'wasp-dna)
 (require 'wasp-fakechat)
-(require 'bezelea-muzak)
+(require 'wasp-overlay)
+(require 'wasp-cyclone)
+(require 'wasp-bless)
+(require 'muzak)
+(require 'muzak-wasp)
 
 (setf
  w/twitch-redeems
  (list
+  (list
+   "lurker check in" 1
+   (lambda (user _)
+     (w/write-chat-event (format "%s is lurking" user))))
   (list
    "mental clarity" 1
    (lambda (user _)
@@ -40,6 +48,11 @@
    (lambda (user inp)
      (w/write-chat-event (format "%s submitted a headline: %s" user inp))
      (w/friend-journalism user inp)))
+  (list
+   "cycle gizmos" 1
+   (lambda (user _)
+     (w/write-chat-event (format "%s cycled the gizmos" user))
+     (w/gizmo-cycle)))
   (list
    "talk to clone" 2
    (lambda (user inp)
@@ -66,27 +79,66 @@
      (w/model-toggle "forsen")))
   (list "SEASICKNESS GENERATOR" 3 (lambda (_ _) (w/model-toggle "zoom_wave")))
   (list
+   "The Pharaoh's Curse" 3
+   (lambda (user _)
+     (w/write-chat-event (format "%s drew the ire of the Pharaoh upon me" user))
+     (w/obs-activate-toggle 'pharaohs-curse)
+     ))
+  (list
    "pursue idol dream" 3
    (lambda (user _)
      (w/write-chat-event (format "Helping %s pursue their idol dream~" user))
      (w/obs-activate-toggle 'chase-dreams)
      (w/model-region-user-avatar "hair" user)))
   (list
+   "INTJ stare" 3
+   (lambda (_ _)
+     (w/obs-activate-toggle 'intj-stare)))
+  (list
+   "Live LCOLONQ Reaction" 3
+   (lambda (_ _)
+     (w/obs-activate-toggle 'live-reaction)))
+  (list
+   "Live friend Reaction" 3
+   (lambda (_ _)
+     (w/obs-activate-toggle 'live-friend-reaction)))
+  (list
    "bells of bezelea" 4
    (lambda (user msg)
-     (muzak//get-song
+     (w/get-song
       msg
       (lambda (song)
         (if song
             (progn
               (w/write-chat-event (format "%s played a song: %s (sponsored by Bezelea)" user msg))
-              (muzak/play-song msg))
+              (muzak/play-tracks song))
           (w/write-chat-event (format "%s played the bells (sponsored by Bezelea)" user))
           (muzak/play-tracks msg))))))
+  (list
+   "activate spell card" 4
+   (lambda (user msg)
+     (w/write-chat-event
+      (format
+       "%s Sign: \"%s\""
+       (s-titleize user)
+       (s-titleized-words (alist-get user w/twitch-chat-history (w/pick-random w/overlay-spellcard-names) nil #'cl-equalp))))
+     (w/overlay-decode-shorthand-bml
+      msg
+      (lambda (data)
+        (w/overlay-start-barrage data)))))
   (list "palette swap (hair)" 5 (w/handle-redeem-region-swap "hair"))
   (list "palette swap (highlight)" 5 (w/handle-redeem-region-swap "highlight"))
   (list "palette swap (eyes)" 5 (w/handle-redeem-region-swap "eyes"))
-  (list "palette swap (hat)" 5 (w/handle-redeem-region-swap "hat"))
+  ;; (list "palette swap (hat)" 5 (w/handle-redeem-region-swap "hat"))
+  (list "palette swap (hands)" 5 (w/handle-redeem-region-swap "hands"))
+  (list
+   "run program" 6
+   (lambda (user inp)
+     (if (w/user-authorized)
+         (progn
+           (w/write-chat-event (s-concat user " runs program: " inp))
+           (w/bless inp 50))
+       (w/write-chat-event (format "%s is not authorized to run code" user)))))
   (list
    "feed friend" 10
    (lambda (user inp)
@@ -97,6 +149,16 @@
    (lambda (user inp)
      (w/write-chat-event (s-concat user " talks to \"friend\": " inp))
      (w/friend-chat user inp)))
+  (list
+   "friend composes song" 10
+   (lambda (user inp)
+     (w/write-chat-event (s-concat user " asks \"friend\" to compose a song about: " inp))
+     (w/friend-compose-song inp)))
+  (list
+   "show friend wikipedia page" 10
+   (lambda (user inp)
+     (w/write-chat-event (s-concat user " shows \"friend\" a Wikipedia page: " inp))
+     (w/friend-react-wikipedia user inp)))
   (list
    "theme: maris-dark" 50
    (lambda (user _)
@@ -130,12 +192,9 @@
   (list
    "gamer" 500
    (lambda (user _)
-     (cl-incf w/twitch-gamer-counter)
-     (if (not (= 0 (% w/twitch-gamer-counter 5)))
-         (w/write-chat-event (s-concat user " offered a sacrifice at the altar of Gaming"))
-       (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
-       (soundboard//play-clip "videogame.ogg")
-       (w/obs-activate-toggle 'thug-life))))
+     (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
+     (soundboard//play-clip "videogame.ogg")
+     (w/obs-activate-toggle 'thug-life)))
   (list
    "arrow" 500
    (lambda (user msg)
@@ -150,6 +209,16 @@
    (lambda (_ _)
      (w/twitch-say "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
      (soundboard//play-clip "superidololdshortstyle.ogg")))
+  (list
+   "hex" 500
+   (lambda (user inp)
+     (let* ((sp (s-split " " inp))
+            (spell (car sp))
+            (target (cadr sp)))
+       (when (and spell target (stringp spell) (stringp target))
+         (w/write-chat-event (s-concat user " hexed " target ": " spell))
+         (when-let ((type (alist-get spell w/hex-types nil nil #'s-equals?)))
+           (w/hex target user type))))))
   (list
    "VIPPER" 1000
    (lambda (user inp)

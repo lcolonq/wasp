@@ -9,6 +9,8 @@
 (add-to-list 'load-path (f-canonical "./src/gizmo/"))
 (add-to-list 'load-path (f-canonical "./src/contrib/"))
 
+(add-to-list 'load-path (f-canonical "~/src/muzak/"))
+
 ;; do not open this on stream
 (require 'wasp-sensitive)
 
@@ -24,6 +26,7 @@
 (require 'wasp-obs)
 (require 'wasp-chat)
 (require 'wasp-twitch)
+(require 'wasp-overlay)
 
 ;; gizmos
 (require 'wasp-pronunciation)
@@ -33,7 +36,20 @@
 (require 'wasp-fakechat)
 (require 'wasp-dna)
 (require 'wasp-heartrate)
+(require 'wasp-chatsummary)
 (require 'wasp-8ball)
+(require 'wasp-gcp)
+(require 'wasp-aoc)
+(require 'wasp-hexamedia)
+(require 'wasp-copfish)
+(require 'wasp-shindaggers)
+(require 'wasp-uwoomfie)
+(require 'wasp-density)
+(require 'wasp-wikipedia)
+(require 'wasp-prod)
+(require 'wasp-youtube)
+(require 'wasp-hex)
+(require 'wasp-cyclone)
 
 ;; configuration
 (require 'wasp-user-whitelist)
@@ -44,7 +60,7 @@
 (require 'wasp-event-handlers)
 
 ;; user contrib
-(require 'bezelea-muzak)
+(require 'muzak)
 
 ;; initialization
 (w/connect)

@@ -248,12 +248,18 @@ Optionally, return the buffer NM in chat mode."
     ("pal" . "pokemon")
     ("Pal" . "Pokemon")
     ("PAL" . "POKEMON")
+    ("Amazon" . "Microsoft")
+    ("Microsoft" . "Google")
+    ("Google" . "Facebook")
+    ("Facebook" . "Apple")
+    ("Apple" . "Amazon")
     ("darkrai" . "*******")
     ("hunter2" . "*******")
     ("*******" . "hunter2")))
 
 (defun w/write-chat-message (msg)
   "Write MSG to the chat buffer as USER with USERID and COLOR."
+  (w/daily-log (format "%s: %s" (w/. user msg) (w/. text msg)))
   (let ((inhibit-read-only t))
     (with-current-buffer (w/get-chat-buffer)
       (goto-char (point-max))

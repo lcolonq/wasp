@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 's)
+(require 'ht)
 (require 'wasp-utils)
 (require 'wasp-db)
 
@@ -10,6 +11,31 @@
 
 (defvar w/user-current-name nil)
 (defvar w/user-current nil)
+
+(defvar w/user-cache (ht-create)
+  "A read-only cache of user records for the current session.")
+
+(defun w/user-cache-update (nm d)
+  "Set the cache entry for user NM to D."
+  (ht-set! w/user-cache (s-downcase nm) d))
+
+(defun w/user-cache-get (nm)
+  "Get the cache entry for user NM."
+  (ht-get w/user-cache (s-downcase nm)))
+
+(defun w/user-cache-populate ()
+  "Populate `w/user-cache' with entries for all users.
+\(This is slow, so it happens once at startup.\)"
+  (ht-clear! w/user-cache)
+  (w/db-keys
+   "user:*"
+   (lambda (users)
+     (--each users
+       (let ((nm (cadr (s-split ":" it))))
+       (w/user-get
+        nm
+        (lambda (_)
+          (message "Updated cache for %s" nm))))))))
 
 (defun w/user-db-key (nm)
   "Return the database key for user NM."
@@ -26,12 +52,15 @@ Pass the resulting Lisp form to K."
            ((d)
             (stringp d)
             (res (w/read-sexp d)))
-           (funcall k res)
+           (progn
+             (w/user-cache-update nm res)
+             (funcall k res))
          (funcall k nil))))))
 
 (defun w/user-set (nm d)
   "Save the Lisp form D as the user data for NM."
   (when (and nm (stringp nm) d)
+    (w/user-cache-update nm d)
     (w/db-set
      (w/user-db-key nm)
      (format "%S" d))))
@@ -52,7 +81,7 @@ Save it back to the database after K returns."
   (let ((boost (alist-get :boost w/user-current)))
     (or (and boost (> boost 2))
         (and boost (< boost -2))
-        (-contains? w/user-whitelist w/user-current-name))))
+        (-contains? w/user-whitelist (s-downcase w/user-current-name)))))
 
 (defun w/user-boost (user)
   "Increase USER's boost power by 1."

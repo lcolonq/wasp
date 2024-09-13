@@ -83,7 +83,7 @@ Optionally append EXT to the path."
   (decode-coding-string (base64-decode-string s) 'utf-8))
 
 (defun w/encode-string (s)
-  "Decode the base64 UTF-8 string S."
+  "Encode the base64 UTF-8 string S."
   (base64-encode-string (encode-coding-string s 'utf-8) t))
 
 (defun w/slurp (path)
@@ -95,6 +95,16 @@ Optionally append EXT to the path."
 (defun w/spit (path data)
   "Write DATA to PATH."
   (write-region data nil path))
+
+(defun w/daily-log-path ()
+  "Return the path to today's daily log file."
+  (format-time-string "~/logs/log-%Y-%m-%d.txt" (current-time)))
+
+(defun w/daily-log (msg)
+  "Write MSG to today's daily log file."
+  (write-region
+   (s-concat (format-time-string "[%H:%M:%S]" (current-time)) "\t" msg "\n")
+   nil (w/daily-log-path) t 'donotprintmessagety))
 
 (defvar w/fetch-last-response nil)
 (defun w/fetch (url &optional k)
@@ -163,7 +173,7 @@ Otherwise, throw an error."
 
 (defun w/get-stream-primary-window ()
   "Get the marked primary stream window."
-  (window-at-x-y 0 0))
+  (window-at-x-y 1 1))
 
 (defun w/open-link ()
   "Open URL in the primary stream window."
@@ -181,13 +191,13 @@ Otherwise, throw an error."
   "Return the absolute path given an asset path PATH."
   (f-join w/asset-base-path path))
 
-(defun w/image-text (path &optional text)
+(defun w/image-text (path &optional text &rest props)
   "Return TEXT propertized with the image at PATH.
 If TEXT is nil, use the empty string instead."
   (propertize
    (or text "i")
    'display
-   (create-image path)
+   (apply #'create-image path nil nil props)
    'rear-nonsticky t))
 
 (defsubst w/saget (k a)

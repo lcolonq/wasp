@@ -22,6 +22,10 @@
     "Laconic"
     "Loincloth"
     "Costco"
+    "L Cluster"
+    "Love, Chastity, Organized, Love again, Organized again, Nice, Qomputer"
+    "Elkhunk"
+    "late late late late show with llll colonq"
     ))
 
 (defconst w/pronunciation-part1 ;; the LLLL
