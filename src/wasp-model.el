@@ -36,8 +36,7 @@
 (defun w/model-reset ()
   "Reset the model palette."
   (interactive)
-  (w/pub '(avatar reset))
-  (w/model-region-word "hair" "tranquility_"))
+  (w/pub '(avatar reset)))
 
 (defun w/model-toggle (toggle)
   "Toggle TOGGLE on model."

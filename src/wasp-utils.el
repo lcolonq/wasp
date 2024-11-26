@@ -40,6 +40,10 @@ Return nil on error."
     (w/write-line (format "%s" line) face)
     (goto-char (point-max))))
 
+(defun w/append-file (s path)
+  "Append S to the file at PATH."
+  (f--write-bytes (encode-coding-string s 'utf-8) path t))
+
 (defmacro w/defstruct (name &rest body)
   "Define a structure with NAME (with the constructor under the w/ namespace).
 BODY is passed directly to `cl-defstruct'."
@@ -54,7 +58,7 @@ BODY is passed directly to `cl-defstruct'."
 
 (defun w/pick-random (xs)
   "Pick a random element of XS."
-  (nth (random (length xs)) xs))
+  (and xs (nth (random (length xs)) xs)))
 
 (defun w/shuffle (s)
   "Shuffle S."

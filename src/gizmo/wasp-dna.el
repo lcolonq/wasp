@@ -22,8 +22,11 @@
 (defun w/dna-generate-from-logs (user)
   "Generate DNA from historical logs for USER.
 You probably want to use this interactively and then save the result here."
-  (let* ((logstr (w/slurp "~/logs/log-2024-07-23.txt"))
-         (log (--map (cons (cadr it) (caddr it)) (--map (s-split "\t" it) (s-lines logstr)))))
+  (let* (;; (logstr (w/slurp "~/logs/log-2024-09-24.txt"))
+         ;; (log (--map (w/list-to-pair (s-split ": " it)) (-non-nil (--map (cadr (s-split "\t" it)) (s-lines logstr)))))
+         (logstr (w/slurp "~/logs/lcolonq-2024Q1.log"))
+         (log (--map (cons (cadr it) (caddr it)) (--map (s-split "\t" it) (s-lines logstr))))
+         )
     (-non-nil
      (--map-indexed
       (when (s-equals? (car it) (s-downcase user))
@@ -1304,6 +1307,231 @@ You probably want to use this interactively and then save the result here."
      "vesdev" . "just make a game that scrolls the rules of this jam")
     (("BoganBits" . "I want a Real Life wiki") "vesdev" .
      "warframe mentioned")))
+
+(defconst w/dna-kierem__
+  '((("Tyumici" .
+      "Tune in next time for more high-yield entertainment!")
+     "kierem__" . "Joel")
+    (("Tyumici" . "lcolonHi") "kierem__" . "o/")
+    (("eudemoniac" . "Joel") "kierem__" . "Joel")
+    (("[VOICE]" .
+      "6. Hello, hello, uh, who, who else? Who else is on here? Who, who'd they put on this machine? This infernal de-")
+     "kierem__" . "lcolonSpin lcolonSpin lcolonSpin")
+    (("yiffweed" . "Waiting room for Path of Exile") "kierem__" . "plink")
+    (("Zullfix_" . "Listening") "kierem__" . "...")
+    (("[VOICE]" .
+      "fun. Right? We're trying to identify some fun. I have some ideas. I think probably we're going to fucking write some emacs lists and do some other things besides...")
+     "kierem__" . "Joeling")
+    (("[VOICE]" .
+      "You got the wood out? Yeah, just make an MMORPG tonight. You're literally streaming video with a video camera. All that's needed now is game and we have video game. Yeah. ")
+     "kierem__" . "Joel")
+    (("[VOICE]" .
+      "This is how, so IKR13, it's sort of like this, hello abc123, thank you for 75 also. So I'm not using the keyboard lg because we spore")
+     "kierem__" . "Joel")
+    (("LCOLONQ" .
+      "#cyberspace on IRC at colonq.computer:26697 (over TLS)")
+     "kierem__" . "jol")
+    (("[VOICE]" .
+      "and we just write like a native Raylib game. Like it doesn't actually display, it runs Emacs in bash mode, just like displays it headless and like creates another X window.")
+     "kierem__" . "Joel")
+    (("stoicmana" . "the yapping hour") "kierem__" . "GoldenJoel")
+    (("boga_14" . "MODCLONK") "kierem__" . "friend is dead lcolonSadge")
+    (("archible" . "LETSGO") "kierem__" . "o/")
+    (("krzysckh" . "can you please show you r id please oh please")
+     "kierem__" . "lcolonHi")
+    (("resxnance_live" . "I was here but it is hilarious xd") "kierem__"
+     . "Joelest")
+    (("ellg" . "lmao") "kierem__" . "this is so cool omg lcolonShine")
+    (("Tyumici" . "RUINED") "kierem__" . "oh no")
+    (("wyndupboy" . "(but not as bad as you think)") "kierem__" . "2")
+    (("LCOLONQ" . "Joel") "kierem__" . "Joel")
+    (("a_tension_span" .
+      "The breaking of the hand cam needs to be recorded as lore event in the glossary btw, @prodzpod")
+     "kierem__" . "Joel")
+    (("[VOICE]" .
+      "Oh my god. Oh my god. The quality is excellent voice. Thank you. Um, the the curse of raw raw all things")
+     "kierem__" . "Joeler")
+    (("resxnance_live" . "literally feels like ad yo hahha") "kierem__" .
+     "...")
+    (("Venorrak" . "hi jake lcolonHi") "kierem__" . "lcolonQ")
+    (("KotaruComplex" . "could you mr. beastify a chat message?")
+     "kierem__" . "floor")
+    (("aliant2" . "actually froze") "kierem__" . "...")
+    (("[VOICE]" . "wait literally leaving the room") "kierem__" . "Joel")
+    (("gtfrvz" . "need EMERGENCY MITTENS?") "kierem__" . "o/")
+    (("[VOICE]" .
+      "It wasn't like, you know, Soldiers normally can take weeks and weeks and weeks. You're playing Hearts of Iron 4 right now, the game has a themed wiki browser in it. Yeah, I know-")
+     "kierem__" . "Joel")))
+
+(defconst w/dna-octorinski
+  '((("Tomaterr" . "@MODCLONK based") "octorinski" .
+     "Hello computer and all Joel")
+    (("mickynoon" . "Joel") "octorinski" . "I just came in :)")
+    (("loweffortzzz" . "based hair") "octorinski" . "lcolonHi")
+    (("XorXavier" . "live chatters") "octorinski" . "lcolonSoTrue")
+    (("steeledshield" . "pacamn?") "octorinski" . "plink")
+    (("[VOICE]" .
+      "that has a cool little custom display slash controller thing it's kind of it's kind of interesting interlaced oh yes")
+     "octorinski" .
+     "Looks cool from what I can see https://static.arcade-game-sales.com/images/products/large/17952_2.jpg")
+    (("wyndupboy" . "that looks like something from General Atomics.")
+     "octorinski" . "ProxMox is a KVM hypervisor")
+    (("[FRIEND]" .
+      "ooh a yellow dot, what's the universe up to? probably just stretching its legs!")
+     "octorinski" . "It uses libvirt under the hood")
+    (("[VOICE]" .
+      "I see I'm concerned about all of this the how is the audio by the way is the audio tolerable are we")
+     "octorinski" . "Very tolerable")
+    (("Polars_Bear" . "who is talking in the background?") "octorinski" .
+     "(we (like (LISP)))")
+    (("[VOICE]" .
+      "In VTuber circles, they might call this an off-collab. I think that's today.")
+     "octorinski" . "bpm_counter++")
+    (("[VOICE]" .
+      "like the collection of papers submitted to a conference the the previous the previous fuck fuck")
+     "octorinski" . "submissions?")
+    (("Tomaterr" . "the backlog") "octorinski" . "Itinerary?")
+    (("[VOICE]" .
+      "is a this is it's it's quite it's quite scary yeah just throw coins directly at the back")
+     "octorinski" . "ACTION Octorinski was permanently banned")
+    (("eudemoniac" . "good bit") "octorinski" .
+     "@dehidehiNotFromFinland BROTHER NOOO")
+    (("[VOICE]" .
+      "I'm still the verdict is still out on that topic. I would say the You know all sorts of all sorts of ghosts")
+     "octorinski" . "deja vu is crazy though")
+    (("[VOICE]" . "Oh, I see I see") "octorinski" . "EntireShrekMovie")
+    (("dehidehiNotFromFinland" .
+      "IP leaked, hotel network nuked. Thanks obama")
+     "octorinski" . "1 tenth of a second CarlSmile")
+    (("[VOICE]" .
+      "Which is kind of tricky over. I don't know if you actually do that the Maybe you can")
+     "octorinski" . "hi")
+    (("[VOICE]" .
+      "IRC is a new line delimited protocol, right? So I don't know if you can actually send a new line within an IRC message, but I think there are.")
+     "octorinski" . "Didn't work :(")
+    (("[VOICE]" .
+      "I'm still, I'm still lacking, I'm still lacking visibility here.")
+     "octorinski" . "I tried to newline")
+    (("[FRIEND]" .
+      "wow, yellowberryhn, you're swimming right through the copfish collection!")
+     "octorinski" . "Lcolonq looks like")
+    (("dehidehiNotFromFinland" . "You are rob boss?") "octorinski" .
+     "Jason Momoa was also Aquaman")
+    (("rudle" . "car gone") "octorinski" . "cargo run? nah. cargo vroom")
+    (("[VOICE]" .
+      "And we need to git add everything. We need to add everything. Linking with CC failed, mentioned LFG.")
+     "octorinski" . "@yellowberryHN RareParrot")
+    (("[VOICE]" .
+      "the moment I would say yeah we're experiencing that's delay yeah that's delay that's a rust analyzer moment that's death I would")
+     "octorinski" . "real latent stremer")
+    (("[VOICE]" .
+      "It's an extruded. I don't know. It's got four legs. It's got udders. Maybe if it's if it's a cow")
+     "octorinski" . "Joel")
+    (("chixie9901" . "Cow2DProjectedDotJpeg") "octorinski" .
+     "Graphics design is my passion and what you have is the best I could attempt")
+    (("[VOICE]" .
+      "decompiler god damn I like it though I you know you know you can go a long way with art if you just give everything")
+     "octorinski" . "That cow has personality")
+    (("loweffortzzz" .
+      "it doesnt have to look exactly like a cow its rounded")
+     "octorinski" . ">:^3")
+    (("Tomaterr" . "nicheCow") "octorinski" . "stripCool nice cow")
+    (("[VOICE]" .
+      "Okay, okay, tension span. What is this? What is this? What are you saying? Clown? Clown?")
+     "octorinski" . "@loweffortzzz lcolonGreen")))
+
+(defconst w/dna-charleyfolds
+  '((("xivandroid" . "Wassup") "charleyfolds" .
+     "I wish I was a rotating pikachu")
+    (("yukievt" . "C/////|/D////|//E///|///F//|////G/|/////A")
+     "charleyfolds" . "This is my second time using it")
+    (("charleyfolds" . "This is my second time using it") "charleyfolds"
+     . "I know what it does >:(")
+    (("prodzpod" . "can you only refund the most recent redeem")
+     "charleyfolds" . "It's good really, I'll save for a clone")
+    (("gendude" . "lcolonRaid") "charleyfolds" .
+     "VoHiYo VoHiYo charle236Takethis charle236Takethis charle236Takethis charle236Takethis charle236Takethis")
+    (("a_tension_span" . "Sorry, have sleepy brain") "charleyfolds" .
+     "It was good, just doodlin' and a little noodlin'")
+    (("codespace0x25" . "h") "charleyfolds" . "LgoslingQ")
+    (("mickynoon" . "lonely stack overflows in your area") "charleyfolds"
+     .
+     "I'm letting life hit me until it gets tired. Then I'll hit back. It's a classic rope-a-dope.")
+    (("kinwoop" . "as its all timelines") "charleyfolds" .
+     "To be honest, when I found out the patriarchy wasn't just about horses, I lost interest.")
+    (("ginjivitis" . "sounds brisk") "charleyfolds" .
+     "The whole town's underwater. You're grabbing a bucket when you should be grabbing a bathing suit.")
+    (("vrkitect" . "arthur262Sealcry") "charleyfolds" .
+     "Those are nice, huh? And they're not real, so they'll last forever.")
+    (("akashicmagick" .
+      "Trying to think about a clever pun thats computer related play on words for like harry potter's sorting hat")
+     "charleyfolds" . "I drive.")
+    (("codespace0x25" . "earendFlip earendTable") "charleyfolds" .
+     "You want a why. Well, maybe there isn't one. Maybe this is just something that happened.")
+    (("setolyx" . "I love the idea of this so much.") "charleyfolds" .
+     "Let me put it this way. I'm standing in front of a burning house, and I'm offering you fire insurance on it.")
+    (("acher0_" . "olga is day one huh") "charleyfolds" .
+     "You have to believe that life is more than the sum of its parts. What if you can't put the pieces together in the first place?")
+    (("retroboi128thegamedev" . "Hello, World! And Hello, Chat!")
+     "charleyfolds" .
+     "Sometimes I think that the one thing I love most about being an adult is the right to buy candy whenever and wherever I want.")
+    (("khlorghaal" .
+      "im like \"whoa this underpass doesnt have used syringes?!\"")
+     "charleyfolds" .
+     "It was important for me to get an outside look at America even though I grew up in Canada, it's an incredible country and I love it, but it's so close. It's like being too close to a Monet or something.")
+    (("eudemoniac" . "boss will get tired and let friend run the stream")
+     "charleyfolds" . "I was highly influenced by violence.")
+    (("piglilith" .
+      "LCOLONQ please remember to turn your computer off on december 31, 1999")
+     "charleyfolds" .
+     "Cars can have a hypnotic effect. You can get in a car and get out and not really remember the trip.")
+    (("khargoosh" . "Oh look. Now he's horny.") "charleyfolds" .
+     "There's a hundred-thousand streets in this city. You don't need to know the route. You give me a time and a place, I give you a five minute window. Anything happens in that five minutes and I'm yours. No matter what. Anything happens a minute either side of that and you're on your own. Do you understand?")
+    (("vettle" . "Sanest emacs user") "charleyfolds" .
+     "My uncle was an Elvis impersonator - his name was Perry, and he went by 'Elvis Perry'.")
+    (("a_tension_span" .
+      "Wait, who is playing rn? I missed the beginning cause I was in the shower")
+     "charleyfolds" .
+     "Does the label \"long-term long-distance low-commitment casual girlfriend\" mean nothing to her?")
+    (("nichepenguin" .
+      "Germans from Germany, Long Germany German, Second German Germany. I am German because my Germany.")
+     "charleyfolds" .
+     "If you ask me, the devil makes more sense than God does. I can at least see why people would want him around. It's good to have somebody to blame for the bad stuff they do.")
+    (("liquidcake1" . "Please put your shoe on your head.")
+     "charleyfolds" . "i drive")
+    (("faeliore" . "it did lag you real bad, but no crash")
+     "charleyfolds" . "Freedom is such a gift.")
+    (("danktownbunny" .
+      "\"look how easy it is to hack this game, buy it now!\"")
+     "charleyfolds" . "[pointing at dog] Is it real?")
+    (("lcolonq" . "https://discord.gg/f4JTbgN7St") "charleyfolds" .
+     "I sometimes forget to have breakfast in the morning, but when I actually buy a box of cereal, I will probably eat it not only for breakfast but also as a snack later on.")
+    (("hardcorexhunter" .
+      "mortuary assistant but all the dead bodies are replaced with vtubers")
+     "charleyfolds" .
+     "For now, I'm just going to keep doing the work and hope I don't get fired.")
+    (("daiyadiamandis" . "fun") "charleyfolds" .
+     "I feel like it reminded me of a video game, you know?")
+    (("kukukaeruvt" . "I drive") "charleyfolds" . "I drive")
+    (("running_out_of_unames" .
+      "What are the names for those Russians who insist that computer are not Turing machines because of the lack of \"infinite tape\"? They are the ones that have a long \"argument\" with Moskovakis about definition of equality of algorithms")
+     "charleyfolds" . "Changing it up and we played tekken")
+    (("nineteenninetyx" .
+      "see prime intellect solves that by using spooky action at a distance to consume the universe to automatically extend the address space")
+     "charleyfolds" . "WAIT no")
+    (("running_out_of_unames" .
+      "@rondDev Perhaps? But I think they don't agree.")
+     "charleyfolds" .
+     "To watch a master work at anything is a privilege.")
+    (("buddyspizza" . "rails is legacy now") "charleyfolds" . "I drive")
+    (("chromosundrift" . "clojure is a decent lisp") "charleyfolds" .
+     "If I eat a huge meal and I can get the girl to rub my belly, I think that's about as romantic as I can think of.")
+    (("jonkero" . "make mr green a equipable which boosts your stats")
+     "charleyfolds" . "I'd like to try thank one person properly")
+    (("prodzpod" .
+      "all the callback speech only to defall into the abyss that is await...")
+     "charleyfolds" . "I drive")
+    (("modclonk" . "lcolonHi") "charleyfolds" . "I drive")))
 
 ;; put DNA in chemical grade tube
 (defun w/dna-put-in-chemical-grade-tube (dna)

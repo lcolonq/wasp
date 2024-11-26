@@ -32,7 +32,10 @@ Pass the resulting article summary to K."
        (lambda (&key data &allow-other-keys)
 
          (setq w/wikipedia-last-response data)
-         (if-let ((pages (car (ht-values (ht-get (ht-get w/wikipedia-last-response "query") "pages"))))
+         (if-let (((ht-p w/wikipedia-last-response))
+                  (query (ht-get w/wikipedia-last-response "query"))
+                  (prepages (ht-get query "pages"))
+                  (pages (car (ht-values prepages)))
                   (ext (ht-get pages "extract"))
                   (dom (with-temp-buffer (insert ext) (libxml-parse-html-region (point-min) (point-max))))
                   )

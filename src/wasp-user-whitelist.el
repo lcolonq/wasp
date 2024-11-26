@@ -198,6 +198,23 @@
    "neural_works"
    "slendidev"
    "dehidehinotfromfinland"
+   "machiavellianalloy"
+   "ywxslzak"
+   "sgtnubbles"
+   "mistresskell"
+   "kokupsi"
+   "capstasher"
+   "polyglitch"
+   "itbeblockhead"
+   "faceoftrolls"
+   "zoft_fae"
+   "unlessgames"
+   "machka6"
+   "airhomer99"
+   "geegxp"
+   "extremelybig"
+   "ostas_"
+   "mcschwartz2"
    )))
 
 (provide 'wasp-user-whitelist)

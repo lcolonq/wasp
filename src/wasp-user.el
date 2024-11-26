@@ -113,5 +113,15 @@ Save it back to the database after K returns."
    (lambda (qs)
      (w/user-set "__quotes__" (cons (cons q user) qs)))))
 
+(defun w/user-crown (user)
+  "Increment USER's equity status."
+  (w/user-get
+   user
+   (lambda (u)
+     (let ((old (or (alist-get :equity u) 0)))
+       (setf (alist-get :equity u) (+ old 1)))
+     (print u)
+     (w/user-set user u))))
+
 (provide 'wasp-user)
 ;;; wasp-user.el ends here

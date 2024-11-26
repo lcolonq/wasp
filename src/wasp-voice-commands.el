@@ -9,11 +9,13 @@
 (require 'wasp-obs)
 
 (setq
- w/stream-transcribe-voice-commands
+ w/audio-voice-commands
  (list
   (cons "mr. beast" (lambda () (soundboard//play-clip "mrbeast.mp3")))
   (cons "joel" (lambda () (w/twitch-say (w/pick-random (list "Joel" "EvilJoel")))))
   (cons "i can't" (lambda () (cl-incf w/chat-icant-count) (w/chat-update-header-line)))
+  (cons "sorry" (lambda () (cl-incf w/chat-apology-count) (w/chat-update-header-line)))
+  (cons "apologies" (lambda () (cl-incf w/chat-apology-count) (w/chat-update-header-line)))
   (cons "lua"
         (lambda ()
           (progn (w/obs-toggle-brazil)

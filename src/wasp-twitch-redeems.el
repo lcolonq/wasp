@@ -47,12 +47,21 @@
    "submit headline" 1
    (lambda (user inp)
      (w/write-chat-event (format "%s submitted a headline: %s" user inp))
+     (w/glossary-record inp)
      (w/friend-journalism user inp)))
   (list
    "cycle gizmos" 1
    (lambda (user _)
      (w/write-chat-event (format "%s cycled the gizmos" user))
      (w/gizmo-cycle)))
+  (list
+   "allow streamer to drink" 1
+   (lambda (user _)
+     (w/write-chat-event (format "%s allowed the streamer to \"drink\"" user))))
+  (list
+   "deslug" 1
+   (lambda (user _)
+     (w/write-chat-event (format "%s inverted slug" user))))
   (list
    "talk to clone" 2
    (lambda (user inp)
@@ -74,10 +83,15 @@
      (w/model-toggle "spin")))
   (list
    "forsen" 3
-   (lambda (_ _)
+   (lambda (user _)
+     (w/write-chat-event (s-concat user " loudly exclaims forsenE"))
      (soundboard//play-clip "cave3.ogg" 75)
      (w/model-toggle "forsen")))
-  (list "SEASICKNESS GENERATOR" 3 (lambda (_ _) (w/model-toggle "zoom_wave")))
+  (list
+   "SEASICKNESS GENERATOR" 3
+   (lambda (user _)
+     (w/write-chat-event (s-concat user " is a salty sea dog"))
+     (w/model-toggle "zoom_wave")))
   (list
    "The Pharaoh's Curse" 3
    (lambda (user _)
@@ -92,15 +106,18 @@
      (w/model-region-user-avatar "hair" user)))
   (list
    "INTJ stare" 3
-   (lambda (_ _)
+   (lambda (user _)
+     (w/write-chat-event (format "%s suggested a little more sodium chloride next time" user))
      (w/obs-activate-toggle 'intj-stare)))
   (list
    "Live LCOLONQ Reaction" 3
-   (lambda (_ _)
+   (lambda (user _)
+     (w/write-chat-event (format "%s demanded extremely \"hype\" reactions, &c." user))
      (w/obs-activate-toggle 'live-reaction)))
   (list
    "Live friend Reaction" 3
-   (lambda (_ _)
+   (lambda (user _)
+     (w/write-chat-event (format "%s demanded extremely \"hype\" reactions, &c. but from \"friend\"!?" user))
      (w/obs-activate-toggle 'live-friend-reaction)))
   (list
    "bells of bezelea" 4
@@ -202,7 +219,8 @@
      (w/obs-activate-toggle 'clickbait msg)))
   (list
    "antipiracy" 500
-   (lambda (_ _)
+   (lambda (user _)
+     (w/twitch-say (format "%s does not condone any form of copyright infringement whatsoever." user))
      (w/obs-activate-toggle 'activate-nixos)))
   (list
    "super idol" 500
@@ -215,10 +233,12 @@
      (let* ((sp (s-split " " inp))
             (spell (car sp))
             (target (cadr sp)))
-       (when (and spell target (stringp spell) (stringp target))
-         (w/write-chat-event (s-concat user " hexed " target ": " spell))
-         (when-let ((type (alist-get spell w/hex-types nil nil #'s-equals?)))
-           (w/hex target user type))))))
+       (if (and spell target (stringp spell) (stringp target))
+           (progn
+             (w/write-chat-event (s-concat user " hexed " target " with: " spell))
+             (when-let ((type (alist-get spell w/hex-types nil nil #'s-equals?)))
+               (w/hex target user type)))
+         (w/write-chat-event (s-concat user "'s hex fizzled out with a puff of smoke!"))))))
   (list
    "VIPPER" 1000
    (lambda (user inp)
@@ -240,6 +260,11 @@
       (lambda () (soundboard//play-clip "gong.ogg")))
      (w/write-chat-event (s-concat user " established total clarity"))
      (w/obs-activate-toggle 'total-clarity)))
+  (list
+   "canonize me" 20000
+   (lambda (user _)
+     (w/write-chat-event (s-concat user " was canonized!"))
+     (w/bible-canonize user)))
   ))
 
 (provide 'wasp-twitch-redeems)

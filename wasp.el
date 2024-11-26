@@ -10,6 +10,7 @@
 (add-to-list 'load-path (f-canonical "./src/contrib/"))
 
 (add-to-list 'load-path (f-canonical "~/src/muzak/"))
+(add-to-list 'load-path (f-canonical "~/src/soundboard/"))
 
 ;; do not open this on stream
 (require 'wasp-sensitive)
@@ -27,10 +28,13 @@
 (require 'wasp-chat)
 (require 'wasp-twitch)
 (require 'wasp-overlay)
+(require 'wasp-auth)
+(require 'wasp-setup)
 
 ;; gizmos
 (require 'wasp-pronunciation)
 (require 'wasp-biblicality)
+(require 'wasp-glossary)
 (require 'wasp-newspaper)
 (require 'wasp-friend)
 (require 'wasp-fakechat)
@@ -61,22 +65,6 @@
 
 ;; user contrib
 (require 'muzak)
-
-;; initialization
-(w/connect)
-(w/db-connect)
-(w/create-chat-overlay-frame)
-(w/show-chat-overlay-frame nil)
-(w/twitch-7tv-update-emotes)
-(w/twitch-update-title)
-
-(w/twitch-run-shoutout-timer)
-(w/twitch-run-emote-frame-timer)
-(w/run-model-timer)
-(w/run-obs-timer)
-(w/run-stream-transcribe-timer)
-
-(w/populate-bible-table)
 
 ;; (defun w/fix-user-database-ok (user)
 ;;   "Fix USER's database entry."

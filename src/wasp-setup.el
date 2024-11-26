@@ -1,0 +1,75 @@
+;;; wasp --- Stream setup -*- lexical-binding: t; -*-
+;;; Commentary:
+;;; Code:
+
+(require 'eyebrowse)
+(require 'wasp-utils)
+(require 'wasp-bus)
+(require 'wasp-db)
+(require 'wasp-chat)
+(require 'wasp-twitch)
+
+(defun w/setup-stream-layout ()
+  "Configure windows for streaming without buffers."
+  (interactive)
+  (eyebrowse-switch-to-window-config 0)
+  (eyebrowse-close-window-config)
+  (eyebrowse-switch-to-window-config 0)
+  (split-window-horizontally -70)
+  (split-window-vertically -10)
+  (enlarge-window 2)
+  (windmove-down)
+  (split-window-horizontally)
+  (windmove-right)
+  (windmove-right)
+  (split-window-vertically -28)
+  (windmove-down)
+  )
+
+(defun w/setup-stream ()
+  "Configure windows for streaming."
+  (interactive)
+  ;; initialization
+  (w/connect)
+  (w/db-connect)
+  (w/create-chat-overlay-frame)
+  (w/show-chat-overlay-frame nil)
+  (w/twitch-7tv-update-emotes)
+  (w/twitch-update-title)
+  (w/twitch-run-shoutout-timer)
+  (w/twitch-run-emote-frame-timer)
+  (w/run-model-timer)
+  (w/run-obs-timer)
+  (w/run-audio-record-end-timer)
+  (w/populate-bible-table)
+
+  (w/start-audio-record)
+  (w/start-chatsummary)
+  (w/start-fake-chatters)
+  (w/start-friend)
+
+  ;; layout
+  (eyebrowse-switch-to-window-config 0)
+  (eyebrowse-close-window-config)
+  (eyebrowse-switch-to-window-config 0)
+  (split-window-horizontally -70)
+  (split-window-vertically -10)
+  (find-file "~/notes/docket.org")
+  (enlarge-window 2)
+  (windmove-down)
+  (split-window-horizontally)
+  (switch-to-buffer w/friend-buffer)
+  (w/gizmo-tag-window)
+  (windmove-right)
+  (switch-to-buffer w/heartrate-buffer)
+  (w/gizmo-tag-window)
+  (windmove-right)
+  (split-window-vertically -28)
+  (switch-to-buffer w/chat-buffer)
+  (windmove-down)
+  (find-file "~/src/colonq")
+  (project-eshell)
+  )
+
+(provide 'wasp-setup)
+;;; wasp-setup.el ends here

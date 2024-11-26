@@ -18,6 +18,7 @@
 (defvar w/chat-minus2-count 0)
 (defvar w/chat-icant-count 0)
 (defvar w/chat-bpm-count 0)
+(defvar w/chat-apology-count 0)
 
 (defvar w/chat-header-line "")
 
@@ -29,7 +30,8 @@
     "  Joel: " (format "%s" w/chat-joel-count)
     " | ICANT: " (format "%s" w/chat-icant-count)
     " | +2: " (format "%s" w/chat-plus2-count)
-    " | -2: " (format "%s" w/chat-minus2-count))))
+    " | -2: " (format "%s" w/chat-minus2-count)
+    " | apology: " (format "%s" w/chat-apology-count))))
 
 (define-derived-mode w/chat-overlay-mode special-mode "ClonkHead Stats"
   "Major mode for displaying chatter statistics."
@@ -188,6 +190,7 @@ Optionally display the window at X, Y"
   (add-hook 'post-command-hook #'w/handle-chat-overlay nil t)
   (advice-add 'handle-switch-frame :before-while #'w/prevent-focus-frame)
   (setq-local window-point-insertion-type t)
+  (setq-local cursor-type nil)
   (cond
    (t (setq-local header-line-format '(:eval w/chat-header-line)))))
 
@@ -262,6 +265,7 @@ Optionally, return the buffer NM in chat mode."
   (w/daily-log (format "%s: %s" (w/. user msg) (w/. text msg)))
   (let ((inhibit-read-only t))
     (with-current-buffer (w/get-chat-buffer)
+      (setq-local cursor-type nil)
       (goto-char (point-max))
       (insert-text-button
        (s-concat
@@ -302,7 +306,10 @@ Optionally, return the buffer NM in chat mode."
            (propertize
             bible-button-text
            'face '(:foreground "#bbbbbb")))))
-      (insert "\n"))))
+      (insert "\n"))
+    (when-let ((win (get-buffer-window (w/get-chat-buffer))))
+      (with-selected-window win
+        (goto-char (point-max))))))
 
 (provide 'wasp-chat)
 ;;; wasp-chat.el ends here

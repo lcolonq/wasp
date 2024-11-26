@@ -55,6 +55,7 @@
 (defvar w/twitch-redeems nil)
 (defvar w/twitch-chat-commands nil)
 (defvar w/twitch-gamer-counter 0)
+(defvar w/twitch-sub-alert-cooldown 0)
 
 (defun w/twitch-api-endpoint-test ()
   "Get LOC from the Twitch API, passing the returned JSON to K."
@@ -151,7 +152,8 @@
 
 (defun w/twitch-get-7tv-emote (name)
   "Retrieve the 7TV emote ID for NAME."
-  (ht-get w/twitch-7tv-emote-map name))
+  (when w/twitch-7tv-emote-map
+    (ht-get w/twitch-7tv-emote-map name)))
 
 (defun w/twitch-user-avatar-path (user)
   "Get the path to USER's avatar."
@@ -365,10 +367,11 @@ CALLBACK will be passed the winner when the poll concludes."
   "Ensure that EMOTEID exists in the cache and then call K."
   (let* ((path (w/twitch-7tv-emote-path emoteid))
          (url (format "https://cdn.7tv.app/emote/%s/1x.webp" emoteid)))
-    (unless (f-exists? path)
+    (if (f-exists? path)
+        (funcall k)
       (make-process
        :name "wasp-download-7tv-emote"
-       :buffer nil
+       :buffer " *wasp-download-7tv-emote-output*"
        :command (list "get_7tv_fixed" url path)
        :sentinel
        (lambda (_ _)
@@ -381,6 +384,17 @@ CALLBACK will be passed the winner when the poll concludes."
 (defun w/twitch-download-7tv-emote (emoteid)
   "Ensure that EMOTEID exists in the cache."
   (w/twitch-download-7tv-emote-then emoteid (lambda () nil)))
+(defun w/twitch-download-many-7tv-emotes (xs)
+  "Download every 7TV emote in XS."
+  (when xs
+    (message "Downloading emote: %s" (car xs))
+    (w/twitch-download-7tv-emote-then
+     (w/twitch-get-7tv-emote (car xs))
+     (lambda ()
+       (run-with-timer
+        1 nil
+        (lambda ()
+          (w/twitch-download-many-7tv-emotes (cdr xs))))))))
 
 (defun w/twitch-add-7tv-emotes (msg)
   "Propertize MSG with images corresponding to 7TV emotes."
@@ -469,7 +483,8 @@ CALLBACK will be passed the winner when the poll concludes."
 
 (defun w/twitch-badges-sigil (badges)
   "Return the sigil character BADGES for the current user."
-  (let ((equity (alist-get :equity w/user-current)))
+  (let ((equity (alist-get :equity w/user-current))
+        (name (s-downcase w/user-current-name)))
     (apply
      #'s-concat
      (-non-nil
@@ -479,19 +494,23 @@ CALLBACK will be passed the winner when the poll concludes."
        (when (-contains? badges "artist-badge/1") "🖌️")
        (when (and equity (> equity 0))
          (cond ;; The Equity Lords
-          ((s-equals? (s-downcase w/user-current-name) "bezelea") "♿🔔")
-          ((s-equals? (s-downcase w/user-current-name) "altovt") "📈")
-          ((s-equals? (s-downcase w/user-current-name) "prodzpod") "🌌🎑")
-          ((s-equals? (s-downcase w/user-current-name) "faeliore") "😹")
-          ((s-equals? (s-downcase w/user-current-name) "vasher_1025") "🕴")
-          ((s-equals? (s-downcase w/user-current-name) "leadengin") "💈")
-          ;; ((s-equals? (s-downcase w/user-current-name) "kettlestew") "")
-          ;; ((s-equals? (s-downcase w/user-current-name) "blazynights") "")
-          ;; ((s-equals? (s-downcase w/user-current-name) "must_broke_") "")
-          ;; ((s-equals? (s-downcase w/user-current-name) "bvnanana") "")
-          ((s-equals? (s-downcase w/user-current-name) "venorrak") "📺")
-          ;; ((s-equals? (s-downcase w/user-current-name) "tf_tokyo") "")
-          ;; clone is lord ((s-equals? (s-downcase w/user-current-name) "liquidcake1") "")
+          ((s-equals? name "bezelea") "♿🔔")
+          ((s-equals? name "altovt") "📈")
+          ((s-equals? name "prodzpod") "🌌🎑")
+          ((s-equals? name "faeliore") "😹")
+          ((s-equals? name "vasher_1025") "🕴")
+          ((s-equals? name "leadengin") "💈")
+          ;; ((s-equals? name "kettlestew") "")
+          ((s-equals? name "blazynights") "🀄")
+          ;; ((s-equals? name "must_broke_") "")
+          ((s-equals? name "bvnanana") "🧉")
+          ((s-equals? name "venorrak") "📺")
+          ;; ((s-equals? name "tf_tokyo") "")
+          ((s-equals? name "devts_de") "∃")
+          ((s-equals? name "trap_exit") "💀")
+          ((s-equals? name "essento") "🥚")
+          ((s-equals? name "tyumici") "🤌")
+          ;; clone is lord ((s-equals? name "liquidcake1") "")
           (t "EL.")))
        (when (-contains? badges "vip/1") "💎")
        (when (-contains? badges "subscriber/0") "💻"))))))
@@ -538,24 +557,30 @@ CALLBACK will be passed the winner when the poll concludes."
            (when (s-contains? (car it) text)
              (funcall (cdr it) user text))))))))
 
+(defun w/twitch-handle-redeem-helper (user redeem input &optional limit)
+  "Handle the channel point redeem REDEEM from USER with INPUT.
+Optionally, only apply redeems with point costs less than LIMIT."
+  (let ((handler (alist-get redeem w/twitch-redeems nil nil #'s-equals?)))
+    (if handler
+        (if (< (car handler) 1000)
+            (w/user-bind
+             user
+             (lambda ()
+               (condition-case err
+                   (funcall (cadr handler) user input)
+                 (error
+                  (w/write-chat-event (format "Error during redeem: %s" err))))))
+          (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
+      (w/write-chat-event (format "Unknown channel point redeem: %S" redeem)))))
+
 (defun w/twitch-handle-redeem (r)
   "Handle the channel point redeem R."
   (w/write-log r)
   (let* ((user (car r))
          (redeem (cadr r))
          (encoded-input (caddr r))
-         (input (when encoded-input (w/decode-string encoded-input)))
-         (handler (alist-get redeem w/twitch-redeems nil nil #'s-equals?)))
-    (if handler
-        (w/user-bind
-         user
-         (lambda ()
-           (condition-case err
-               (funcall (cadr handler) user input)
-             (error
-              (w/write-chat-event (format "Error during redeem: %s" err))
-              ))))
-      (w/write-log (format "Unknown channel point redeem: %S" redeem)))))
+         (input (when encoded-input (w/decode-string encoded-input))))
+    (w/twitch-handle-redeem-helper user redeem input)))
 
 (defun w/twitch-handle-redeem-api (r)
   "Handle a channel point redeem R coming from the API."
@@ -565,12 +590,8 @@ CALLBACK will be passed the winner when the poll concludes."
          (encoded-input (caddr r))
          (user (when encoded-user (w/decode-string encoded-user)))
          (redeem (when encoded-redeem (w/decode-string encoded-redeem)))
-         (input (when encoded-input (w/decode-string encoded-input)))
-         (handler (alist-get redeem w/twitch-redeems nil nil #'s-equals?)))
-    (when (< (car handler) 1000)
-      (if handler
-          (w/user-bind user (lambda () (funcall (cadr handler) user input)))
-        (w/write-log (format "Unknown channel point redeem: %S" redeem))))))
+         (input (when encoded-input (w/decode-string encoded-input))))
+    (w/twitch-handle-redeem-helper user redeem input)))
 
 (provide 'wasp-twitch)
 ;;; wasp-twitch.el ends here

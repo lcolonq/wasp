@@ -8,6 +8,7 @@
 (require 'ht)
 (require 'wasp-utils)
 (require 'wasp-db)
+(require 'wasp-glossary)
 
 (defvar w/newspaper-todays-articles nil)
 
@@ -40,11 +41,23 @@
    "a snack for friend"
    "59 frames per second"))
 
+(defun w/newspaper-screenshot (k)
+  "Take a screenshot and pass the path of that screenshot to K."
+  (let ((path (s-concat (make-temp-name "/tmp/wasp-newspaper-screenshot") ".png")))
+    (make-process
+     :name "*wasp-newspaper-screenshot*"
+     :buffer nil
+     :command `("newspaper-screenshot" ,path)
+     :sentinel
+     (lambda (_ _)
+       (funcall k path)))))
+
 (w/defstruct
  w/newspaper-article
  headline
  author
- content)
+ content
+ image)
 
 (defun w/newspaper-wrap-emoji (s)
   "Wrap emoji with appropriate TeX in S."
@@ -79,6 +92,13 @@
    "}{"
    (w/newspaper-wrap-emoji (w/newspaper-escape (w/newspaper-article-author a)))
    "}\n"
+   (if (w/newspaper-article-image a)
+       (s-concat
+        "\\includegraphics[width=0.8\\linewidth]{"
+        (w/newspaper-article-image a)
+        "}\\\\"
+        )
+     "")
    (w/newspaper-wrap-emoji (w/newspaper-escape (w/newspaper-article-content a)))
    "\n\\closearticle\n"))
 
@@ -128,7 +148,8 @@ Pass the path of the generated PDF to K."
     (w/make-newspaper-article
      :headline "omg hi oomfie"
      :author "Joel"
-     :content "\\lipsum[1]")
+     :content "\\lipsum[1]"
+     :image "/home/llll/tmp/mrgreen.png")
     (w/make-newspaper-article
      :headline "omg hi oomfie"
      :author "Joel"
@@ -157,6 +178,7 @@ Pass the path of the generated PDF to K."
 (defun w/newspaper-publish ()
   "Finalize and publish today's work-in-progress newspaper."
   (interactive)
+  (w/glossary-save)
   (w/db-get
    "newspaper:edition"
    (lambda (edstr)

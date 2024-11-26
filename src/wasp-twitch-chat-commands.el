@@ -23,6 +23,7 @@
   (cons "MRBEAST" (lambda (_ _) (soundboard//play-clip "mrbeast.mp3")))
   (cons "NICECOCK" (lambda (_ _) (soundboard//play-clip "pantsintoashes.mp3")))
   (cons "hexadiCoding" (lambda (_ _) (soundboard//play-clip "developers.ogg")))
+  (cons "ProgrammingTime" (lambda (_ _) (soundboard//play-clip "emacslisp.ogg")))
   (cons
    "roguelike"
    (lambda (user _)
@@ -43,11 +44,18 @@
   (cons "bpm" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "BPM" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "heartrate" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "Heartrate" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "Heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "!irc" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
   (cons "IRC" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
 
   (cons "!today" (lambda (_ _) (w/twitch-say (s-trim (w/slurp "~/today.txt")))))
+  (cons "!schedule" (lambda (_ _) (w/twitch-say "https://twitch.tv/LCOLONQ/schedule")))
   (cons "!bingo" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~prod/toy/bingo/")))
+  (cons
+   "!music"
+   (lambda (_ _) (w/twitch-say "https://www.youtube.com/playlist?list=PLQ_Vw7ACol3CN58_osDkbeKa14Hk-N-TZ")))
   (cons
    "!fish"
    (lambda (_ _)
@@ -63,6 +71,7 @@
   ;; (cons "!jetsWave" (lambda (_ _) (fig//twitch-say (fig/slurp "jetsWave.txt"))))
   ;; (cons "!forth" (lambda (_ _) (fig//twitch-say "https://github.com/lcolonq/giving")))
   (cons "!oub" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
+  (cons "!cellar" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~llll/cellar/index.html")))
   (cons "!game" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
   (cons "!voidstranger" (lambda (_ _) (w/twitch-say "https://store.steampowered.com/app/2121980/Void_Stranger/")))
   (cons "!pubnix" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))

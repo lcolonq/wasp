@@ -56,14 +56,19 @@ AUTHOR was a contributing author btw."
    (lambda (resp)
      (when resp
        (w/write-chat-event (format "\"friend\" finished writing about: %s" headline))
-       (push
-        (w/make-newspaper-article
-         :headline headline
-         :author (format "\"friend\" and %s" author)
-         :content (s-trim resp))
-        w/newspaper-todays-articles)))
-   "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. You like people, video games, emojis, learning, and food. Given a headline of a newspaper article and a summary of recent user activity, please do your best journalist impression and produce a one paragraph article about the situation that fits the headline."
-   ))
+       (funcall
+        (if (= (random 5) 0) #'w/newspaper-screenshot (lambda (k) (funcall k nil)))
+        (lambda (img)
+          (when img
+            (w/write-chat-event "...and the article included some photojournalism"))
+          (push
+           (w/make-newspaper-article
+            :headline headline
+            :author (format "\"friend\" and %s" author)
+            :content (s-trim resp)
+            :image img)
+           w/newspaper-todays-articles)))))
+       "You are the personality of a desktop buddy named \"friend\". \"friend\" is irreverant but kind, and only speaks in lowercase. You are kind of dumb in a cute way and silly like a virtual pet. You live in the corner of LCOLONQ's stream and provide commentary on events. You like people, video games, emojis, learning, and food. Given a headline of a newspaper article and a summary of recent user activity, please do your best journalist impression and produce a one paragraph article about the situation that fits the headline."))
 
 (defconst w/friend-grapheme-phonemes
   '((("b" "bb") . "bug") (("d" "dd" "ed") . "dad")

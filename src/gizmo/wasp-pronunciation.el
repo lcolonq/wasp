@@ -26,6 +26,7 @@
     "Love, Chastity, Organized, Love again, Organized again, Nice, Qomputer"
     "Elkhunk"
     "late late late late show with llll colonq"
+    "move right and exit"
     ))
 
 (defconst w/pronunciation-part1 ;; the LLLL
@@ -58,6 +59,7 @@
     "See"
     "Cloin"
     "Coloin"
+    "Kernel"
     ))
 
 (defconst w/pronunciation-part3 ;; the Q

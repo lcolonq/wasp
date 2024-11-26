@@ -5,6 +5,7 @@
 (require 'wasp-utils)
 (require 'wasp-chat)
 (require 'wasp-ai)
+(require 'wasp-audio)
 (require 'cl-lib)
 (require 'ht)
 (require 's)
@@ -23,17 +24,20 @@
     ("PIQUANT" . mild)
     ("PORCINE" . piglatin)
     ("PYTHON" . oldeenglishe)
+    ("MANIAC" . pokemon)
     ("ELBERETH" . counterspell)
     ("ESUNA" . decurse)
     ))
 
 (defconst w/hex-users (ht-create 'equal))
+(defconst w/hex-pokemon (w/read-sexp (w/slurp (w/asset "palcries/pokemon.eld"))))
 
 (w/defstruct
  w/hex
  type
  caster
- (timer 0))
+ (timer 0)
+ data)
 
 (defun w/hex-get (user)
   "Return the active hexes for USER."
@@ -62,7 +66,43 @@
    (w/make-hex
     :type type
     :caster caster
-    :timer 10)))
+    :timer 10
+    :data
+    (cl-case type
+      (pokemon (random (length w/hex-pokemon)))
+      (t nil)))))
+
+(defun w/hex-pokemon-syllable (pkmn)
+  "Extract a syllable from PKMN."
+  (if (= (random 4) 0)
+      pkmn
+    (let ((vowels '("a" "e" "i" "o" "u" "y")))
+      (or
+       (->>
+        (-mapcat
+         (lambda (idx)
+           (--map
+            (substring pkmn idx (+ idx it))
+            (-iota (- (length pkmn) idx))))
+         (-iota (length pkmn)))
+      (--filter
+       (and
+        (s-present? it)
+        (>= (length it) 2)
+        (not (-contains? vowels (substring it 0 1)))
+        (-contains? vowels (substring it 1 2))
+        (-any (lambda (v) (s-contains? v it)) vowels)))
+      (w/pick-random))
+     pkmn))))
+
+(defun w/hex-transform-pokemon (msg idx)
+  "Transform MSG as if it was spoken by Pokemon IDX."
+  (let* ((pkmn (nth (- idx 1) w/hex-pokemon)))
+    (s-capitalize
+     (s-replace-regexp
+      (rx (one-or-more alpha))
+      (lambda (_) (w/hex-pokemon-syllable pkmn))
+      msg))))
 
 (defun w/hex-transform-helper (msg hexes k)
   "Transform MSG according to HEXES and pass the result to K."
@@ -156,6 +196,15 @@
           (setf (w/chat-message-text msg) new)
           (w/hex-transform-helper msg (cdr hexes) k))
         "Please censor all profanity in the given message and respond with the censored version. Censor by rewriting in a very polite way like Ned Flanders. Do not provide any other text, only a censored version of the message. If there is no profanity respond with the given message verbatim."))
+      (pokemon
+       (w/audio-play (w/asset (format "palcries/%d.mp3" (w/hex-data (car hexes)))) nil 75)
+       (setf
+        (w/chat-message-user msg)
+        (s-titleize (nth (- (w/hex-data (car hexes)) 1) w/hex-pokemon)))
+       (setf
+        (w/chat-message-text msg)
+        (w/hex-transform-pokemon (w/chat-message-text msg) (w/hex-data (car hexes))))
+       (w/hex-transform-helper msg (cdr hexes) k))
       (piglatin
        (setf
         (w/chat-message-text msg)
