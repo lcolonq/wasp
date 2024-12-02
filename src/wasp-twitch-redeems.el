@@ -34,15 +34,19 @@
   (list
    "BOOST" 1
    (lambda (user _)
-     (soundboard//play-clip "yougotboostpower.ogg")
-     (w/write-chat-event (s-concat user " boosted their boost number"))
-     (cl-incf (alist-get :boost w/user-current 0))))
+     (unless (-contains? w/twitch-boosters user)
+       (add-to-list 'w/twitch-boosters user)
+       (soundboard//play-clip "yougotboostpower.ogg")
+       (w/write-chat-event (s-concat user " boosted their boost number"))
+       (cl-incf (alist-get :boost w/user-current 0)))))
   (list
    "TSOOB" 1
    (lambda (user _)
-     (soundboard//play-clip "rewoptsoobtoguoy.ogg" 140)
-     (w/write-chat-event (s-reverse (s-concat user " boosted their boost number")))
-     (cl-decf (alist-get :boost w/user-current 0))))
+     (unless (-contains? w/twitch-tsoobers user)
+       (add-to-list 'w/twitch-tsoobers user)
+       (soundboard//play-clip "rewoptsoobtoguoy.ogg" 140)
+       (w/write-chat-event (s-reverse (s-concat user " boosted their boost number")))
+       (cl-decf (alist-get :boost w/user-current 0)))))
   (list
    "submit headline" 1
    (lambda (user inp)
@@ -206,12 +210,12 @@
    (lambda (user _)
      (w/write-chat-event (format "%s changed the theme: rosa" user))
      (w/change-theme 'ef-rosa)))
-  (list
-   "gamer" 500
-   (lambda (user _)
-     (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
-     (soundboard//play-clip "videogame.ogg")
-     (w/obs-activate-toggle 'thug-life)))
+  ;; (list
+  ;;  "gamer" 500
+  ;;  (lambda (user _)
+  ;;    (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
+  ;;    (soundboard//play-clip "videogame.ogg")
+  ;;    (w/obs-activate-toggle 'thug-life)))
   (list
    "arrow" 500
    (lambda (user msg)
@@ -220,13 +224,13 @@
   (list
    "antipiracy" 500
    (lambda (user _)
-     (w/twitch-say (format "%s does not condone any form of copyright infringement whatsoever." user))
+     (w/write-chat-event (format "%s does not condone any form of copyright infringement whatsoever." user))
      (w/obs-activate-toggle 'activate-nixos)))
-  (list
-   "super idol" 500
-   (lambda (_ _)
-     (w/twitch-say "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
-     (soundboard//play-clip "superidololdshortstyle.ogg")))
+  ;; (list
+  ;;  "super idol" 500
+  ;;  (lambda (_ _)
+  ;;    (w/write-chat-event "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
+  ;;    (soundboard//play-clip "superidololdshortstyle.ogg")))
   (list
    "hex" 500
    (lambda (user inp)

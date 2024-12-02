@@ -215,7 +215,16 @@
    "extremelybig"
    "ostas_"
    "mcschwartz2"
+   "siersciuch_albinos"
+   "thelordzeeee"
+   "trueround"
    )))
+
+(setq
+ w/user-hell
+ '(
+   "nikolarhristov"
+   ))
 
 (provide 'wasp-user-whitelist)
 ;;; wasp-user-whitelist.el ends here

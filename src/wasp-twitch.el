@@ -56,6 +56,8 @@
 (defvar w/twitch-chat-commands nil)
 (defvar w/twitch-gamer-counter 0)
 (defvar w/twitch-sub-alert-cooldown 0)
+(defvar w/twitch-boosters nil)
+(defvar w/twitch-tsoobers nil)
 
 (defun w/twitch-api-endpoint-test ()
   "Get LOC from the Twitch API, passing the returned JSON to K."
@@ -496,7 +498,7 @@ CALLBACK will be passed the winner when the poll concludes."
          (cond ;; The Equity Lords
           ((s-equals? name "bezelea") "♿🔔")
           ((s-equals? name "altovt") "📈")
-          ((s-equals? name "prodzpod") "🌌🎑")
+          ((s-equals? name "prodzpod") "🌠🌌🎑")
           ((s-equals? name "faeliore") "😹")
           ((s-equals? name "vasher_1025") "🕴")
           ((s-equals? name "leadengin") "💈")
@@ -504,16 +506,26 @@ CALLBACK will be passed the winner when the poll concludes."
           ((s-equals? name "blazynights") "🀄")
           ;; ((s-equals? name "must_broke_") "")
           ((s-equals? name "bvnanana") "🧉")
-          ((s-equals? name "venorrak") "📺")
+          ((s-equals? name "venorrak") "📺📜")
           ;; ((s-equals? name "tf_tokyo") "")
           ((s-equals? name "devts_de") "∃")
           ((s-equals? name "trap_exit") "💀")
           ((s-equals? name "essento") "🥚")
           ((s-equals? name "tyumici") "🤌")
           ;; clone is lord ((s-equals? name "liquidcake1") "")
+          ;; ((s-equals? name "loufbread_") "")
+          ;; ((s-equals? name "yellowberryhn") "")
+          ;; ((s-equals? name "maradyne_") "")
+          ;; ((s-equals? name "sampie159") "")
+          ;; ((s-equals? name "zamielpayne") "")
+          ((s-equals? name "xorxavier") "🌸")
+          ((s-equals? name "6horntaurus") "⚰️")
+          ;; ((s-equals? name "steeledshield") "")
+          ((s-equals? name "asrael_io") (propertize "Q" 'display (create-image (w/twitch-emote-path "emotesv2_a9dc5935824a4d6792f4b48f91031fcf"))))
           (t "EL.")))
        (when (-contains? badges "vip/1") "💎")
-       (when (-contains? badges "subscriber/0") "💻"))))))
+       (when (-contains? badges "subscriber/0") "💻")
+       (when (-contains? badges "founder/0") "🖥️"))))))
 
 (defun w/twitch-handle-incoming-chat (msg)
   "Write MSG to the chat buffer, processing any commands."
@@ -560,18 +572,19 @@ CALLBACK will be passed the winner when the poll concludes."
 (defun w/twitch-handle-redeem-helper (user redeem input &optional limit)
   "Handle the channel point redeem REDEEM from USER with INPUT.
 Optionally, only apply redeems with point costs less than LIMIT."
-  (let ((handler (alist-get redeem w/twitch-redeems nil nil #'s-equals?)))
-    (if handler
-        (if (< (car handler) 1000)
-            (w/user-bind
-             user
-             (lambda ()
-               (condition-case err
-                   (funcall (cadr handler) user input)
-                 (error
-                  (w/write-chat-event (format "Error during redeem: %s" err))))))
-          (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
-      (w/write-chat-event (format "Unknown channel point redeem: %S" redeem)))))
+  (unless (-contains? w/user-hell (s-downcase user))
+    (let ((handler (alist-get redeem w/twitch-redeems nil nil #'cl-equalp)))
+      (if handler
+          (if (or (not limit) (< (car handler) limit))
+              (w/user-bind
+               user
+               (lambda ()
+                 (condition-case err
+                     (funcall (cadr handler) user input)
+                   (error
+                    (w/write-chat-event (format "Error during redeem: %s" err))))))
+            (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
+        (w/write-chat-event (format "Unknown channel point redeem: %S" redeem))))))
 
 (defun w/twitch-handle-redeem (r)
   "Handle the channel point redeem R."
@@ -591,7 +604,7 @@ Optionally, only apply redeems with point costs less than LIMIT."
          (user (when encoded-user (w/decode-string encoded-user)))
          (redeem (when encoded-redeem (w/decode-string encoded-redeem)))
          (input (when encoded-input (w/decode-string encoded-input))))
-    (w/twitch-handle-redeem-helper user redeem input)))
+    (w/twitch-handle-redeem-helper user redeem input 1000)))
 
 (provide 'wasp-twitch)
 ;;; wasp-twitch.el ends here

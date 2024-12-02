@@ -47,6 +47,7 @@
   (cons "Heartrate" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "Heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
+  (cons "!menu" (lambda (_ _) (w/twitch-say "https://secure.colonq.computer/menu")))
   (cons "!irc" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
   (cons "IRC" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
 

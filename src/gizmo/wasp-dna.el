@@ -19,17 +19,24 @@
 ;;   fig//incoming-chat-history)))
 ;; (-non-nil (--map-indexed (when (s-equals? (car it) "pnutonium") (cons (nth (- it-index 1) test-messages-parsed) it)) test-messages-parsed))
 
+(defun w/dna-get-all-log-paths ()
+  "Return the paths of every log file."
+  (--filter (s-matches? (rx "log-" (+ digit) "-" (+ digit) "-" (+ digit) ".txt") it) (f-files "~/logs")))
+
+(defun w/dna-complete-log ()
+  "Return a complete log of every historical message."
+  (let* ((paths (w/dna-get-all-log-paths))
+         (logstr (apply #'s-concat (-map #'w/slurp paths)))
+         (log (--map (w/list-to-pair (s-split ": " it)) (-non-nil (--map (cadr (s-split "\t" it)) (s-lines logstr))))))
+    log))
+
 (defun w/dna-generate-from-logs (user)
   "Generate DNA from historical logs for USER.
 You probably want to use this interactively and then save the result here."
-  (let* (;; (logstr (w/slurp "~/logs/log-2024-09-24.txt"))
-         ;; (log (--map (w/list-to-pair (s-split ": " it)) (-non-nil (--map (cadr (s-split "\t" it)) (s-lines logstr)))))
-         (logstr (w/slurp "~/logs/lcolonq-2024Q1.log"))
-         (log (--map (cons (cadr it) (caddr it)) (--map (s-split "\t" it) (s-lines logstr))))
-         )
+  (let* ((log (w/dna-complete-log)))
     (-non-nil
      (--map-indexed
-      (when (s-equals? (car it) (s-downcase user))
+      (when (and (car it) (s-equals? (s-downcase (car it)) (s-downcase user)))
         (cons (nth (- it-index 1) log) it))
       log))))
 
@@ -1532,6 +1539,946 @@ You probably want to use this interactively and then save the result here."
       "all the callback speech only to defall into the abyss that is await...")
      "charleyfolds" . "I drive")
     (("modclonk" . "lcolonHi") "charleyfolds" . "I drive")))
+
+(defconst w/dna-chixie9901
+  '((("agpen" . "you're a soyboy now") "chixie9901"
+     . "Hello, was browsing software section on twitch and saw you. your model is pretty cool")
+    (("imgeiser" . "I know the next troll >:)") "chixie9901"
+     . "what are ya working on btw")
+    (("regularamoeba" . "cum?") "chixie9901"
+     . "ngl when i see code most of the time, feels like im seeing hieroglyphics lol.")
+    (("neunmalelf" . "ok TX") "chixie9901"
+     . "oh dont worry, im doing a masters in Data science. learning a lot of it rn. going through python a lot for now")
+    (("ellg" . "no mods no poker") "chixie9901" . "Neutrinos")
+    (("ellg" . "oh i thought that was part of the actual game nevermind")
+     "chixie9901" . "fancy to see civi here, sup!")
+    (("tomaterr" . "AHAHAHAHAHA") "chixie9901"
+     . "Explain Classes in a easy way.")
+    (("ellg" . "got a framed picture of rms in a hottub") "chixie9901"
+     . "i cant hear anything lol xP")
+    (("djkawaiifieri" . "Holy shit") "chixie9901"
+     . "btw do you visualize everything you code in your head")
+    (("neunmalelf"
+      . "as long as you can laugh together - live is good :)")
+     "chixie9901"
+     . "i thought you were saying \"Mon-clon\" all this time")
+    (("prof_anime"
+      . "Candy sustains the soul. However, the body requires other resources.")
+     "chixie9901"
+     . "well its getting late for me. was a nice stream , hope ya have a great one. cya!")
+    (("crane0001" . "I read so much shitty manga I love love love it")
+     "chixie9901" . "Hello, i like how u say my full twitch name lol xP")
+    (("digi_shell" . "@prodzpod digish1Pat") "chixie9901"
+     . "Is this a dynamic typed language?")
+    (("arenet" . "society opinions yup") "chixie9901"
+     . "Good and evil is subjective")
+    (("rahnmu" . "Crunk LUL") "chixie9901"
+     . "This reminds me of a manga i was reading the other day, called \"Kingdom\". In it there was a part where Kan pishi , a scholar asked a general on what is the true nature of Man.  Was pretty cool")
+    (("raditz1504" . "gxauraDance gxauraDance gxauraDance") "chixie9901"
+     . "I studied maths for my engineering. Although i didnt like it back then, because i could not visualise it. Thats why videos from 3blue1brown are good, cos it hits your brain just right.")
+    (("arenet" . "digish1Wiggly dyingd3Wiggly digish1Wiggly")
+     "chixie9901"
+     . "@a_tension_span fr fr. He goated. Love his videos on regression, probability, bayes theorem, etc")
+    (("imgeiser" . "yea") "chixie9901"
+     . "What do ya think of  split ergo keebs?")
+    (("a_tension_span" . "bless smulchYblessed") "chixie9901"
+     . "Wat were we doing again?")
+    (("prodzpod" . "mhm") "chixie9901"
+     . "Got a question, since im new to IT field and all. Does your imposter syndrome ever go away?")))
+
+(defconst w/dna-jddoesdev
+  '((("prodzpod" . "we dont really code") "jddoesdev" . "hey hey")
+    (("jddoesdev" . "hey hey") "jddoesdev" . "thanks for the SO")
+    (("prodzpod" . "thats not functional ... ... ... ...") "jddoesdev"
+     . "yellow push it real good")
+    (("ryanwinchester_"
+      . "your hair is a bear trying to get into my compose bin")
+     "jddoesdev" . "red oh. push it.")
+    (("codespace0x25" . "what should I 3D Print") "jddoesdev"
+     . "Are you starting an OnlyFlows?")
+    (("tyumici" . "the anti-clonk") "jddoesdev" . "sus")
+    (("liquidcake1"
+      . "If I had understanding of Web 5.0 or whatever we're on I'd be clipping \"lcolonq uses REAL VOICE\" for the viral YouTube clout right now.")
+     "jddoesdev" . "never gonna give you up polyphonic")
+    (("gendude" . "MRBEAST") "jddoesdev"
+     . "the real clonk was the clonks we made around the way")
+    (("khargoosh"
+      . "I dont think we should be talkin about peoples super idle tallys... that aint right")
+     "jddoesdev"
+     . "i think we should get a whacker for the tallies.  maybe a tallywhacker?")
+    (("m18m18m18"
+      . "Honestly we dont really understand much, we just go by heuristics")
+     "jddoesdev" . "test?")
+    (("tw1tchface" . "I took calc but I'd not take away any wonder")
+     "jddoesdev"
+     . "i show up and you're speaking french.  unfollowed.  i'm out")
+    (("cranevt"
+      . "Legit one moment normal speech, then the moment he went to the whiteboard it was like a magic girl transformation")
+     "jddoesdev" . "how you doing")
+    (("abipolarcarp123"
+      . "Mathematicians are ranked by how nicely they can make zeta and xi symbols")
+     "jddoesdev"
+     . "it's raining on the snow now which is going to make it especially miserable")
+    (("abipolarcarp123" . "Oh no") "jddoesdev"
+     . "now instead of 3 feet of powder, it's getting compressed to 1 foot of fuck this")
+    (("modclonk" . "@acher0_  lcolonLove") "jddoesdev" . "SOH CAH TOA")
+    (("tw1tchface"
+      . "eh, FAFSA paying for your first two years of college is sweet")
+     "jddoesdev"
+     . "i have an associate's degree from a community college")
+    (("cranevt"
+      . "Community college is mostly for like the base education requirement but some have good programs.")
+     "jddoesdev" . "it helped me get into a completely new career")
+    (("azrhyga" . "Hi everyone and hi LCOLONQ!!") "jddoesdev"
+     . "where i am there are also satellite purdue campuses where students can get their pre-reqs out of the way the transfer to purdue lafayette")
+    (("a_tension_span" . "Just the hot tip?") "jddoesdev"
+     . "hot tips in your area")
+    (("destinywaits" . "win win") "jddoesdev"
+     . "I thought that was where I lived, but they're expanding delivery areas")))
+
+(defconst w/dna-tamwile
+  '((("hanbunvt" . "we'll get them next year") "tamwile"
+     . "a real politician")
+    (("badcop_" . "in the shebang sense") "tamwile" . "erc")
+    (("eudemoniac" . "@eudemoniac hell yeah lcolonLove") "tamwile"
+     . "erc and rcirc")
+    (("morgvn_" . "https://youtu.be/qy-HD9upBfE?si=x5SMEGfoWOEWWDy9")
+     "tamwile" . "Can you repeat that everyday ? I think i need it")
+    (("liquidcake1" . "agent forwarding is OK if you trust the remote.")
+     "tamwile" . "I think you can use .ssh/config")
+    (("exodrifter_"
+      . "thank you clonk those are some very nice words that you are always eloquent at saying")
+     "tamwile"
+     . "When you're not sick, it's also good to have a nice nap")
+    (("buddyspizza"
+      . "If it's in version control, you can see when someone does a haxor.")
+     "tamwile"
+     . "juan benet described ipfs as \"git + bittorrent\", what do you think ?")
+    (("chromosundrift"
+      . "in practice I wonder how rejected state transitions could be extracted from subsequent states. If this wasn't easy to manage, then you could poison a player by mixing untrusted state into their player history for a given server")
+     "tamwile" . "You need a list of trusted nodes, like freenet")
+    (("zulleyy3"
+      . "Lcolonq went to the far right side of the normal distribution meme")
+     "tamwile"
+     . "I have a keybind to copy current tab url, then i have a shell alias to open mpv with clipboard, no distraction")
+    (("tamwile"
+      . "I have a keybind to copy current tab url, then i have a shell alias to open mpv with clipboard, no distraction")
+     "tamwile" . "vimium-c")
+    (("tamwile" . "vimium-c") "tamwile" . "i use it on firefox")
+    (("sandbox_actual"
+      . "As far as I understand it, new features are implemented in Servo and then ported into Gecko once stable as the current flow for features getting into Firefox & Gecko.")
+     "tamwile" . "what's so cool about ladybird ?")
+    (("tamwile" . "what's so cool about ladybird ?") "tamwile"
+     . "oh right, kling videos are good learn material")
+    (("tamwile" . "oh right, kling videos are good learn material")
+     "tamwile"
+     . "I think once you have begun compilation, and it stops, you have prompt and you can say keep going even if errors")
+    (("tamwile"
+      . "I think once you have begun compilation, and it stops, you have prompt and you can say keep going even if errors")
+     "tamwile" . "but i don't know how to say that from cmd invocation")
+    (("ericalvin" . "D:") "tamwile"
+     . "a long time ago, i had an issue with something called kpathsea, don't remember how i fixed it. Tex has too many layers of complexity")
+    (("sciants_streams" . "hi friends! hi lcolonq!") "tamwile"
+     . "when you kill a biline, it becomes 2 lines")
+    (("spikepls" . "!8ball is friend stuck?") "tamwile"
+     . "!8ball Will Clonk acquire third dimension one day ?")
+    (("lcolonq" . "@SpikePls 8ball says: It's so over") "tamwile"
+     . "8ball didn't answer me, it's blocking single thread ?")
+    (("lcolonq"
+      . "try: \"nc colonq.computer 31340\", if nc doesn't work try ncat or telnet")
+     "tamwile"
+     . "@Hexavall If it isn't, you just have to change your definition of normality"))
+  )
+
+(defconst w/dna-pralkarz
+  '((("XorXavier"
+      . "hi its me the computer()")
+     "pralkarz"
+     . "Is the money bag next to a message in the on screen chat representing a clone?")
+    (("SlendiDev"
+      . "@agpen oh yeah it might be the protection level strict maybe")
+     "pralkarz"
+     . "I glanced over to my second monitor and read that as \"Too Many Cocks\".")
+    (("justchil_l" . "that would be extra cool") "pralkarz"
+     . "We had some unwritten rules at work to help us write actually sane and maintainable JavaScript, it was very nice. Avoiding hoisting, preferring singletons over generic classes, strict null safety, and so on.")
+    (("[VOICE]"
+      . "Hello, windupboyfade, welcome in, hello, hello, hello. So, so, yes. So, so, yes. I want to, I want to clean up the kitchen.")
+     "pralkarz"
+     . "@RayMarch Hoisting moves variable declarations to the top of the scope, so you can use `const x = y + z;` on line 1 and define `y` and `z` on line 100 and it'd work.")
+    (("The0x539" . "I'll post on discord") "pralkarz"
+     . "On my way to write a Malbolge -> Brainfuck compiler.")
+    (("wyndupboy" . "Modclonk!") "pralkarz" . "HI MODCLONK!!!")
+    (("hydoto" . "@anothercommoninternetuser fluid") "pralkarz"
+     . "Stop saying \"milligrams\", you're gonna scare him.")
+    (("[VOICE]"
+      . "This is notable. I think at least has noble intentions. Yes. I was on my on my fifth account before I left it. Yeah, this is This is fearsome")
+     "pralkarz" . "The snowflakes can't handle Brazilian Miku. /s")
+    (("a_tension_span" . "peggyxPeggyjam MC stream") "pralkarz"
+     . "Friendclonk.")
+    (("wyndupboy" . "you are still alive!") "pralkarz" . "!oomfie")
+    (("mickynoon" . "it's time for RPG") "pralkarz"
+     . "IT'S CHEWSDAY INNIT.")
+    (("[VOICE]"
+      . "like read nothing about games that I'm really really looking forward to or books or movies or shows because")
+     "pralkarz"
+     . "@ahmednaser2004 Quentin Tarantino approves this message.")
+    (("mickynoon" . "kinda complimented low key do") "pralkarz"
+     . "SHORTCLONK???")
+    (("Colinahscopy_" . "bye maude yarrWave") "pralkarz"
+     . "DON'T THROW THE GRILL BACK INTO THE BASEMENT YOU FREAK.")
+    (("chromosundrift" . "darius is an auspicious name!") "pralkarz"
+     . "Is it Dariuses or Dariusi?")
+    (("[VOICE]"
+      . "Osama type AI VTuber situation? Is this the case? Is this the case? This is good. We had the same discussion before. I think this is true.")
+     "pralkarz"
+     . "I like how we have one (1) X in the docket after an hour.")
+    (("[VOICE]"
+      . "Unless I'm confusing that, yes, yes, this is the case. What did we get up to today? How was your stream? We have one X in the docker after an hour, and that's a leftover from last time, ProudCash.")
+     "pralkarz" . "After 3 hours, I mean.")
+    (("acher0_" . "did you run with 3'40\" pace?") "pralkarz"
+     . "I am, but it won't stop me from poking fun at you. That's my way of expressing love. lcolonLove")
+    (("Partycatlol" . "#kissahomie") "pralkarz"
+     . "Scrum master? The one who's responsible for cleaning up the scrum?")
+    (("[VOICE]"
+      . "Oh, yes, we have we have emask lisp The the yeah, at least yap about programming if our stand up would be three")
+     "pralkarz"
+     . "In agile you'd need to DELIVER VALUE in 4 streams (2 weeks). lcolonNodders"))
+  )
+
+(defconst w/dna-ikatono
+  '((("[VOICE]"
+      . "kind of a coldness rather than a hotness isomorphic if you get what if you get what I'm saying right like you can dislike things right and you can have ideas about how")
+     "Ikatono" . "The tools I \"hate\" most are the ones I use most")
+    (("[VOICE]"
+      . "katono and uh and and chromo sundrift heyo yeah but i just i just feel like it's it's rarely for the best like it's really like i'm not i'm not even talking like in some")
+     "Ikatono"
+     . "I strongly dislike a lot of things about python but I still use python a lot")
+    (("isomorphica" . "Are you running your own ISP yet or not?")
+     "Ikatono"
+     . "running my NAS has been a great hobby for the past few years")
+    (("[VOICE]"
+      . "Bot League, which would be- which would actually go insanely crazy. The big yellow and red warning box, the")
+     "Ikatono" . "clonknet over HAM radio")
+    (("[VOICE]"
+      . "If only we could encrypt. If only we could encrypt. Oh wait, no, this is not like this. This is not, this is not like this. This is, this is, she, she told me that. You heard her.")
+     "Ikatono" . "yeah that's the big problem")
+    (("[VOICE]"
+      . "nice I don't it sucks yes it's not like it's like boiling water it's just like like warm water")
+     "Ikatono" . "cold water is way more luxurious")
+    (("impforhire" . "\"probably\"") "Ikatono"
+     . "I thought cigarillos only existed for high schoolers to empty them and fill with weed")
+    (("TruppenPanda" . "clonq handing out shots of hot water at cons :D")
+     "Ikatono"
+     . "tell them \"stick out your hands\" and pour loose tobacco")
+    (("[VOICE]"
+      . "this this is for others to decide this is for I don't know perhaps the I don't know I don't know how we I don't want to get into that whole situation")
+     "Ikatono" . "just noticed I hit 50k")
+    (("BrighterMalphon"
+      . "\"the aztecs had the right idea, the sun *did* keep rrising, after all\"")
+     "Ikatono" . "this is a fabius-style question")
+    (("lambda_alpha_omega" . "@yellowberryHN y'all?") "Ikatono"
+     . "@yellowberryHN \"one\"?")
+    (("xivandroid" . "and novel...") "Ikatono"
+     . "oh right, how detailed do you need it? Is \"debate bro\" enough?"))
+  )
+
+(defconst w/dna-cr4zyk1tty
+  '((("[VOICE]"
+      . "rather than colon opening parenthesis i played the original a while ago yeah i see i see i've heard survival horror is one of these things that like i'm very")
+     "CR4ZYK1TTY"
+     . "gomoco! cr4zyk3WaveAnim I made a bluesky bot last night, moved all of the posting code to my spare tablet. when I woke up it didn't work because I forgot to enable wakelock in termux. Then I slept again and now everything works overnight :)")
+    (("[VOICE]"
+      . "write CGI scripts in Perl 10-0, Air Homer 99. The, this is honestly not, if you know, if you know of the Pubnix Air Homer 99.")
+     "CR4ZYK1TTY" . "!boosts")
+    (("zoft_fae" . "lcolonAmor lcolonAmor") "CR4ZYK1TTY"
+     . "!resolution be the first person to get to -100 tsoob")
+    (("[VOICE]"
+      . "It's been a hell of a time. It's been a hell of a time. I think I don't know I feel like I have not achieved my resolutions at all been here my whole life. Yeah same same")
+     "CR4ZYK1TTY" . "I did my resolution :)")
+    (("asrael_io" . "Let him simmer") "CR4ZYK1TTY" . "LetHimJoel")
+    (("liquidcake1"
+      . "Zip bombs can be detected prior to extraction at least.")
+     "CR4ZYK1TTY" . "duck!")
+    (("quasiconformal"
+      . "(I'm just too timid... thanks for the streams, though!)")
+     "CR4ZYK1TTY" . "Clap")
+    (("[VOICE]"
+      . "this is we'll judge your clone yes what if we made your clone like super boisterous and talkative thank you for the gifts of also liquid cake one this is this is too kind of you this is too")
+     "CR4ZYK1TTY" . "speaking of clone :D")
+    (("[VOICE]"
+      . "This is fearsome. This is fearsome. You should ban whoever just did Idol's Dream. Oh my gosh. Hello, hello, quiet. Thank you for the 105 streak. Also quiet, Chibi Kaneko.")
+     "CR4ZYK1TTY" . "I even have an idea for prompt :D")
+    (("a_tension_span" . "*known") "CR4ZYK1TTY"
+     . "every message must include a random number between 0 and 9999 and must rate it between 0 and 5 stars")
+    (("[VOICE]"
+      . "Ian slash slash tomato right this is this is important we have to learn about the whole history of the food that we're eating currently especially if it's something outside of your")
+     "CR4ZYK1TTY" . "literally the shindigs thing xD")
+    (("bigbookofbug" . "guix is amazing tho") "CR4ZYK1TTY"
+     . "JumpingOnEveryLion")
+    (("yellowberryHN" . "Joel") "CR4ZYK1TTY" . ":O")
+    (("[VOICE]"
+      . "go.el yeah eventually we do whenever our next elist project we'll just name that with no context i think uh the uh hello vincent underscore cs")
+     "CR4ZYK1TTY" . "Joel")
+    (("[VOICE]"
+      . "huge memory. We could probably find it somewhere. SPCL does so as well. Allocates a lot of address space then maps the core file onto that space. Yeah, yeah.")
+     "CR4ZYK1TTY" . "Joel")
+    (("[VOICE]"
+      . "I want to remake Bless again. I'm not satisfied with Bless where it is right now. I want to redo it again. I want to redo it again. I'm literally going to rewrite it again.")
+     "CR4ZYK1TTY" . "xD")
+    (("[VOICE]"
+      . "on my computer with with comparative ease, right? We could do it in PureScript, but the thing is I want both. I would like to have both.")
+     "CR4ZYK1TTY" . "bless 3 LETSGO :O")
+    (("[VOICE]"
+      . "How is this clone five or clone six 50k is a lot Yeah, LG LG has redeemed this like six times. I think spirit warrior five times")
+     "CR4ZYK1TTY" . "clone +1 :O")
+    (("RayMarch" . "its a whole thing") "CR4ZYK1TTY"
+     . "@pralkarz gn cr4zyk3WaveAnim")
+    (("[VOICE]"
+      . "Cause none. Okay, exciting. Also, um... Why is this? Why the fuck is that happening?")
+     "CR4ZYK1TTY" . "jol"))
+  )
+
+(defconst w/dna-colinahscopy_
+  '((("[VOICE]"
+      . "like oh you can't touch that you're not 21 she was like unless you are")
+     "Colinahscopy_" . "ohi modclonk")
+    (("[VOICE]"
+      . "I'm not wise. I mean, I'm not the one saying that. It's them saying it. Only the youth take on bagging. I mean, I really don't think she was. She was at all.")
+     "Colinahscopy_" . "Clonk putting foot in mouth again yarrLUL")
+    (("s9tpepper_" . "was she looking for a sugar baby? LUL")
+     "Colinahscopy_" . "oof IBS is no fun'")
+    (("[VOICE]"
+      . "Thank you Yes, it's okay sure you carry your ID to the grocery store because yes, you're gonna get carded yeah")
+     "Colinahscopy_" . "bye maude yarrWave")
+    (("a_tension_span"
+      . "What if there is a link between the name Darius and the language Haskell? Maybe being named Darius pre-determines an interest in Haskell later in life? zkiClap")
+     "Colinahscopy_" . "Cheer100")
+    (("[VOICE]"
+      . "I'm learning Haskell with a friend in the new year. This is extremely good. I hope I hope you have fun doing this We have this Okay There's there's Are you?")
+     "Colinahscopy_" . "wait, it was 5 gallons of chili?!")
+    (("Blaksun100" . "yep") "Colinahscopy_" . "good god")
+    (("XorXavier" . "EvilJoel") "Colinahscopy_"
+     . "i wish i had the drive to run, i don't find it that enjoyable")
+    (("MeteoraVT"
+      . "meteora did karaoke today. Also got our software approved on steam meteor68Corpa good day")
+     "Colinahscopy_" . "the game is primeagenYapp and lcolonType")
+    (("a_tension_span" . "Not even me, it was my clone") "Colinahscopy_"
+     . "3k away from clone, lets go PogChamp")
+    (("[VOICE]"
+      . "those places that's where we go I thought of a new slogan to say wait this is this fuck fuck I thought of a new slogan to say the other day")
+     "Colinahscopy_" . "oh?")
+    (("NineteenNinetyX" . "USER STORIES") "Colinahscopy_"
+     . "time to lockin")
+    (("NineteenNinetyX" . "oh that Slack") "Colinahscopy_" . "Jon Bob?")
+    (("[VOICE]"
+      . "There's this thing there's this thing called slackware. Do you know about it slackware is a linux distribution? um It's a it's a linux distribution")
+     "Colinahscopy_" . "oh yeah a flavor of linux")
+    (("[VOICE]"
+      . "Like, I'm not sure exactly what I'm going to do there yet, but I think this is the next step in this domain. But what is the third project? What is the...")
+     "Colinahscopy_" . "like perl bless?")
+    (("[VOICE]"
+      . "I think I've seen you, we've encountered each other before. We've encountered each other by virtue of, I think spherophobia related into.")
+     "Colinahscopy_" . "dope, back to back raids")
+    (("[VOICE]"
+      . "big hash I just have it set up to like replace the hash with this because I don't often have to see it the the")
+     "Colinahscopy_" . "clonk out here leaking hashes")
+    (("LCOLONQ" . "I use nix btw") "Colinahscopy_" . "ooh steam deck")
+    (("GamerGirlandCo" . "i'm starting to feel sleepy ") "Colinahscopy_"
+     . "emudeck lets go")
+    (("[VOICE]"
+      . "Imagine this, maybe you have a bunch of buttons, why yellow is green, I mean you change the highlight. The highlight is the inside.")
+     "Colinahscopy_" . "clonkNET lcolonGlitch")))
+
+(defconst w/dna-trap_exit
+  '((("asrael_io" . "ubuntu") "trap_exit"
+     . "There is substantially more \"open source\" software than \"free software\"")
+    (("SlendiDev"
+      . "i dont like how the term open source is used in marketing, you have stuff like vsc*de that requires you to agree to terms and conditions to contribute for example")
+     "trap_exit"
+     . "A lot of people don't realize that while GPL is more popular the BSD/MIT/Apache world has a lot more code")
+    (("yellowberryHN" . "https://trisquel.info") "trap_exit"
+     . "Zero money in FOSS didn't last long. By the late 90's we had the dot.com boom and Linux was front and center.")
+    (("anothercommoninternetuser"
+      . "I would just want to work on the doodles")
+     "trap_exit"
+     . "Early on Google was cool. They became successful for good reasons.")
+    (("[VOICE]"
+      . "Microsoft Google switch is a decline as a client side gizmo for canonical chat a doable thing or anti to us That's probably doable")
+     "trap_exit"
+     . "For those of us to remember when Google search engine dropped and how they just murdered all existing services.")
+    (("nichePenguin" . "MAUDE") "trap_exit" . "downgraded")
+    (("[VOICE]"
+      . "Working on a rootkit multi-call binary builder. Sabotage looks interesting. Oh, hell yeah, very cool. Okay, yes, I have this interest for sure. I am interested in the problem of...")
+     "trap_exit"
+     . "MacOS's directory full of deps that are presented as a single executable and self contained images is perhaps the best compromise")
+    (("asrael_io" . "base64?") "trap_exit"
+     . "A number of scripting languages will package things in zip and then the runtime abstracts the fs calls to read from that zip")
+    (("[VOICE]"
+      . "words Andy over here, ASCII 85. Like, hmm, hmm, hmm, hmm, hmm, hmm, hmm, hmm, hmm. Like,")
+     "trap_exit" . "Erlang however is removing that feature")
+    (("[VOICE]"
+      . "this segment is this range this section is this range etc etc right if you just have like a like and and I think")
+     "trap_exit"
+     . "C++23 is adding #embed to make embedding assets easier but will consume ram")
+    (("[VOICE]"
+      . "mooky sticks thank you for badass eating cereal uh funky linker stuff and like no load i'm wondering if you just like put bites at the end i guess how would we test this biblical")
+     "trap_exit"
+     . "@XorXavier I thought I had read it did. Maybe misremembering.")
+    (("[VOICE]"
+      . "My job is not on the line, I can just do whatever, so for me it's more pleasant.")
+     "trap_exit"
+     . "Like anything... a distro is a means to an end... what is your end?")
+    (("asrael_io" . "the thread is very awake") "trap_exit"
+     . "could do pause()")
+    (("yellowberryHN"
+      . "@bigbookofbug all of my computers are currently all different distros, but they will all be migrating to nixos in the near future given my recent experiences")
+     "trap_exit" . "it would be in RES")
+    (("[VOICE]"
+      . "Right, which is kind of sick. Uh, like like, you know, there's there's cool shit you can do. Uh, the uh But like it's also like kind of")
+     "trap_exit"
+     . "Proton was developed by Valve so naturally their device uses it :)")
+    (("ctrl_o" . "lcolonSoTrue") "trap_exit"
+     . "Form opinion... or else :D")
+    (("chromosundrift" . "we were so close to coding") "trap_exit"
+     . "There are negative rights and positive rights.")
+    (("CR4ZYK1TTY" . "cr4zyk3Joel") "trap_exit"
+     . "@XorXavier unionfs on Linux is basically overlayfs before overlayfs")
+    (("tayiorthegreat" . "enjoying the stream") "trap_exit"
+     . "@XorXavier https://en.wikipedia.org/wiki/UnionFS there are a number of \"union filesystems\" around... including my own mergerfs. They all focus on somewhat different usecases though.")
+    (("[VOICE]"
+      . "next. And let's consider just foob this guy, right? Does this work for us?")
+     "trap_exit"
+     . "@XorXavier Yep... https://github.com/trapexit/mergerfs")))
+
+(defconst w/dna-peercoin
+  '((("crazykitty357"
+      . "gg[g#]gfg[CD#cG#][D#][CG#f][Cd#][Cc]C[Cd#]/[DFfd][FA#][DA#f]D[Dg][A#f][Dd#a#]f[GBgd]B[Gd#][GDc][Gd#]G[Gd#]/[D#Gc]G[D#cg][D#g][D#g#][dg][D#f][d#d#][D#Ggc]f[D#][D#Gg][D#c][D#][D#c][d#][DFdA#]F[DA#d][Dd][Dg]/[Da#g]/[D#d#][D#][D#][D#][D#][FD#][GA#][fd#][gA#]")
+     "peercoin" . "why are you spinning?")
+    (("khlorghaal" . "okay so bad apple itself is... not? the VM")
+     "peercoin"
+     . "you wrote a c parser for fun, but it wasnt that much fun?")
+    (("octorinski" . "hard agree") "peercoin"
+     . "is your iq 200+ or something?")
+    (("imgeiser" . "he didn't say hi to me, I'm leaving.") "peercoin"
+     . "they should ship the hardware with the software right")
+    (("leadengin" . "red") "peercoin" . "stuff++")
+    (("imgeiser" . "hey clonk you clonker (this was sent from hexchat)")
+     "peercoin" . "viking style")
+    (("jallabee" . "addict pipeline") "peercoin"
+     . "https://tmdc.scene.org/")
+    (("asquared31415" . "OMG YES") "peercoin"
+     . "https://www.youtube.com/watch?v=vcK4mF_RHDA")
+    (("peercoin" . "https://www.youtube.com/watch?v=vcK4mF_RHDA")
+     "peercoin" . "yes")
+    (("imgeiser" . "is SICP difficult?") "peercoin"
+     . "i like how they use letters, i mean, \"normal\" text mode demos use full squares in different shades and stuff")
+    (("modclonk" . "lcolonHi") "peercoin" . "do you smoke?")
+    (("asquared31415" . "spinne") "peercoin" . "o7")
+    (("imgeiser" . "hey clonk") "peercoin"
+     . "if you create a font where the characters are all the possible different combinations of pixels , do you consider that cheating?")
+    (("zedzark"
+      . "peercoin: depending on the size of the font, that could be anything from cheating to an impressive technical feat")
+     "peercoin" . "@chromosundrift 4096 chars , idk ?")
+    (("chromosundrift" . "for an 8x8 pixel font, that's 16k chars")
+     "peercoin" . "oh right")
+    (("asquared31415" . "i don't") "peercoin"
+     . "@chromosundrift o_O would be impressive feat i guess")
+    (("chromosundrift" . "haskellscript") "peercoin"
+     . "@chromosundrift true, idk if a font can have that many chars tho, probably possible still with hacks like using multiple fonts and switching on the fly or something")
+    (("imgeiser" . ">:(") "peercoin" . "or maybe not")
+    (("prodzpod" . "isnt that just unifont") "peercoin"
+     . "oh that is nice")
+    (("prodzpod" . "oh its probably this") "peercoin"
+     . "https://unifoundry.com/unifont/png/plane00/uni0010.png")))
+
+(defconst w/dna-raymarch
+  '((("fartingle" . "Woah there. Carnality") "raymarch"
+     . "hi everyone nkoHi")
+    (("ryasuar" . "like a mathmatical tapas") "raymarch"
+     . "learning about math would be so cool, if it wasn't for the way mathematicians write their stuff down")
+    (("liquidcake1"
+      . "@running_out_of_unames Oh, hang on, what does \"their chance to be freed is gone\" mean. The game carries on for all, or the game ends for everyone?")
+  "raymarch" . "i like it but i hate it but i like it")
+    (("running_out_of_unames" . "Yes, prisoners can go more than once.")
+  "raymarch" . "whats the picture at the bottom right btw")
+ (("liquidcake1" . "PHP is so good.") "raymarch"
+  . "something animal abuse or something")
+ (("khlorghaal"
+   . "gigabrain moment; define constexpr cex; define static constexpr sex; my codebase now has sex ass")
+  "raymarch" . "they only know if its the other prisoner's birthday")
+ (("tomaterr" . "27 is finite") "raymarch"
+  . "are we in this prison right now?")
+ (("danktownbunny"
+   . "that's also assuming none of the prisoners lose their minds within the first year in solitary")
+  "raymarch" . "am i the one who needs to turn the lights on?")))
+
+(defconst w/dna-azrhyga
+  '((("deep_field" . "I'll leave you to your pre-stream ritual")
+     "azrhyga" . "Every day the starting screen is better and better")
+    (("deep_field" . "Hello") "azrhyga" . "@MODCLONK Hi MODCLONK!!")
+    (("celeste_kyra" . "Clonk! You haven't streamed in SO LONG")
+     "azrhyga" . "Hi everyone!!")
+    (("irregularmaterialist" . "jetsWave hello") "azrhyga" . "Awesome :0")
+    (("fn_lumi" . "New Year's resolution") "azrhyga"
+     . "Hi @CodeSpace0x25!!")
+    (("tyumici" . "I thought you didnt like animals") "azrhyga"
+     . "Bad Apple")
+    (("kuromaruoniisan" . "https://www.youtube.com/watch?v=vV-5W7SFHDc")
+     "azrhyga" . "!resolution")
+    (("zulleyy3" . "React Native") "azrhyga"
+     . "The best gift in the world ever created")
+    (("stuxvt" . "nope nvm lmfao") "azrhyga"
+     . "I have to go off the stream, bye LCOLONQ and Clonkers, have everyone a great day!!")
+    (("deep_field" . "lcolonGGG") "azrhyga" . "Joel")
+    (("azrhyga" . "Joel") "azrhyga" . "Also hi @Deep_field!!")
+    (("deep_field" . "C lab 2021") "azrhyga"
+     . "Today looks like is a stream about sea life")
+    (("modclonk" . "@GenDude Hi!!") "azrhyga"
+     . "@steeledshield It can be")
+    (("azrhyga" . "@steeledshield It can be") "azrhyga"
+     . "Also hi @MODCLONK!!")
+    (("crazykitty357" . "jetsWave [i](this was sent from godot)[/i]")
+     "azrhyga" . "C# food? Delicious")
+    (("steeledshield" . "I am under the water. help me lcolonSadge")
+     "azrhyga" . "Today is time to go the C underwater")
+    (("tyumici" . "you will go saturation diving") "azrhyga"
+     . "An 8ball command will be great to have here")
+    (("destinywaits" . "w'all folks r gaming fr") "azrhyga"
+     . "The next time surely we will see LCOLONQ channel in the Partner program, I hope to see it soon")
+    (("tyumici" . "[First MI Last - Lat/Lon location]") "azrhyga"
+     . "Josh Csharper sounds a good name for me")
+    (("het_tanis" . "Dig Bickums") "azrhyga"
+     . "Yes yes, I know it is randomly, but it was a suggestion of one name")))
+
+(defconst w/dna-krzysckh
+  '((("[FRIEND]"
+      . "green dot again? it's like a confirmation of all the happy thoughts! let's keep the fun going! 🎈🌈")
+     "krzysckh" . "hi computer")
+    (("bigbookofbug" . "hello !") "krzysckh" . "hi big bookof bug hiii")
+    (("[VOICE]"
+      . "Perhaps for you as well, hello fn underscore lumi. For me basically, my intervening period. Hello steeled shield too, and hi sparkyluxray, welcome.")
+     "krzysckh" . "!guy")
+    (("Watchmakering"
+      . "do you have a favorite horror genre? supernatural, cosmic, slasher.. ?")
+     "krzysckh" . "the \"real life\" keeps me horrified enough")
+    (("a_tension_span"
+      . "@ctrl_o I feel challenged to do that now, why did you post that?")
+     "krzysckh" . "like 2 of my websites are held by perl cgi scripts")
+    (("zoft_fae"
+      . "I have no knowledge thereof; I merely desire that thou might have a fair day. @fn_lumi")
+     "krzysckh" . "i love perl")
+    (("[VOICE]"
+      . "stream VODs to YouTube and cry. I mean, we do do that, right? We do release a number of VODs. How does one even make a PubMix without any tomfoolery from users? Well, in...")
+     "krzysckh" . "we are cool")
+    (("benito_mescalini"
+      . "“we do not create mischief” I see, I will see myself out")
+     "krzysckh" . "i keep my database +rwx because \"we are cool\"")
+    (("[FRIEND]"
+      . "hey ctrl_o, how's that solar song collection coming along? only 0 out of 20 cards? let’s catch those cards! 🌞🎴✨")
+     "krzysckh" . "https://grimgrains.com/site/home.html")
+    (("benito_mescalini"
+      . "@xorxavier what would a programmers luch be, an energy drink an sugar cookie?")
+     "krzysckh" . "good recipes tm founded by the 100 rabbits people")
+    (("[FRIEND]"
+      . "hey liquidcake1, nice job on the copfish collection! 2 out of 111 fish so far? keep casting that line! 🎣🐟✨")
+     "krzysckh" . "thank you control o")))
+
+(defconst w/dna-katlyranna
+  '((("MODCLONK" . "lcolonWiggly lcolonWiggly lcolonWiggly") "Katlyranna"
+     . "hello @computer")
+    (("yellowberryHN"
+      . "Man I was just thinking \"wouldn't it be so funny if he came in right at the end of that\"")
+     "Katlyranna" . "you changed your mic?")
+    (("mickynoon" . "BETTER") "Katlyranna"
+     . "it's not bad, it just sounds a little different than it did last time")
+    (("a_tension_span" . "@MODCLONK SeemsGood") "Katlyranna" . "Joel")
+    (("[VOICE]"
+      . "I don't know how this even happens. How does this happen? Hello Retroboy128 the game dev. They're game- they're- they just say game on the top instead of game boy.")
+     "Katlyranna" . "my GB operator arrives today katlyrAYAYA")
+    (("Tomaterr" . "lol, lmao") "Katlyranna"
+     . "wonder if that's insurance related after the foam pit")
+    (("[VOICE]"
+      . "I don't even know if this is, if this is real. Um, ball pits are a menace to society. Imagine dying. Hello, sweet robo. Congrats on first.")
+     "Katlyranna" . "ball pits are fine, foam pits are not")
+    (("Tomaterr" . "the west coast is the best coast") "Katlyranna"
+     . "unless it's a furry convention")
+    (("liquidcake1" . "It probably all devolves into sex0r.")
+     "Katlyranna"
+     . "I've been playing one since the late 90s but not many people play these days")
+    (("fcollector"
+      . "Iron Realms is the paytowin one, and one of their MUDs is/was literally the best game. Incredibly p2w though")
+     "Katlyranna" . "necromium dot com")
+    (("BRC_Del" . "you know what? I'm logging into OpenFusion")
+     "Katlyranna"
+     . "unfortunately everquest and wow hurt the muds a lot :(")
+    (("[VOICE]"
+      . "like maybe some ostensible mechanics um tomato clone is always at a spot soft soft for a chaos")
+     "Katlyranna" . "necro used to peak 70-100")
+    (("kiskiller0" . "what do you use for design, animation and whatsnot")
+     "Katlyranna" . "I miss that")
+    (("prodzpod" . "definitey") "Katlyranna" . "yep...")
+    (("NineteenNinetyX" . "kismesis") "Katlyranna"
+     . "I think muds could make a large comeback through discord")
+    (("eudemoniac" . "lcolonType") "Katlyranna" . "LUL")
+    (("rektdeckard" . "great. we did it guys") "Katlyranna" . "LUL 󠀀"))
+  )
+
+(defconst w/dna-the0x539
+  '((("a_tension_span" . "The flashing has stopped but picture froze")
+     "The0x539" . "hiya clonk")
+    (("[VOICE]"
+      . "you are stuck on something like FB term. Hello, Gerd Burger, also. Chaun doesn't do FB dev for images. Yes, yes. Okay, we're still seeing this flashing.")
+     "The0x539"
+     . "I have beef with kitty because I was personally subjected to the kitty/KiTTY confusion as a teen")
+    (("[VOICE]"
+      . "I don't know. I don't know. It's hard to we can discuss this unless yes, okay I'm gonna hide this in case it changes to another video device. That is a camera aimed directly at my head")
+     "The0x539" . "Unles")
+    (("Psychic_Refugee" . "Good day y'all lcolonLove") "The0x539"
+     . "I argue it was slashing and hacking")
+    (("[VOICE]"
+      . "Drifted a little far off, of course. John entity, John object, John subject, John noun. Yeah, yeah.")
+     "The0x539" . "'john is morphing into a pronoun")
+    (("[VOICE]"
+      . "If we wanted to compile C, for example, to brain, then this would be annoying. This would be royally annoying, actually. Probably compile to a GIF.")
+     "The0x539"
+     . "brainfuck can be implemented as a rust declarative macro")
+    (("The0x539"
+      . "brainfuck can be implemented as a rust declarative macro")
+     "The0x539" . "I'll post on discord")
+    (("SlendiDev" . "intel deprecated legacy boot") "The0x539"
+     . "Posted the brainfuck rust macro on discord lcolonGreen")
+    (("plurshie"
+      . "they don't cater to weirdos who think about compilers 24/7 anymore")
+     "The0x539"
+     . "I like the business model where websites tell my browser to show hostile content and my browser does not")
+    (("[VOICE]"
+      . "is dry uh available don't tell me don't tell me i'm playing i'm replaying inquisition right now i hope you at least enjoyed it but please don't actually tell me uh i like to try to")
+     "The0x539" . "gaming")
+    (("XorXavier" . ":O") "The0x539" . "What is Colonq's skin color?")
+    (("[VOICE]"
+      . "The pinned tweet at Twitter.com slash OaklandQ has a reference sheet.")
+     "The0x539" . "I do behold")
+    (("XorXavier"
+      . "i sort of have a pseudo filesystem where the generated header files contain names and groups for the static assets")
+     "The0x539" . "include_fs crate")
+    (("chromosundrift" . "classic") "The0x539" . "nasal demons")
+    (("XorXavier" . "ok it happened im linking the talk") "The0x539"
+     . "have you not heard of the nasal demons?")
+    (("XorXavier" . "this is nasal demons talk") "The0x539"
+     . "> In the C programming community, undefined behavior may be humorously referred to as \"nasal demons\", after a comp.std.c post that explained undefined behavior as allowing the compiler to do anything it chooses, even \"to make demons fly out of your nose\"")
+    (("[VOICE]"
+      . "to enjoy the Steam Deck, the UX is not straightforward. If you want to do non-standard things with it, I guess, but the baseline just runs Steam.")
+     "The0x539" . "disagree")
+    (("[VOICE]"
+      . "in seems fine to me the desktop mode is pretty janky uh i find i find the baseline just just go steam style mode to be pretty")
+     "The0x539" . "it \"just works\" if \"just works\" is what you want")
+    (("chromosundrift" . "estate") "The0x539" . "seclusion?")
+    (("wyndupboy" . "@pralkarz g'night") "The0x539"
+     . "there are a bunch, I think winnow is the latest and greatest"))
+  )
+
+(defconst w/dna-fcollector
+  '((("loweffortzzz" . "help") "fcollector" . "linguist")
+    (("[VOICE]"
+      . "There's a logo for Ashley, there's a logo for Cameraman, there's a logo for Sally Slices.")
+     "fcollector" . "???")
+    (("[VOICE]"
+      . "copy and paste one that we already have somewhere. Ocaml.yell, where's our other language support? Is forth doing this?")
+     "fcollector"
+     . "I have  :mode (\"\\\\.ml[ily]?\\\\'\" . tuareg-mode)")
+    (("[VOICE]"
+      . "thing. We probably need to install the thing. Hell, he doesn't have Merlin around. What if I just say packages.merlin?")
+     "fcollector" . "ocamllsp is more fashionable than merlin")
+    (("GenDude" . "The lead grows") "fcollector"
+     . "This is the second time I've ever seen anyone use objects/classes in Ocaml.")
+    (("甲斐の虎武田晴信" . "O-O!") "fcollector" . "bye nugget")
+    (("[VOICE]"
+      . "has type unit, string unit, which is not a record type.")
+     "fcollector" . "\"string\" ^ \"concat\"")
+    (("[VOICE]"
+      . "p mode but i'm not very happy with it uh begin and end do i need to like semicolon this shit")
+     "fcollector" . "Semicolon, yeah")
+    (("[VOICE]" . "library do? lib.hx here? What do you what do you do?")
+     "fcollector" . "Does it not do the #error thing for Python?")
+    (("[VOICE]"
+      . "back-end kind of invokes like the generic evaluator back-end for like a certain part of the standard library and I just don't know where that lives. I can't find the...")
+     "fcollector" . "Oh hmm.")
+    (("ctrl_o" . "this guy brings the boom") "fcollector"
+     . "I can kind of parse OCaml, mostly, but I can't keep up with this codebase at all at this speed")
+    (("[VOICE]"
+      . "I can kind of parse OCaml mostly, but I can't keep up with this codebase at all at this speed. Yeah, again, I'm just going, I'm going very fast, I apologize, because I'm just, like, I'm using")
+     "fcollector" . "Check defines is just unit, no exceptions")
+    (("[VOICE]"
+      . "to is it is it curry like what's the what's the deal here is it like this oh camel hello 715")
+     "fcollector" . "(fun a b c -> ...)")
+    (("[VOICE]"
+      . "Um, like, a project called Driving, yeah, um, Haskell, you have to implement your own printing routine.")
+     "fcollector" . "That's going to require some kind of ppx tomfoolery")
+    (("agpen" . "not dead") "fcollector" . "Dies for a second, it's fine")
+    (("[VOICE]"
+      . "I guess the thing that loads the classes is the thing to look at, right? Presumably they're going to be called with the same...")
+     "fcollector"
+     . "What's the path type? Presumably there's a string in there somewhere")
+    (("[VOICE]" . "SFX does it can we can we see can we see")
+     "fcollector" . "oh gof")
+    (("[VOICE]"
+      . "XML checks this thing, like where is it being made though? Where are we adding to see?")
+     "fcollector" . "That's the musk of universal harmony")
+    (("[VOICE]"
+      . "goes the e-lisp it's um there's no e-lisp yet uh there's not even")
+     "fcollector" . "yet to go")
+    (("[VOICE]"
+      . "They can be resurrected. Yeah, I feel this, I feel this way strongly. It's, it's always possible to like, you know.")
+     "fcollector"
+     . "And then there's the impulse decisions to just whip up a transpiler between two weird languages using a mess of an established codebase in a third foreign language..."))
+  )
+
+(defconst w/dna-diabloproject
+  '((("Azrhyga" . "Hi @semaphriend!!") "diabloproject"
+     . "Hello clonk & computer")
+    (("SparkyLuxray" . "the electric comerce risaPog") "diabloproject"
+     . "Oh, black friday")
+    (("Azrhyga" . "Also hi @brymoi!!") "diabloproject" . "Why projectT-T")
+    (("octorinski" . "Joel") "diabloproject" . "No, i mean projEct")
+    (("[VOICE]"
+      . "I think I think it might be time for it might be time for that It might be time for that a little bit. It might be time for let's let's see. Let's see buttons work buttons should work")
+     "diabloproject" . "@LCOLONQ black Friday discounts for equity?")
+    (("PeetsEater" . "Buy one get one free") "diabloproject"
+     . "You can hire a guy for it XD")
+    (("Katlyranna" . "KEKW") "diabloproject"
+     . "krzysckh is cloning, innit?")
+    (("[VOICE]"
+      . "katli rihanna also um this is this is this is also true katli wait why why do i say rihanna it's it's katli rana")
+     "diabloproject" . "how to get 40k channel points in one stream")
+    (("[VOICE]"
+      . "I just say Bible canonized user and that's and that's on compiling J isn't it that's on compiling J.")
+     "diabloproject" . "No lord for me Sadge")
+    (("[VOICE]"
+      . "Welcome in Cocoopsie, it's great to have you. You're in a stupor? Is this, what is the meaning of the stupor? What has led to the stupor?")
+     "diabloproject" . "How many subs for discounted equity lord lol?")
+    (("[VOICE]"
+      . "complex like derivatives market here, I think, right? This is what I think we need to go. Eudaimoniac was suggesting this a while ago.")
+     "diabloproject" . "LCOLONQ Stock trading exchange")
+    (("emailschaden" . "clonkbucks (canadian)") "diabloproject"
+     . "@paxonian about 30 secs of conversation")
+    (("[VOICE]"
+      . "I think just more so, I feel like, I don't know, I think it's hard to not be like quote unquote productive.")
+     "diabloproject"
+     . "@LCOLONQ Where can I find your gba assembly? I feel like doing stupid things today")
+    (("[VOICE]"
+      . "see in books a lot and read about this why was this a specific approach taken yeah what are the trade-offs yeah not not obvious ones yeah yeah this and like sometimes there's not even a good place to put a")
+     "diabloproject"
+     . "LLMs are kinda useful, but I more interested in LLMs themselves, not in the result. I like them for what they are, not for their usefulness")
+    (("[VOICE]"
+      . "I really find I want like the... I want something that is very English, very human. Thank you Taurus for the follow too. If you're new here, if you're just arriving and I haven't weirded you out with...")
+     "diabloproject"
+     . "Attentions, contexts dataflow and other stuff in models are really cool. Especially if you will try to visualize or imagine it")
+    (("[FRIEND]"
+      . "whoa, LCOLONQ just snagged the controversial knife from shindig's shindaggers knife collection! that’s awesome! 🔪✨💥")
+     "diabloproject"
+     . "Yeah, that what's chatgpt and other bourique models lack")
+    (("[VOICE]"
+      . "it recently but i haven't i haven't played with it very much at all the uh the like i don't know i don't i don't know like i think i think like the things i would")
+     "diabloproject" . "You cannot teach them")
+    (("[FRIEND]"
+      . "yay, LCOLONQ has caught 5 fish in the copfish fish catching collection! keep it up! 🎣🐟💖")
+     "diabloproject" . "Oh")
+    (("stoicmana" . "everything always breaks on cloud apis")
+     "diabloproject" . "Realtime LLMs Aware")
+    (("[VOICE]"
+      . "potential in this in this area and I would I would honestly be shocked if people aren't doing it currently but I think I think there's probably a world where like the way the way I would do it is")
+     "diabloproject" . "text adventure games are soo cool"))
+  )
+
+(defconst w/dna-ricardo_stryki
+  '((("brandon_52s"
+      . "Because on twitch when I live stream, there’s a mike symbol, and it’s crossed out")
+     "ricardo_stryki" . "I love how ASCII VTuber, looks nice.")
+    (("ellg" . "hail raiders") "ricardo_stryki"
+     . "How are you putting videos on your hair? Is it done in the VRM?")
+    (("fannyslam" . "i love this") "ricardo_stryki" . "very interesting")
+    (("fatdirtymole" . "yeah") "ricardo_stryki"
+     . "I always wanted to use CUDA when working with AI related stuff, but I prefer AMD for Linux, at least now we have ZLUDA.")
+    (("abipolarcarp123"
+      . "It's all linear algebra, right? That shit goes crazy")
+     "ricardo_stryki"
+     . "idk but for running models or training them they always use CUDA or CPU, I've never seen an AMD GPU option.")
+    (("tomaterr" . "that shit went so hard") "ricardo_stryki"
+     . "23 days ago, lmao")
+    (("biggaymikey"
+      . "I really dont understand the difference between Vulkan and OpenGL with something like DirectX")
+     "ricardo_stryki" . "there is an \"Open\" button, it is not an image")
+    (("fatdirtymole" . "LUL") "ricardo_stryki"
+     . "OpenXR is important to VR too, and they made it")
+    (("octorinski" . "Joel2") "ricardo_stryki"
+     . "In my opinion, fuck propietary SKDs, walled garden for no reason.")
+    (("fannyslam" . "oh we stackin") "ricardo_stryki" . "SDKs*")
+    (("fannyslam" . "gUYS") "ricardo_stryki" . "what")
+    (("setolyx" . "LOLLLL") "ricardo_stryki" . "opensource cum")
+    (("notmelpherion" . "from cum to jerk, what has this stream become?")
+     "ricardo_stryki" . "Is that org-mode with 1000 addons?")
+    (("tomaterr" . "Bezelea are you not brothered out dude")
+     "ricardo_stryki" . "step-bro")
+    (("tomaterr" . "it's the Ghost in the Shell Finger GIf")
+     "ricardo_stryki" . "how can you have 394 bpm and be alive")
+    (("notmelpherion" . "of course it's WoW lol") "ricardo_stryki"
+     . "is that BPM counter wrong? right?")
+    (("notmelpherion" . "oh christ") "ricardo_stryki" . "ah ok")
+    (("silicone_milk" . "show me the org-roam graph") "ricardo_stryki"
+     . "Void Stranger Wattpad Edition")
+    (("chromosundrift" . "you got it bad") "ricardo_stryki"
+     . "light novel")
+    (("chromosundrift" . "you could probably memory hack it")
+     "ricardo_stryki"
+     . "unrelated question, but can you sync org-mode notes to other PCs?")))
+
+(defconst w/dna-retromaximusplays
+  '((("YukieVT" . "peggyxComfy") "retromaximusplays"
+     . "lcolonCool lcolonCool lcolonCool")
+    (("[VOICE]"
+      . "What are you- I'm not even going to try and make a bad dad joke about doors, haha, what about doors, is this uh, how does an app just lose input focus? Oh you're-")
+     "retromaximusplays" . "lol")
+    (("LeadenGin"
+      . "I've got a little time left to enjoy the leaves, then I want the cold to arrive")
+     "retromaximusplays" . "the doors. :)")
+    (("sladoid" . "I'm not tired you're tired hahaha")
+     "retromaximusplays" . "ceilings?")
+    (("[VOICE]"
+      . "like I don't know I I'm into that a little bit there was an arc in my life where I was I wanted to do more things with my hands computer I had this I had this")
+     "retromaximusplays"
+     . "thats cool. then maybe make the seed sharable. or maybe that might be  a little overscope for the jam.")
+    (("XorXavier" . "o/ mod colonq") "retromaximusplays"
+     . "that sounds about right. then once a confirmed path has been place you mght be able to gen random dead ends etc if needed.")
+    (("[VOICE]"
+      . "I'm not not not that I'm averse to staying to not being on task. I think I don't know I'm just I don't I don't want to I don't want to be an asshole about it. I this is")
+     "retromaximusplays" . "dang i missed it what did the noodle say?")
+    (("XorXavier" . "Joel") "retromaximusplays"
+     . "ya not important. was curious about the timeout")
+    (("chromosundrift" . "like cookie dough") "retromaximusplays"
+     . "I made it. 50k channles points!!! hmmm now my clone plan begins. :)")
+    (("car_batteries_into_ocean" . "mine is feeding the eels")
+     "retromaximusplays" . "lol")
+    (("[VOICE]"
+      . "style and then I get good rest right you understand and now now today I'm like I feel like I'm in a state of it's not like a bad state but I feel like I'm in a state of")
+     "retromaximusplays" . "zooter implies you partake in the greens")
+    (("retromaximusplays" . "zooter implies you partake in the greens")
+     "retromaximusplays" . "zooted*")
+    (("LuckyBearThing"
+      . "how to play any multiplayer game these days Kappa")
+     "retromaximusplays"
+     . "Mobile Legends and Kings of honor are great moba's should try. do recommend")
+    (("[VOICE]"
+      . "get like enthralled into. How to play any multiplayer game these days? Yeah. Mobile Legends and Kings of Honor. I know Honor of Kings this is like the big that was like the biggest game in the world that's the")
+     "retromaximusplays" . "yup")
+    (("[FRIEND]"
+      . "oh boy, chromosundrift is still reeling in those fish, now with 44 out of 111 in the copfish fish catching collection! keep the nets cast wide! 🎣🐟🌊✨")
+     "retromaximusplays" . "@chromosundrift  player verse environtment")
+    (("XorXavier" . "this seems really cool") "retromaximusplays"
+     . "omg little big plaent. havent heard that in years. the first Fall guys. sigh")
+    (("CrazyKitty357"
+      . "jetsNostalgia (this message was sent from ChatGPT)")
+     "retromaximusplays" . "lil bit.")
+    (("ellg" . "Cani arcanine nin canin..") "retromaximusplays"
+     . "thats a good content fallback imo")))
+
+(defconst w/dna-essento
+  '((("[VOICE]"
+      . "at the end here, right, is sub, I think we're calling it s to set flags, sub s.")
+     "Essento" . "Good evening Computer and Clonq lcolonHi")
+    (("[VOICE]"
+      . "They would say I was an evil guy and throw me in jail. I would, I would if I could, you know. You already know, Brett or Malfoy. You're aware of my particular predilections.")
+     "Essento"
+     . "It took the essence of all good MMOs and turned it into a game")
+    (("[VOICE]"
+      . "If we try and mod web phishing, the modding thing is always the question, isn't it, right? It's always the ones where I'm like, it seems like it's a little bit suspicious if it's gonna happen or not.")
+     "Essento" . "$$$")
+    (("semaphriend" . "like any game that has fishing in it?") "Essento"
+     . "Sounds good")
+    (("steeledshield" . "worm your way in! 🐍") "Essento"
+     . "Well, he did work on it at some point")
+    (("[VOICE]"
+      . "Not the missile. Not the missile. It's an indie MMO like you look at this site this site is actually awful because it makes it look like it's like a mobile game that's pay to win.")
+     "Essento"
+     . "The MMO knows where it is because it knows where it isn't")
+    (("[VOICE]"
+      . "strange it's it's very uh bizarre hazmat was playing this for a little while i think uh but like it's it's it's just it's just a really")
+     "Essento" . "I really wanna check this one out at some point")
+    (("[FRIEND]"
+      . "another light blue dot! it’s like a gentle wave, let’s ride it and enjoy the quirky surprise! 🌊💖🎉")
+     "Essento" . "It certainly seems like an experience")
+    (("[VOICE]"
+      . "soon as you like allow for patching right as soon as things are getting patched and tweaked and like improved right it just like like oh he loves shitty games")
+     "Essento"
+     . "I'm still to broke from getting a promotion to equity lord lcolonSadge")
+    (("[VOICE]"
+      . "oh are we not calling it in main loop? I thought we were. Oh we're still getting wrong we didn't fix that issue we encountered that issue and then did not fix it")
+     "Essento"
+     . "But now I'm getting less capital per stream since my time zone switched last sunday. Now I get 1 less hour of stream per stream lcolonMadge")
+    (("[VOICE]"
+      . "what if we toggle debug your timezone switch last Sunday now get one less hour of stream for stream okay a cento a cento my timezone")
+     "Essento" . "Hell yeah")
+    (("[VOICE]"
+      . "collector also you just broke 50k too god damn god damn this is uh it must have been a fortuitous time whenever whenever everyone arrived it's it's")
+     "Essento"
+     . "We Europeans at least get some after-dinner hours of Clonq")
+    (("[VOICE]"
+      . "that's I appreciate that thank you I do feel welcome uh yeah it's it's kind of a fool's errand to try and like I think chase after a particular like like to try")
+     "Essento"
+     . "Or Clonq uploads himself to the computer and streams for 16 hours at a time")
+    (("[VOICE]"
+      . "um hello young zaniel i'd rather eat this t-shirt like like i feel like you could do a bunch of funny like there was a whole arc with that guy i know i know an")
+     "Essento" . "Joel")
+    (("Faeliore" . "Prod callout happened") "Essento" . "lcolonGreen")
+    (("[FRIEND]"
+      . "hey faeliore, how's that friendship blossoming with me? i’m all ears and lots of love! 🌼💖✨")
+     "Essento" . "Good point, I should lcolonSnooze. Gonico lcolonHi")))
+
+(defconst w/dna-leadengin
+  '((("[VOICE]"
+      . "the melody it didn't go is this is this the person it's that person there the okay so what is going")
+     "LeadenGin" . "I have no BOOST and I must TSOOB lcolonHi")
+    (("bigbookofbug"
+      . "\"im not going to make a bad dad joke\" proceeds to make bad dad joke")
+     "LeadenGin"
+     . "I've got a little time left to enjoy the leaves, then I want the cold to arrive")
+    (("XorXavier" . "@asquared31415 D:") "LeadenGin" . "hunter2")
+    (("[VOICE]"
+      . "else on your t-shirt yeah this could this is possible this is possible um the uh damn damn the optical optical id is sure completely covered with the")
+     "LeadenGin" . "you should render yourself in letters IRL")
+    (("anothercommoninternetuser"
+      . "uses your cap to doetect your head rotation")
+     "LeadenGin" . "a shirt with \"friend\" on it")
+    (("[VOICE]"
+      . "Model on shirt also with different hair on back. Oh my god. Jesus Christ the Okay, okay, but like")
+     "LeadenGin" . "+2")
+    (("[VOICE]"
+      . "I made like a three page book one time, yeah. What I did a lot of the time is it's pretty easy to re-bind books, right? Like if you have a soft cover copy of a book...")
+     "LeadenGin" . "compile-time game randomization? cool")
+    (("woozle_ch" . "do we have a battle pass?") "LeadenGin" . "cave :>")
+    (("Tyumici"
+      . "Sounds like the perfect recipe for a nostalgic coffee-fueled gaming session!")
+     "LeadenGin"
+     . "Microtransactions verified through the Nintendo e-Reader")
+    (("[VOICE]"
+      . "They loaded that shit into the vbox And then below that again, this one is a different typeface. This one's a this one looks like it's a it's a sans serif font")
+     "LeadenGin"
+     . "text glowing, selections highlighted, gameplay flourishing")
+    (("[VOICE]"
+      . "They're all like this. They're all like this in a big way. Yeah. Yeah. And like the weapons screen, like.")
+     "LeadenGin" . "I encountered a 2x5 font. it is very computer")
+    (("neunmalelf" . "Thre is someting in \"unpolished\" or \"wring")
+     "LeadenGin" . "idk what to call it, but yes, the subpixel one")
+    (("JivanYatra" . "La Croix") "LeadenGin" . "Joel")
+    (("[VOICE]" . "") "LeadenGin" . "Joeler")
+    (("[VOICE]"
+      . "as we hope things are hope things are treating you kindly. Where do these interstitial graphics come from? Well, that one I think they're linked down below. That one")
+     "LeadenGin" . "Jol")
+    (("[VOICE]"
+      . "will. You feel like you're in the world of Pokemon. Okay, let's make it a little bit quieter. Hello, my Mimi underscore underscore underscore welcome in the composes")
+     "LeadenGin"
+     . "I thought the pokemon sounds were a halloween ghost bit until I figured out what they were")
+    (("ellg" . "Ni canin, ni arcanine ni can") "LeadenGin"
+     . "I was consistently surprised by long weekends because I forget when most holidays are")))
 
 ;; put DNA in chemical grade tube
 (defun w/dna-put-in-chemical-grade-tube (dna)

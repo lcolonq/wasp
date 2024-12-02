@@ -92,13 +92,11 @@ Optionally append EXT to the path."
 
 (defun w/slurp (path)
   "Read PATH and return a string."
-  (with-temp-buffer
-    (insert-file-contents-literally path)
-    (buffer-string)))
+  (f-read-text path 'utf-8))
 
 (defun w/spit (path data)
   "Write DATA to PATH."
-  (write-region data nil path))
+  (f-write-text data 'utf-8 path))
 
 (defun w/daily-log-path ()
   "Return the path to today's daily log file."

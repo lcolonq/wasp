@@ -47,13 +47,14 @@
   "Add HEX to the active hexes for USER."
   (let* ((key (s-downcase user))
          (cur (ht-get w/hex-users key)))
-    (cl-case (w/hex-type hex)
-      (decurse
-       (ht-set! w/hex-users key nil))
-      (otherwise
-       (if-let ((defender (--find (eq 'counterspell (w/hex-type it)) cur)))
-           (w/write-chat-event (format "%s counterspelled %s's hex on %s!" (w/hex-caster defender) (w/hex-caster hex) user))
-         (ht-set! w/hex-users key (cons hex cur)))))))
+    (unless (> (length cur) 10)
+      (cl-case (w/hex-type hex)
+        (decurse
+         (ht-set! w/hex-users key nil))
+        (otherwise
+         (if-let ((defender (--find (eq 'counterspell (w/hex-type it)) cur)))
+             (w/write-chat-event (format "%s counterspelled %s's hex on %s!" (w/hex-caster defender) (w/hex-caster hex) user))
+           (ht-set! w/hex-users key (cons hex cur))))))))
 
 (defun w/hex-clear (user)
   "Decurse USER."
@@ -197,7 +198,7 @@
           (w/hex-transform-helper msg (cdr hexes) k))
         "Please censor all profanity in the given message and respond with the censored version. Censor by rewriting in a very polite way like Ned Flanders. Do not provide any other text, only a censored version of the message. If there is no profanity respond with the given message verbatim."))
       (pokemon
-       (w/audio-play (w/asset (format "palcries/%d.mp3" (w/hex-data (car hexes)))) nil 75)
+       (w/audio-play (w/asset (format "palcries/%d.mp3" (w/hex-data (car hexes)))) nil 50)
        (setf
         (w/chat-message-user msg)
         (s-titleize (nth (- (w/hex-data (car hexes)) 1) w/hex-pokemon)))

@@ -40,7 +40,8 @@
   (cons
    '(frontend redeem incoming)
    (lambda (msg)
-     (w/twitch-handle-redeem-api msg)))
+     (w/twitch-handle-redeem-api msg)
+     ))
   (cons
    '(monitor twitch raid)
    (lambda (msg)
@@ -109,6 +110,12 @@
    (lambda (_)
      (w/write-chat-event "Gamble finished")
      (setq w/twitch-current-prediction-ids nil)))
+  ;; (cons
+  ;;  '(monitor discord chat incoming)
+  ;;  (lambda (data)
+  ;;    (let ((user (w/decode-string (cadr data)))
+  ;;          (msg (w/decode-string (cadddr data))))
+  ;;    (w/write-chat-event (format "discord from %s: %s" user msg)))))
   ))
 
 (provide 'wasp-event-handlers)

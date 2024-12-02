@@ -176,6 +176,15 @@
    (lambda (_)
      (w/write-chat-event "eighteyedsixwingedseraph is lurking"))))
 
+(defconst w/fake-chatter-profile-quasiconformal
+  (w/make-fake-chatter-profile
+   :username "quasiconformal"
+   :color "#FFFFFF"
+   :compute-likeliness #'w/fake-chatter-standard-likeliness
+   :send-message
+   (lambda (_)
+     (w/write-chat-event "quasiconformal is lurking"))))
+
 (defconst w/fake-chatter-profile-nefrayu
   (w/make-fake-chatter-profile
    :username "Nefrayu"
