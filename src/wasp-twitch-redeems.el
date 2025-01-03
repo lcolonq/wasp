@@ -19,6 +19,8 @@
 (require 'muzak)
 (require 'muzak-wasp)
 
+(defvar w/twitch-redeem-sound-last 0)
+
 (setf
  w/twitch-redeems
  (list
@@ -210,12 +212,15 @@
    (lambda (user _)
      (w/write-chat-event (format "%s changed the theme: rosa" user))
      (w/change-theme 'ef-rosa)))
-  ;; (list
-  ;;  "gamer" 500
-  ;;  (lambda (user _)
-  ;;    (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
-  ;;    (soundboard//play-clip "videogame.ogg")
-  ;;    (w/obs-activate-toggle 'thug-life)))
+  (list
+   "gamer" 500
+   (lambda (user _)
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user "'s Gamer Sacrifice summoned an entity"))
+         (soundboard//play-clip "videogame.ogg")
+         (w/obs-activate-toggle 'thug-life)
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "arrow" 500
    (lambda (user msg)
@@ -226,11 +231,14 @@
    (lambda (user _)
      (w/write-chat-event (format "%s does not condone any form of copyright infringement whatsoever." user))
      (w/obs-activate-toggle 'activate-nixos)))
-  ;; (list
-  ;;  "super idol" 500
-  ;;  (lambda (_ _)
-  ;;    (w/write-chat-event "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
-  ;;    (soundboard//play-clip "superidololdshortstyle.ogg")))
+  (list
+   "super idol" 500
+   (lambda (_ _)
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
+         (soundboard//play-clip "superidololdshortstyle.ogg")
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "hex" 500
    (lambda (user inp)

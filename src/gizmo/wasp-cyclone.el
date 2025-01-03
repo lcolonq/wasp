@@ -6,12 +6,14 @@
 (require 'wasp-friend)
 (require 'wasp-heartrate)
 (require 'wasp-chatsummary)
+(require 'wasp-alert-message)
 
 (defconst w/gizmo-buffer-names
   (list
    w/friend-buffer
    w/heartrate-buffer
-   w/chatsummary-buffer))
+   w/chatsummary-buffer
+   w/alert-message-buffer))
 
 (defvar w/gizmo-windows (list))
 

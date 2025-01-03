@@ -218,6 +218,9 @@
    "siersciuch_albinos"
    "thelordzeeee"
    "trueround"
+   "quantumbohm"
+   "sodacoma"
+   "hibakod"
    )))
 
 (setq

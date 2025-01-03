@@ -10,7 +10,7 @@
 (require 'request)
 (require 'wasp-sensitive)
 
-(defcustom w/aoc-leaderboard-url "https://adventofcode.com/2023/leaderboard/private/view/3307583.json"
+(defcustom w/aoc-leaderboard-url "https://adventofcode.com/2024/leaderboard/private/view/3307583.json"
   "URL for Advent of Code API."
   :type '(string)
   :group 'wasp)
@@ -28,11 +28,18 @@
     ("fn_lumi" . "lumi")
     ("leadengin" . "leaden")
     ("vasher_1025" . "vash3r")
-    ("andrewdtr" . "drawthatredstone")))
+    ("andrewdtr" . "drawthatredstone")
+    ("badcop_" . "cgsdev0")
+    ("asrael_io" . "asrael")
+    ("colinahscopy_" . "@colinahscopy")
+    ("ctrl_o" . "control-o")
+    ("whimsicallymade" . "aecepoglu")
+    ("chromosundrift" . "christo")
+    ))
 
 (defun w/aoc-max-stars ()
   "Return the maximum Advent of Code stars for today."
-  (* 2 (string-to-number (format-time-string "%d" (current-time)))))
+  (min 50 (* 2 (string-to-number (format-time-string "%d" (current-time))))))
 
 (defun w/aoc-lookup-stars (user)
   "Retrieve the Advent of Code stars for USER."

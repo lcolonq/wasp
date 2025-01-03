@@ -27,6 +27,7 @@
     "Elkhunk"
     "late late late late show with llll colonq"
     "move right and exit"
+    "Al Capone"
     ))
 
 (defconst w/pronunciation-part1 ;; the LLLL

@@ -16,6 +16,8 @@
   (cons "i can't" (lambda () (cl-incf w/chat-icant-count) (w/chat-update-header-line)))
   (cons "sorry" (lambda () (cl-incf w/chat-apology-count) (w/chat-update-header-line)))
   (cons "apologies" (lambda () (cl-incf w/chat-apology-count) (w/chat-update-header-line)))
+  (cons "john" (lambda () (cl-incf w/chat-john-count) (w/chat-update-header-line)))
+  (cons "ostensibly" (lambda () (cl-incf w/chat-ostensibly-count) (w/chat-update-header-line)))
   (cons "lua"
         (lambda ()
           (progn (w/obs-toggle-brazil)

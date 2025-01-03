@@ -485,12 +485,15 @@ CALLBACK will be passed the winner when the poll concludes."
 
 (defun w/twitch-badges-sigil (badges)
   "Return the sigil character BADGES for the current user."
-  (let ((equity (alist-get :equity w/user-current))
-        (name (s-downcase w/user-current-name)))
+  (let* ((equity (alist-get :equity w/user-current))
+         (name (s-downcase w/user-current-name))
+         (max-stars (w/aoc-max-stars))
+         (aoc-stars (w/aoc-lookup-stars name)))
     (apply
      #'s-concat
      (-non-nil
       (list
+       (when (and aoc-stars (>= aoc-stars max-stars)) "🎄")
        (when (-contains? badges "broadcaster/1") "(it me)")
        (when (-contains? badges "moderator/1") "⚔")
        (when (-contains? badges "artist-badge/1") "🖌️")
@@ -514,7 +517,7 @@ CALLBACK will be passed the winner when the poll concludes."
           ((s-equals? name "tyumici") "🤌")
           ;; clone is lord ((s-equals? name "liquidcake1") "")
           ;; ((s-equals? name "loufbread_") "")
-          ;; ((s-equals? name "yellowberryhn") "")
+          ((s-equals? name "yellowberryhn") "🪴")
           ;; ((s-equals? name "maradyne_") "")
           ;; ((s-equals? name "sampie159") "")
           ;; ((s-equals? name "zamielpayne") "")

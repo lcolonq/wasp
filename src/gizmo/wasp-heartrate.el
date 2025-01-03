@@ -56,7 +56,7 @@
     (setq-local cursor-type nil)
     (let* ((inhibit-read-only t))
       (erase-buffer)
-      (w/write-line (format "%3d bpm" (w/get-heartrate)) 'w/heartrate-big)
+      (w/write-line (format "%3d °C" (w/get-heartrate)) 'w/heartrate-big)
       (w/write (format "arbitrary counter: %s times" w/chat-bpm-count) 'w/heartrate-small))))
 
 (defvar w/heartrate-timer nil)

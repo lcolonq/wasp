@@ -19,6 +19,8 @@
 (defvar w/chat-icant-count 0)
 (defvar w/chat-bpm-count 0)
 (defvar w/chat-apology-count 0)
+(defvar w/chat-john-count 0)
+(defvar w/chat-ostensibly-count 0)
 
 (defvar w/chat-header-line "")
 
@@ -31,7 +33,10 @@
     " | ICANT: " (format "%s" w/chat-icant-count)
     " | +2: " (format "%s" w/chat-plus2-count)
     " | -2: " (format "%s" w/chat-minus2-count)
-    " | apology: " (format "%s" w/chat-apology-count))))
+    " | apology: " (format "%s" w/chat-apology-count)
+    " | John Counter: " (format "%s" w/chat-john-count)
+    " | ostensibly,: " (format "%s" w/chat-ostensibly-count)
+    )))
 
 (define-derived-mode w/chat-overlay-mode special-mode "ClonkHead Stats"
   "Major mode for displaying chatter statistics."
@@ -291,7 +296,7 @@ Optionally, return the buffer NM in chat mode."
       (insert (s-replace-all w/chat-substitutions (w/. text msg)))
       (when (w/. biblicality msg)
         (let* ((wwidth (- (window-total-width (get-buffer-window (current-buffer))) 3))
-               (bible-button-text (format "[biblicality %.2f]" (w/. biblicality msg)))
+               (bible-button-text (format "[medicality %.2f]" (w/. biblicality msg)))
                (msgwidth (line-beginning-position))
                (lines (+ 1 (/ msgwidth wwidth))))
           (insert

@@ -32,6 +32,7 @@
           (format "@%s that is a roguelike :3" user)
         (format "@%s that's not a roguelike" user)))))
   (cons "arch btw" (lambda (_ _) (w/twitch-say "I use nix btw")))
+  (cons "!advent" (lambda (_ _) (w/twitch-say "Join our private leaderboard: 3307583-b61f237c")))
   (cons "!discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
   (cons "discord IRC" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
   (cons "discord irc" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))

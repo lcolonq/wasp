@@ -336,7 +336,7 @@ If K is specified, call it after the response."
 
 (defun w/friend-callout-holiday ()
   "Call to respond to the current holiday."
-  (w/friend-respond "It's currently the LCOLONQ shareholders meeting and you're an executive! Say something about it please!"))
+  (w/friend-respond "It's New Year's Eve! Say something about it please!"))
 
 (defun w/friend-callout-hexamedia ()
   "Call to respond to a random recent chatter's Hexamedia card collection."
@@ -463,7 +463,7 @@ If K is specified, call it after the response."
     (4 (w/friend-callout-shindaggers))
     (5 (w/friend-callout-copfish))
     (6 (w/friend-callout-resolution))
-    (29 (w/friend-callout-holiday))
+    (9 (w/friend-callout-holiday))
     (t (w/friend-set-state 'jumping))))
 
 (defun w/update-friend ()
@@ -523,8 +523,8 @@ If K is specified, call it after the response."
 ;;           "%a\
 ;;     /\\      
 ;;    /\\/\\     
-;;   /    \\    
-;;  /      \\   
+;;   / :3 \\    
+;;  /santa!\\   
 ;; ~~~~~~~~~~
 ;; ~~~~~~~~~~   
 ;;  / %l  %r \\ 
