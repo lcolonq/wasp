@@ -49,15 +49,18 @@
   (cons "heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "Heart" (lambda (_ _) (cl-incf w/chat-bpm-count)))
   (cons "!menu" (lambda (_ _) (w/twitch-say "https://secure.colonq.computer/menu")))
+  (cons "!guy" (lambda (_ _) (w/twitch-say "[🌙] it worked")))
+  (cons "!littleguy" (lambda (_ _) (w/twitch-say "[🌙] it worked")))
   (cons "!irc" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
   (cons "IRC" (lambda (_ _) (w/twitch-say "#cyberspace on IRC at colonq.computer:26697 (over TLS)")))
 
   (cons "!today" (lambda (_ _) (w/twitch-say (s-trim (w/slurp "~/today.txt")))))
   (cons "!schedule" (lambda (_ _) (w/twitch-say "https://twitch.tv/LCOLONQ/schedule")))
   (cons "!bingo" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~prod/toy/bingo/")))
+  (cons "!music" (lambda (_ _) (w/twitch-say "we do not play music because it can be distracting; however you can listen to the official OST at https://vgmusic.fm :3")))
   (cons
    "!music"
-   (lambda (_ _) (w/twitch-say "https://www.youtube.com/playlist?list=PLQ_Vw7ACol3CN58_osDkbeKa14Hk-N-TZ")))
+   (lambda (_ _) (w/twitch-say "alternatively https://www.youtube.com/playlist?list=PLQ_Vw7ACol3CN58_osDkbeKa14Hk-N-TZ")))
   (cons
    "!fish"
    (lambda (_ _)
@@ -80,6 +83,9 @@
   (cons "!ring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!webring" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer")))
   (cons "!animeguide" (lambda (_ _) (w/twitch-say "https://nixos-and-flakes.thiscute.world/introduction")))
+  (cons "!greencircle" (lambda (_ _) (w/twitch-say "https://greencircle.live")))
+  (cons "!circle" (lambda (_ _) (w/twitch-say "https://greencircle.live")))
+  (cons "!doujincircle" (lambda (_ _) (w/twitch-say "https://greencircle.live")))
   (cons "!tsuki" (lambda (_ _) (w/twitch-say "https://forum.tsuki.games")))
   (cons "!sponsor" (lambda (_ _) (w/twitch-say "Like what you see? Don't forget to download GNU Emacs at https://www.gnu.org/software/emacs/?code=LCOLONQ")))
   (cons "!specs" (lambda (_ _) (w/twitch-say "Editor: evil-mode, WM: EXWM, OS: NixOS, hardware: shit laptop")))
@@ -159,7 +165,7 @@
        (if (string-empty-p trimmed)
            (w/write-chat-event "You gotta put what your resolution is.")
          (w/write-chat-event (format "%s RESOLVES: %s" (s-upcase user) trimmed))
-         (setf (alist-get :resolution w/user-current) trimmed)))))
+         (setf (alist-get :resolution2025 w/user-current) trimmed)))))
   ;; (cons "!addbookrec"
   ;;       (lambda (user inp)
   ;;         (let ((trimmed (s-trim (s-replace "!addbookrec" "" inp))))

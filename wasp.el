@@ -44,6 +44,7 @@
 (require 'wasp-8ball)
 (require 'wasp-gcp)
 (require 'wasp-aoc)
+(require 'wasp-resolve)
 (require 'wasp-hexamedia)
 (require 'wasp-copfish)
 (require 'wasp-shindaggers)
@@ -70,6 +71,8 @@
 ;; (defun w/fix-user-database-ok (user)
 ;;   "Fix USER's database entry."
 ;;   (w/user-set user (fig//db2-serialize-old-entry (fig//load-db-old user))))
+
+(setq elisp-flymake-byte-compile-load-path load-path)
 
 (provide 'wasp)
 ;;; wasp.el ends here

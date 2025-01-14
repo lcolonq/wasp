@@ -336,7 +336,7 @@ If K is specified, call it after the response."
 
 (defun w/friend-callout-holiday ()
   "Call to respond to the current holiday."
-  (w/friend-respond "It's New Year's Eve! Say something about it please!"))
+  (w/friend-respond "It's a beautiful day today! Say something about it!"))
 
 (defun w/friend-callout-hexamedia ()
   "Call to respond to a random recent chatter's Hexamedia card collection."

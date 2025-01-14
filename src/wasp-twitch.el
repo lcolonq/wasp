@@ -557,7 +557,7 @@ CALLBACK will be passed the winner when the poll concludes."
          (w/copfish-update-user user)
          (when (s-equals? (s-downcase user) "modclonk")
            (w/obs-activate-toggle 'modclonk))
-
+         (w/resolve-record-user user)
          (w/hex-tick user)
          (w/hex-transform
           user

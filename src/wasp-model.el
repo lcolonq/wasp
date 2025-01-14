@@ -36,7 +36,10 @@
 (defun w/model-reset ()
   "Reset the model palette."
   (interactive)
-  (w/pub '(avatar reset)))
+  (w/pub '(avatar reset))
+  ;; (w/model-region-color "eyes" (color-values "gold"))
+  ;; (w/model-region-word "eyes" "GOLDEN")
+  )
 
 (defun w/model-toggle (toggle)
   "Toggle TOGGLE on model."
