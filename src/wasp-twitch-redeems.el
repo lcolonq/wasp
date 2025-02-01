@@ -90,9 +90,12 @@
   (list
    "forsen" 3
    (lambda (user _)
-     (w/write-chat-event (s-concat user " loudly exclaims forsenE"))
-     (soundboard//play-clip "cave3.ogg" 75)
-     (w/model-toggle "forsen")))
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user " loudly exclaims forsenE"))
+         (soundboard//play-clip "cave3.ogg" 75)
+         (w/model-toggle "forsen")
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "SEASICKNESS GENERATOR" 3
    (lambda (user _)
@@ -165,23 +168,35 @@
   (list
    "feed friend" 10
    (lambda (user inp)
-     (w/write-chat-event (s-concat user " feeds \"friend\" " inp))
-     (w/friend-feed user inp)))
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user " feeds \"friend\" " inp))
+         (w/friend-feed user inp)
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "talk to friend" 10
    (lambda (user inp)
-     (w/write-chat-event (s-concat user " talks to \"friend\": " inp))
-     (w/friend-chat user inp)))
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user " talks to \"friend\": " inp))
+         (w/friend-chat user inp)
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "friend composes song" 10
    (lambda (user inp)
-     (w/write-chat-event (s-concat user " asks \"friend\" to compose a song about: " inp))
-     (w/friend-compose-song inp)))
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user " asks \"friend\" to compose a song about: " inp))
+         (w/friend-compose-song inp)
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "show friend wikipedia page" 10
    (lambda (user inp)
-     (w/write-chat-event (s-concat user " shows \"friend\" a Wikipedia page: " inp))
-     (w/friend-react-wikipedia user inp)))
+     (let ((cur (float-time)))
+       (when (> (- cur w/twitch-redeem-sound-last) 2)
+         (w/write-chat-event (s-concat user " shows \"friend\" a Wikipedia page: " inp))
+         (w/friend-react-wikipedia user inp)
+         (setq w/twitch-redeem-sound-last cur)))))
   (list
    "theme: maris-dark" 50
    (lambda (user _)

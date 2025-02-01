@@ -12,6 +12,14 @@
 (require 'wasp-twitch)
 (require 'wasp-user)
 
+(defun w/model-frame-test ()
+  "Submit a test frame for the new model."
+  (let ((data
+          (seq-mapcat #'byte-to-string (apply #'seq-concatenate 'list (seq-into (caddr (u/load-image-png "/home/llll/mrgreenbig.png")) 'list)) 'string)
+          ;; (seq-mapcat #'byte-to-string (--mapcat (list 0 255 0) (-iota (* 64 64))) 'string)
+          ))
+    (w/pub '(avatar frame) (list (base64-encode-string data t)))))
+
 (defun w/color-value-to-html-code (cval)
   "Convert color value CVAL to an HTML color code."
   (and

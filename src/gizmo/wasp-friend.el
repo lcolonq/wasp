@@ -336,7 +336,7 @@ If K is specified, call it after the response."
 
 (defun w/friend-callout-holiday ()
   "Call to respond to the current holiday."
-  (w/friend-respond "It's a beautiful day today! Say something about it!"))
+  (w/friend-respond "We're restoring a crumbling mansion to it's former glory. Say something about that please!"))
 
 (defun w/friend-callout-hexamedia ()
   "Call to respond to a random recent chatter's Hexamedia card collection."
@@ -414,7 +414,7 @@ If K is specified, call it after the response."
 (defun w/friend-callout-resolution ()
   "Call to respond to a random recent chatter's resolve."
   (when-let*
-      ((users (-filter #'cdr (--map (cons (car it) (alist-get :resolution (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
+      ((users (-filter #'cdr (--map (cons (car it) (alist-get :resolution2025 (w/user-cache-get (car it)))) (-take 10 w/twitch-chat-history))))
        (user (and users (nth (random (length users)) users))))
     (if (s-match (rx (one-or-more digit) (zero-or-more space) "x" (zero-or-more space) (one-or-more digit)) (cdr user))
         (w/friend-respond

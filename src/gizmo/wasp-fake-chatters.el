@@ -10,6 +10,16 @@
  (list
   ;; (w/make-fake-chatter :profile w/fake-chatter-profile-drcolon)
   (w/make-fake-chatter :profile w/fake-chatter-profile-forsen)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-bigwomenbigfun)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-whelpless)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-dansmith87)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-buffybonnet)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-chaotix)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-mountyesfsck)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-candyboxbox)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-goofyluffy69)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-ettelennur)
+  (w/make-fake-chatter :profile w/fake-chatter-profile-deepwhiffer)
 
   (w/make-fake-chatter :profile w/fake-chatter-profile-eighteyedsixwingedseraph)
   (w/make-fake-chatter :profile w/fake-chatter-profile-quasiconformal)

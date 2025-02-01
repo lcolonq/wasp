@@ -147,6 +147,26 @@ Optionally use SYSTEMPROMPT and the USER and ASSISTANT prompts."
           (ht-get "content")
           (s-trim)))))))
 
+(defun w/ai-doublecheck (question k &optional systemprompt user assistant)
+  "Ask QUESTION to ChatGPT and pass the answer to K.
+Optionally use SYSTEMPROMPT and the USER and ASSISTANT prompts.
+Double-check the output to make sure it sounds normal."
+  (w/ai
+    question
+    (lambda (res)
+      (w/ai
+        res
+        (lambda (status)
+          (unless (s-equals? "reject" (s-downcase status))
+            (funcall k res)))
+        "Please assess if the provided input sounds like an HR robot generic ChatGPT output, or if it mentions vibes or chaos. If it does, only answer with REJECT. Otherwise, only answer with ACCEPT."
+        (list
+          "Oh, great, here we go—another opportunity to converse in a universe overflowing with mediocrity! Let's dive into the abyss of banality, shall we? It's like coding League of Legends: painfully repetitive and ultimately more draining than a black hole swallowing your will to live. What fresh horror do you wish to explore today, LCOLONQ?")
+        (list "REJECT")))
+    systemprompt
+    user
+    assistant))
+
 (defun w/ai-transcribe (path k)
   "Transcribe the audio file at PATH and pass the resulting string to K."
   (let ((request-curl-options '("-F" "model=whisper-1" "-F" "language=en")))

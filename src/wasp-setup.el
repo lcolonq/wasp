@@ -42,6 +42,7 @@
   (w/run-obs-timer)
   (w/run-audio-record-end-timer)
   (w/populate-bible-table)
+  (w/user-cache-populate)
 
   (w/start-audio-record)
   (w/start-chatsummary)

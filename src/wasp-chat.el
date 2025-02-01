@@ -66,17 +66,9 @@
   "Face for title."
   :group 'wasp)
 
-(defconst w/chat-overlay-element-display-info
-  '(("fire" "🔥" "red")
-    ("water" "🌊" "blue")
-    ("wind" "🍃️" "green")
-    ("earth" "🪨" "brown")
-    ("lightning" "⚡" "yellow")
-    ("heart" "🩷" "pink")
-    ))
 (defun w/chat-overlay-display-element (e)
   "Return a propertized string representing E."
-  (if-let ((dinfo (alist-get e w/chat-overlay-element-display-info nil nil #'s-equals?)))
+  (if-let ((dinfo (alist-get e w/user-elements nil nil #'s-equals?)))
       (propertize
        (format "%s %s" (car dinfo) e)
        'face (list :foreground (cadr dinfo)))
@@ -265,11 +257,11 @@ Optionally, return the buffer NM in chat mode."
     ("hunter2" . "*******")
     ("*******" . "hunter2")))
 
-(defun w/write-chat-message (msg)
+(defun w/write-chat-message (msg &optional buf)
   "Write MSG to the chat buffer as USER with USERID and COLOR."
   (w/daily-log (format "%s: %s" (w/. user msg) (w/. text msg)))
   (let ((inhibit-read-only t))
-    (with-current-buffer (w/get-chat-buffer)
+    (with-current-buffer (w/get-chat-buffer buf)
       (setq-local cursor-type nil)
       (goto-char (point-max))
       (insert-text-button
