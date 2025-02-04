@@ -21,6 +21,7 @@
 (require 'wasp-bus)
 (require 'wasp-db)
 (require 'wasp-user)
+(require 'wasp-user-stats)
 (require 'wasp-ai)
 (require 'wasp-audio)
 (require 'wasp-model)
@@ -56,6 +57,7 @@
 (require 'wasp-hex)
 (require 'wasp-cyclone)
 (require 'wasp-aoc)
+(require 'wasp-bannerads)
 
 ;; configuration
 (require 'wasp-user-whitelist)
