@@ -231,6 +231,12 @@
       "szenesis"
       "mrteese"
       "ranimusv"
+      "remblanc"
+      "katlyranna"
+      "pwfff"
+      "quackthatsmackyo"
+      "thelinuxdeveloper"
+      "hrrawr"
       )))
 
 (setq

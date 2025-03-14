@@ -18,7 +18,7 @@
 (defvar w/audio-record-process-current nil)
 (defvar w/audio-keep-recording t)
 (defvar w/audio-voice-commands nil)
-(defvar w/last-stream-transcription "")
+(defvar w/last-stream-transcription "we're going down the rabbit hole")
 
 (defun w/tts (msg)
   "Use TTS to say MSG."
@@ -44,7 +44,9 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
 (defun w/stop-all-audio ()
   "Stop all audio by killing mpv processes."
   (interactive)
-  (start-process "pkill" nil "pkill" "mpv"))
+  (setq w/audio-muzak-queue nil)
+  (start-process "pkill" nil "pkill" "mpv")
+  (start-process "pkill" nil "pkill" "muzak"))
 
 (defun w/recorded-chatter-name? (user)
   "Return non-nil if we've recorded USER's name."
@@ -147,6 +149,47 @@ USER it's your birthday today."
   (interactive)
   (setq w/audio-keep-recording nil)
   (w/audio-record-end))
+
+(defconst w/audio-muzak-path "/home/llll/src/muzak-rs/target/release/muzak")
+(defvar w/audio-muzak-now-playing nil)
+(defvar w/audio-muzak-queue nil)
+
+(defun w/audio-muzak (user song)
+  "Play SONG by USER using muzak-rs courtesy The0x539."
+  (setq w/audio-muzak-now-playing (cons user song))
+  (w/pub '(avatar overlay muzak) (list (w/encode-string user)))
+  (let ((proc
+          (make-process
+            :name "wasp-muzak"
+            :connection-type '(pipe . pty)
+            :buffer " *wasp-muzak-log*"
+            :command (list w/audio-muzak-path "play")
+            :sentinel 
+            (lambda (_ _)
+              (w/pub '(avatar overlay muzak clear) (list))
+              (setq w/audio-muzak-now-playing nil)))))
+    (process-send-string proc song)
+    (process-send-eof proc)))
+
+(defun w/audio-muzak-enqueue (user song)
+  "Enqueue a play for SONG by USER."
+  (setq w/audio-muzak-queue (-concat w/audio-muzak-queue (list (cons user song)))))
+
+(defun w/audio-muzak-update ()
+  "Keep playing songs from the queue if they exist."
+  (unless w/audio-muzak-now-playing
+    (when-let* ((entry (pop w/audio-muzak-queue)))
+      (w/audio-muzak (car entry) (cdr entry)))))
+(defvar w/audio-muzak-timer nil)
+(defun w/run-audio-muzak-timer ()
+  "Run the muzak timer."
+  (when w/audio-muzak-timer
+    (cancel-timer w/audio-muzak-timer))
+  (w/audio-muzak-update)
+  (setq
+   w/audio-muzak-timer
+   (run-with-timer 1 nil #'w/run-audio-muzak-timer)))
+(w/run-audio-muzak-timer)
 
 (provide 'wasp-audio)
 ;;; wasp-audio.el ends here

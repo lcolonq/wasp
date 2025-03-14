@@ -89,6 +89,11 @@ Optionally, change text to MSG."
   "Toggle the debate topic."
   (w/pub '(monitor obs toggle) (list "Main" "Debate Topic")))
 
+(defun w/obs-toggle-spatiotemporal-clarity ()
+  "Toggle the shader clarity effect."
+  (w/model-toggle "shaderclarity")
+  (w/pub '(monitor obs toggle) (list "Main" "Mic")))
+
 (w/defstruct
  w/obs-toggle
  toggle
@@ -103,17 +108,19 @@ Optionally, change text to MSG."
 
 (defvar w/obs-toggles
   (list
-   (cons 'modclonk (w/make-obs-toggle :toggle #'w/obs-toggle-modclonk :reset 11))
-   (cons 'live-reaction (w/make-obs-toggle :toggle #'w/obs-toggle-live-reaction :reset 17))
-   (cons 'live-friend-reaction (w/make-obs-toggle :toggle #'w/obs-toggle-live-friend-reaction :reset 17))
-   (cons 'thug-life (w/make-obs-toggle :toggle #'w/obs-toggle-thug-life :reset 17))
-   (cons 'intj-stare (w/make-obs-toggle :toggle #'w/obs-toggle-intj-stare :reset 17))
-   (cons 'critical-hit (w/make-obs-toggle :toggle #'w/obs-toggle-critical-hit :reset 3))
-   (cons 'clickbait (w/make-obs-toggle :toggle #'w/obs-toggle-clickbait :reset 31))
-   (cons 'chase-dreams (w/make-obs-toggle :toggle #'w/obs-toggle-chase-dreams :reset 31))
-   (cons 'total-clarity (w/make-obs-toggle :toggle #'w/obs-toggle-total-clarity :reset 10))
-   (cons 'activate-nixos (w/make-obs-toggle :toggle #'w/obs-toggle-activate-nixos :reset 31))
-   (cons 'pharaohs-curse (w/make-obs-toggle :toggle (lambda () (w/model-toggle "sand")) :reset 20))))
+    (cons 'modclonk (w/make-obs-toggle :toggle #'w/obs-toggle-modclonk :reset 11))
+    (cons 'live-reaction (w/make-obs-toggle :toggle #'w/obs-toggle-live-reaction :reset 17))
+    (cons 'live-friend-reaction (w/make-obs-toggle :toggle #'w/obs-toggle-live-friend-reaction :reset 17))
+    (cons 'thug-life (w/make-obs-toggle :toggle #'w/obs-toggle-thug-life :reset 17))
+    (cons 'intj-stare (w/make-obs-toggle :toggle #'w/obs-toggle-intj-stare :reset 17))
+    (cons 'critical-hit (w/make-obs-toggle :toggle #'w/obs-toggle-critical-hit :reset 3))
+    (cons 'clickbait (w/make-obs-toggle :toggle #'w/obs-toggle-clickbait :reset 31))
+    (cons 'chase-dreams (w/make-obs-toggle :toggle #'w/obs-toggle-chase-dreams :reset 31))
+    (cons 'total-clarity (w/make-obs-toggle :toggle #'w/obs-toggle-total-clarity :reset 10))
+    (cons 'activate-nixos (w/make-obs-toggle :toggle #'w/obs-toggle-activate-nixos :reset 31))
+    (cons 'pharaohs-curse (w/make-obs-toggle :toggle (lambda () (w/model-toggle "sand")) :reset 20))
+    (cons 'spatiotemporal-clarity (w/make-obs-toggle :toggle #'w/obs-toggle-spatiotemporal-clarity :reset 7))
+    ))
 
 (defun w/obs-activate-toggle (tnm &rest args)
   "Pass ARGS to the callback for toggle symbol TNM and start its timer."

@@ -289,8 +289,16 @@ Optionally, return the buffer NM in chat mode."
       (when (w/. biblicality msg)
         (let* ((wwidth (- (window-total-width (get-buffer-window (current-buffer))) 3))
                (bible-button-text (format "[biblicality %.2f]" (w/. biblicality msg)))
+               ;; (bible-button-text (format "[pollicality %.2f]" (w/. biblicality msg)))
                (msgwidth (line-beginning-position))
                (lines (+ 1 (/ msgwidth wwidth))))
+
+          (w/pub '(avatar overlay chat)
+            (list
+              (w/encode-string (w/. text msg))
+              (format "%s" (w/unix-time))
+              (format "%s" (or (w/. biblicality msg) 0.0))))
+
           (insert
            (propertize
             " " 'display

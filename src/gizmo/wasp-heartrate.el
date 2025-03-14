@@ -14,9 +14,18 @@
   (let ((res (shell-command-to-string "uptime")))
     (string-to-number (s-trim (car (s-split "," (cadr (s-split "load average:" res))))))))
 
+(defun w/get-disk-usage (disk)
+  "Get the current usage percent for DISK"
+  (let ((res (shell-command-to-string (format "df %s" disk))))
+    (string-to-number (s-chop-suffix "%" (nth 4 (s-split " " (cadr (s-lines res)) t))))))
+
 (defun w/get-heartrate ()
   "Get the streamer's heart rate."
   (* 100 (w/get-load)))
+
+(defun w/get-blood-pressure ()
+  "Get the streamer's blood pressure."
+  (format "%s/%s" (w/get-disk-usage "/") (w/get-disk-usage "/home")))
 
 (defface w/heartrate-big
   '((t
@@ -57,6 +66,7 @@
     (let* ((inhibit-read-only t))
       (erase-buffer)
       (w/write-line (format "%3d bpm" (w/get-heartrate)) 'w/heartrate-big)
+      (w/write-line (format "blood pressure: %s" (w/get-blood-pressure)) 'w/heartrate-small)
       (w/write (format "arbitrary counter: %s times" w/chat-bpm-count) 'w/heartrate-small))))
 
 (defvar w/heartrate-timer nil)

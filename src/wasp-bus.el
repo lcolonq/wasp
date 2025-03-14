@@ -80,11 +80,12 @@
 
 (defun w/pub (ev &optional d)
   "Publish the data D to the event EV."
-  (process-send-string
-   w/bus-process
-   (s-concat
-    (format "%S" `(pub ,ev ,@d))
-    "\n")))
+  (let ((s (s-concat (format "%S" `(pub ,ev ,@d)) "\n")))
+    (w/write-log (format "sending: %s" s))
+    (process-send-string
+      w/bus-process
+      s
+      )))
 
 (defun w/sub-all ()
   "Subscribe to all events in `w/bus-event-handlers'."

@@ -47,12 +47,25 @@
   (w/pub '(avatar reset))
   ;; (w/model-region-color "eyes" (color-values "gold"))
   ;; (w/model-region-word "eyes" "GOLDEN")
+  ;; (w/model-region-video "hair" "https://www.twitch.tv/kamijoan")
+  ;; (w/model-region-video "hair" "https://www.twitch.tv/kiwidancing")
+  (w/model-region-video "hair" "https://www.youtube.com/watch?v=FtutLA63Cp8")
   )
 
 (defun w/model-toggle (toggle)
   "Toggle TOGGLE on model."
   (w/model-record-change)
   (w/pub '(avatar toggle) (list toggle)))
+
+(defun w/model-toggle-set (toggle)
+  "Set TOGGLE on model."
+  (w/model-record-change)
+  (w/pub '(avatar toggle set) (list toggle)))
+
+(defun w/model-toggle-unset (toggle)
+  "Unset TOGGLE on model."
+  (w/model-record-change)
+  (w/pub '(avatar toggle unset) (list toggle)))
 
 (defun w/model-background-text (msg)
   "Change the background text of the model to MSG."

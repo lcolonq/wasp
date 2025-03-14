@@ -98,6 +98,10 @@ Optionally append EXT to the path."
   "Write DATA to PATH."
   (f-write-text data 'utf-8 path))
 
+(defun w/unix-time ()
+  "Return the current Unix timestamp."
+  (float-time (current-time)))
+
 (defun w/daily-log-path ()
   "Return the path to today's daily log file."
   (format-time-string "~/logs/log-%Y-%m-%d.txt" (current-time)))
@@ -140,7 +144,7 @@ Optionally append EXT to the path."
 
 (defun w/devour (start end)
   "Delete and return the region from START to END."
-  (w/write-log (format "devouring: %s %s %s" start end (buffer-string)))
+  ;; (w/write-log (format "devouring: %s %s %s" start end (buffer-string)))
   (let ((ret (decode-coding-string (buffer-substring start end) 'utf-8)))
     (delete-region start end)
     ret))

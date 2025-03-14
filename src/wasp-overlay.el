@@ -42,7 +42,7 @@
 (defun w/overlay-decode-shorthand-bml (s k)
   "Decode the shorthand BulletML string S.
 Pass the resulting BulletML XML string to K."
-  (w/write-log s)
+  ;; (w/write-log s)
   (w/prod-get-raw
    (format "/api/yamame?input=%s" (url-encode-url s))
    (lambda (data)

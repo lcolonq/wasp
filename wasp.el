@@ -55,9 +55,9 @@
 (require 'wasp-prod)
 (require 'wasp-youtube)
 (require 'wasp-hex)
-(require 'wasp-cyclone)
-(require 'wasp-aoc)
 (require 'wasp-bannerads)
+(require 'wasp-aoc)
+(require 'wasp-cyclone)
 
 ;; configuration
 (require 'wasp-user-whitelist)

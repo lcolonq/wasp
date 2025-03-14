@@ -169,15 +169,16 @@ Double-check the output to make sure it sounds normal."
 
 (defun w/ai-transcribe (path k)
   "Transcribe the audio file at PATH and pass the resulting string to K."
-  (let ((request-curl-options '("-F" "model=whisper-1" "-F" "language=en")))
-    (w/ai-openai-post-form
-     "/v1/audio/transcriptions"
-     `(("file" . ,(f-canonical path)))
-     (lambda (res)
-       (funcall
-        k
-        (-some-> res
-          (ht-get "text")))))))
+  )
+  ;; (let ((request-curl-options '("-F" "model=whisper-1" "-F" "language=en")))
+  ;;   (w/ai-openai-post-form
+  ;;    "/v1/audio/transcriptions"
+  ;;    `(("file" . ,(f-canonical path)))
+  ;;    (lambda (res)
+  ;;      (funcall
+  ;;       k
+  ;;       (-some-> res
+  ;;         (ht-get "text")))))))
 
 (provide 'wasp-ai)
 ;;; wasp-ai.el ends here

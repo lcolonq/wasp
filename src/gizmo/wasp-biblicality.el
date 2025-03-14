@@ -37,7 +37,8 @@
     (let ((occs (ht-get w/bible-table (downcase (s-trim word))))
           (thresh 0.6))
       (if occs
-          (+ thresh (/ (min occs 1000.0) (/ 1000.0 (- 1.0 thresh))))
+          ;; (+ thresh (/ (min occs 1000.0) (/ 1000.0 (- 1.0 thresh))))
+          (+ thresh (/ (min occs 10.0) (/ 10.0 (- 1.0 thresh))))
         0.0))))
 
 (defun w/bible-word-color (word)

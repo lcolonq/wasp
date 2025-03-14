@@ -214,7 +214,7 @@ K is called when the download is finished."
        (s-concat "/users?login=" user)
        (lambda (data)
          (let ((url (ht-get (aref (ht-get data "data") 0) "profile_image_url")))
-           (w/write-log (format "downloading avatar: %s %s" url path))
+           ;; (w/write-log (format "downloading avatar: %s %s" url path))
            (make-process
             :name "wasp-download-avatar"
             :buffer nil
@@ -536,7 +536,7 @@ CALLBACK will be passed the winner when the poll concludes."
 
 (defun w/twitch-handle-incoming-chat (msg)
   "Write MSG to the chat buffer, processing any commands."
-  (w/write-log (format "%s" msg))
+  ;; (w/write-log (format "%s" msg))
   (let ((user (w/decode-string (car msg))))
     (w/user-bind
      user
@@ -596,7 +596,7 @@ Optionally, only apply redeems with point costs less than LIMIT."
 
 (defun w/twitch-handle-redeem (r)
   "Handle the channel point redeem R."
-  (w/write-log r)
+  ;; (w/write-log r)
   (let* ((user (car r))
          (redeem (cadr r))
          (encoded-input (caddr r))
