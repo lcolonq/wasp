@@ -137,12 +137,12 @@
           (diff (if last (time-subtract cur last) 99999999))
           (d (time-convert diff 'integer)))
     (+
-      (if (> d 300) 0.01 0.1)
+      (if (> d 300) 0.01 0.05)
       (if
         (--any?
           (s-contains? (w/fake-chatter-profile-username (w/fake-chatter-profile st)) (cdr it))
           (-take 20 w/twitch-chat-history))
-        0.8
+        0.1
         0.0))))
 
 (defun w/fake-chatter-elevated-likeliness (st)

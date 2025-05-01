@@ -16,8 +16,6 @@
 (require 'wasp-overlay)
 (require 'wasp-cyclone)
 (require 'wasp-bless)
-(require 'muzak)
-(require 'muzak-wasp)
 
 (defvar w/twitch-redeem-sound-last 0)
 
@@ -30,7 +28,7 @@
         (w/write-chat-event (format "%s threw shade" user))
         (w/db-set "shader" shader)
         (w/model-record-change)
-        (w/pub '(avatar overlay shader) (list (w/encode-string user) (w/encode-string shader)))))
+        (w/overlay-shader user shader)))
     (list
       "lurker check in" 1
       (lambda (user _)
@@ -174,6 +172,10 @@
             (w/bless inp 50))
           (w/write-chat-event (format "%s is not authorized to run code" user)))))
     (list
+      "encoded clarity" 7
+      (lambda (user _)
+        (w/write-chat-event (format "%s allowed the streamer to \"drink\"" user))))
+    (list
       "feed friend" 10
       (lambda (user inp)
         (let ((cur (float-time)))
@@ -187,7 +189,7 @@
         (let ((cur (float-time)))
           (when (> (- cur w/twitch-redeem-sound-last) 2)
             (w/write-chat-event (s-concat user " talks to \"friend\": " inp))
-            (w/friend-chat user inp)
+            (w/friend-respond (format "%s says: %s" user inp))
             (setq w/twitch-redeem-sound-last cur)))))
     (list
       "friend composes song" 10
@@ -301,7 +303,7 @@
         (w/write-chat-event (s-concat user " established spatiotemporal clarity"))
         (w/obs-activate-toggle 'spatiotemporal-clarity)))
     (list
-      "total clarity" 5000
+      "nasal clarity" 5000
       (lambda (user _)
         (w/stop-all-audio)
         (run-with-timer
@@ -314,6 +316,10 @@
       (lambda (user _)
         (w/write-chat-event (s-concat user " was canonized!"))
         (w/bible-canonize user)))
+    (list
+      "cloning facility" 50000
+      (lambda (user _)
+        (w/write-chat-event (format "%s entered the cloning facility" user))))
     ))
 
 (provide 'wasp-twitch-redeems)

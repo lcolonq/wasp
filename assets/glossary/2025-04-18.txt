@@ -1,0 +1,1 @@
+clonk attempts to create a new wiki by drafting a programming list, laying the groundwork for an elaborate knowledge base.

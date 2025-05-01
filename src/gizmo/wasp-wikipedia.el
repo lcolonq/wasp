@@ -29,18 +29,18 @@ Pass the resulting article summary to K."
       :parser #'json-parse-buffer
       :success
       (cl-function
-       (lambda (&key data &allow-other-keys)
+        (lambda (&key data &allow-other-keys)
 
-         (setq w/wikipedia-last-response data)
-         (if-let (((ht-p w/wikipedia-last-response))
-                  (query (ht-get w/wikipedia-last-response "query"))
-                  (prepages (ht-get query "pages"))
-                  (pages (car (ht-values prepages)))
-                  (ext (ht-get pages "extract"))
-                  (dom (with-temp-buffer (insert ext) (libxml-parse-html-region (point-min) (point-max))))
-                  )
-             (funcall k (s-trim (dom-texts dom)))
-           (w/write-chat-event (format "Could not find Wikipedia page: %s" pagename))))))
+          (setq w/wikipedia-last-response data)
+          (if-let* ( ((ht-p w/wikipedia-last-response))
+                     (query (ht-get w/wikipedia-last-response "query"))
+                     (prepages (ht-get query "pages"))
+                     (pages (car (ht-values prepages)))
+                     (ext (ht-get pages "extract"))
+                     (dom (with-temp-buffer (insert ext) (libxml-parse-html-region (point-min) (point-max))))
+                     )
+            (funcall k (s-trim (dom-texts dom)))
+            (w/write-chat-event (format "Could not find Wikipedia page: %s" pagename))))))
     nil))
 
 (defcustom w/wiki-buffer "*wasp-wiki*"
@@ -62,12 +62,12 @@ Pass the resulting article summary to K."
 (defun w/wikipedia-summary (page)
   "Display a summary of PAGE from Wikipedia."
   (w/fetch-wikipedia
-   page
-   (lambda (sum)
-     (with-current-buffer (w/get-wiki-buffer)
-       (let ((inhibit-read-only t))
-         (erase-buffer)
-         (w/write-line sum)))))
+    page
+    (lambda (sum)
+      (with-current-buffer (w/get-wiki-buffer)
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (w/write-line sum)))))
   )
 
 (provide 'wasp-wikipedia)

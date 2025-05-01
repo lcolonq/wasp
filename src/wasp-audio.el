@@ -4,6 +4,8 @@
 
 (require 'wasp-utils)
 (require 'wasp-ai)
+(require 'wasp-db)
+(require 'wasp-overlay)
 
 (defcustom w/audio-play-process "wasp-audio-play"
   "Name of process for playing audio with mpv."
@@ -157,16 +159,16 @@ USER it's your birthday today."
 (defun w/audio-muzak (user song)
   "Play SONG by USER using muzak-rs courtesy The0x539."
   (setq w/audio-muzak-now-playing (cons user song))
-  (w/pub '(avatar overlay muzak) (list (w/encode-string user)))
+  (w/overlay-muzak user song)
   (let ((proc
           (make-process
             :name "wasp-muzak"
             :connection-type '(pipe . pty)
             :buffer " *wasp-muzak-log*"
             :command (list w/audio-muzak-path "play")
-            :sentinel 
+            :sentinel
             (lambda (_ _)
-              (w/pub '(avatar overlay muzak clear) (list))
+              (w/overlay-muzak-clear)
               (setq w/audio-muzak-now-playing nil)))))
     (process-send-string proc song)
     (process-send-eof proc)))
@@ -190,6 +192,25 @@ USER it's your birthday today."
    w/audio-muzak-timer
    (run-with-timer 1 nil #'w/run-audio-muzak-timer)))
 (w/run-audio-muzak-timer)
+
+(defun w/add-song (title notes-string)
+  "Add a song to wasp db.
+TITLE specifies the name of the song.
+NOTES-STRING is a string of notes and rests."
+  (let ((hash (md5 (s-downcase title))))
+    (w/db-hset "songnames" hash title)
+    (w/db-hset "songnotes" hash notes-string)))
+
+(defun w/get-song (song-name k)
+  "Look up notes of SONG-NAME from the database.
+Pass the resulting notes to K."
+  (let ((hash (md5 (s-downcase song-name))))
+    (w/db-hget
+     "songnotes" hash
+     (lambda (notes)
+       (if (and notes (stringp notes) (s-present? notes))
+           (funcall k notes)
+         (funcall k nil))))))
 
 (provide 'wasp-audio)
 ;;; wasp-audio.el ends here

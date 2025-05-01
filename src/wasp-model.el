@@ -12,6 +12,18 @@
 (require 'wasp-twitch)
 (require 'wasp-user)
 
+(defun w/model-get-default-backgrounds (k)
+  "Retrieve the background playlist and pass it to K."
+  (w/db-get "modelbackgrounds"
+    (lambda (res)
+      (funcall k (if (s-present? res) (w/read-sexp res) nil)))))
+
+(defun w/model-add-default-background (url)
+  "Add URL to the background playlist."
+  (w/model-get-default-backgrounds
+    (lambda (cur)
+      (w/db-set "modelbackgrounds" (format "%S" (cons url cur))))))
+
 (defun w/model-frame-test ()
   "Submit a test frame for the new model."
   (let ((data
@@ -45,12 +57,10 @@
   "Reset the model palette."
   (interactive)
   (w/pub '(avatar reset))
-  ;; (w/model-region-color "eyes" (color-values "gold"))
-  ;; (w/model-region-word "eyes" "GOLDEN")
-  ;; (w/model-region-video "hair" "https://www.twitch.tv/kamijoan")
-  ;; (w/model-region-video "hair" "https://www.twitch.tv/kiwidancing")
-  (w/model-region-video "hair" "https://www.youtube.com/watch?v=FtutLA63Cp8")
-  )
+  (w/model-get-default-backgrounds
+    (lambda (bgs)
+      (when bgs
+        (w/model-region-video "hair" (w/pick-random bgs))))))
 
 (defun w/model-toggle (toggle)
   "Toggle TOGGLE on model."

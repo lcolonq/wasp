@@ -197,8 +197,7 @@ Pass the path of the generated PDF to K."
            :sentinel
            (lambda (_ _)
              (w/db-set "newspaper:edition" (number-to-string (1+ edition)))
-             (browse-url (format "https://pub.colonq.computer/~llll/news/%03d.pdf" edition))
-             ))))))))
+             (browse-url (format "https://pub.colonq.computer/~llll/news/%03d.pdf" edition))))))))))
 
 (provide 'wasp-newspaper)
 ;;; wasp-newspaper.el ends here

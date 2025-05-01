@@ -40,7 +40,7 @@
 (defun w/db-parse-value ()
   "Parse a single RESP value from the current buffer."
   ;; (w/write-log (format "parsing: %S" (buffer-string)))
-  (when-let ((c (char-after)))
+  (when-let* ((c (char-after)))
     (delete-char 1)
     (cl-case c
       (?+ (w/db-parse-rest))
@@ -56,7 +56,7 @@
       (?*
        (let ((len (string-to-number (w/db-parse-rest))))
          (--map (w/db-parse-value) (-iota len))))
-      (otherwise (error (format "Unknown Redis sigil: %s" c))))))
+      (otherwise (error (format "Unknown Redis sigil: %s (contents: %S)" c (buffer-string)))))))
 
 (defun w/db-parse-response ()
   "Try to parse a single RESP value from the current process buffer.
@@ -144,9 +144,15 @@ If not, return nil."
   "Get KEYS from Redis and pass the corresponding values to K."
   (w/db-cmd `("MGET" ,@keys) k))
 
+(defun w/db-hset-then (key hkey val k &rest vals)
+  "Set HKEY in hash KEY to VAL in Redis.
+Afterward call K."
+  (w/db-cmd `("HSET" ,key ,hkey ,val ,@vals) k))
+
 (defun w/db-hset (key hkey val &rest vals)
   "Set HKEY in hash KEY to VAL in Redis."
   (w/db-cmd `("HSET" ,key ,hkey ,val ,@vals) (lambda (_) nil)))
+  ;; (w/db-hset-then key hkey val (lambda (_) nil) vals))
 
 (defun w/db-hget (key hkey k)
   "Get HKEY in hash KEY from Redis and pass the corresponding value to K."

@@ -7,6 +7,7 @@
 (require 'evil)
 (require 'wasp-utils)
 (require 'wasp-user)
+(require 'wasp-overlay)
 
 (defcustom w/chat-buffer "*wasp-chat*"
   "Name of buffer used to store the chat log."
@@ -288,16 +289,13 @@ Optionally, return the buffer NM in chat mode."
       (insert (s-replace-all w/chat-substitutions (w/. text msg)))
       (when (w/. biblicality msg)
         (let* ((wwidth (- (window-total-width (get-buffer-window (current-buffer))) 3))
-               (bible-button-text (format "[biblicality %.2f]" (w/. biblicality msg)))
+               ;; (bible-button-text (format "[biblicality %.2f]" (w/. biblicality msg)))
+               (bible-button-text (format "[medicality %.2f]" (w/. biblicality msg)))
                ;; (bible-button-text (format "[pollicality %.2f]" (w/. biblicality msg)))
                (msgwidth (line-beginning-position))
                (lines (+ 1 (/ msgwidth wwidth))))
 
-          (w/pub '(avatar overlay chat)
-            (list
-              (w/encode-string (w/. text msg))
-              (format "%s" (w/unix-time))
-              (format "%s" (or (w/. biblicality msg) 0.0))))
+          (w/overlay-chat msg)
 
           (insert
            (propertize

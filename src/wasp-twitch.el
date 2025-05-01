@@ -14,6 +14,7 @@
 (require 'wasp-copfish)
 (require 'wasp-shindaggers)
 (require 'wasp-hex)
+(require 'wasp-user-stats)
 
 ;; gizmos
 (require 'wasp-biblicality)
@@ -272,7 +273,7 @@ K is called when the download is finished."
   "Run the shoutout timer."
   (when w/twitch-shoutout-timer
     (cancel-timer w/twitch-shoutout-timer))
-  (when-let ((user (pop w/twitch-shoutout-queue)))
+  (when-let* ((user (pop w/twitch-shoutout-queue)))
     (w/twitch-shoutout user))
   (setq
    w/twitch-shoutout-timer
@@ -335,7 +336,7 @@ CALLBACK will be passed the winner when the poll concludes."
     (let ((pos (point-min)))
       (while pos
         (let ((end (next-single-property-change pos 'display)))
-          (when-let ((face (get-text-property pos 'display)))
+          (when-let* ((face (get-text-property pos 'display)))
             (add-text-properties
              pos (or end (point-max))
              `(display
@@ -529,6 +530,9 @@ CALLBACK will be passed the winner when the poll concludes."
           ((s-equals? name "hellpie") "🥧")
           ((s-equals? name "steeledshield") "⛨")
           ((s-equals? name "asrael_io") (propertize "Q" 'display (create-image (w/twitch-emote-path "emotesv2_a9dc5935824a4d6792f4b48f91031fcf"))))
+          ((s-equals? name "nichepenguin") "💚")
+          ;; ((s-equals? name "h_ingles") "")
+          ;; ((s-equals? name "compilingjay") "")
           (t "EL.")))
        (when (-contains? badges "vip/1") "💎")
        (when (-contains? badges "subscriber/0") "💻")

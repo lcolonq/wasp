@@ -123,5 +123,25 @@ Save it back to the database after K returns."
      (print u)
      (w/user-set user u))))
 
+(defun w/user-decrown (user)
+  "Decrement USER's equity status."
+  (w/user-get
+   user
+   (lambda (u)
+     (let ((old (or (alist-get :equity u) 0)))
+       (setf (alist-get :equity u) (- old 1)))
+     (print u)
+     (w/user-set user u))))
+
+(defun w/user-boost-compensation (user)
+  "Give USER a consolation BOOSTPOWER prize."
+  (w/user-get
+   user
+   (lambda (u)
+     (let ((old (or (alist-get :boost u) 0)))
+       (setf (alist-get :boost u) (+ old 20)))
+     (print u)
+     (w/user-set user u))))
+
 (provide 'wasp-user)
 ;;; wasp-user.el ends here

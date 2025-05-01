@@ -2,6 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'dash)
+(require 's)
+(require 'ht)
+(require 'wasp-user)
+
 (defvar w/user-faction-exemptions
   (list
    "LCOLONQ"
@@ -54,7 +59,15 @@
     (w/user-faction-total 'tony)
     (w/user-faction-total 'lever)))
 
+(defun w/user-ensure-name ()
+  "Ensure that the current user has a name assigned."
+  (let ((cur (alist-get :name w/user-current)))
+    (unless cur
+      (setf (alist-get :name w/user-current) w/user-current-name))))
+
 (defun w/user-stats-update ()
+  "Ensure that the current user has all stats."
+  (w/user-ensure-name)
   (w/user-ensure-faction)
   (w/user-ensure-element))
 

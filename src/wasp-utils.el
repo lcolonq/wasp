@@ -170,8 +170,8 @@ If it is C, consume it and return non-nil."
   "Look at the character at point in the current buffer.
 If it is C, consume it.
 Otherwise, throw an error."
-  (if-let ((char (char-after))
-           (cont (= char c)))
+  (if-let* ( (char (char-after))
+             (cont (= char c)))
       (progn
         (delete-char 1)
         t)
@@ -184,7 +184,7 @@ Otherwise, throw an error."
 (defun w/open-link ()
   "Open URL in the primary stream window."
   (interactive)
-  (when-let ((url (thing-at-point 'url t)))
+  (when-let* ((url (thing-at-point 'url t)))
     (select-window (w/get-stream-primary-window))
     (browse-url url)))
 
@@ -192,7 +192,7 @@ Otherwise, throw an error."
   "Prevent focus from reaching popup frame E."
   (not (frame-parameter (cadr e) 'wasp-prevent-focus)))
 
-(defconst w/asset-base-path (f-canonical "./assets/"))
+(defconst w/asset-base-path (f-canonical "/home/llll/src/wasp/assets/"))
 (defun w/asset (path)
   "Return the absolute path given an asset path PATH."
   (f-join w/asset-base-path path))

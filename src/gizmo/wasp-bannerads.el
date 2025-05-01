@@ -49,20 +49,18 @@
     (cancel-timer w/banner-ad-timer))
   (w/render-banner-ad)
   (setq
-   w/banner-ad-timer
-   (run-with-timer 60 nil #'w/run-banner-ad-timer)))
-(w/run-banner-ad-timer)
-
+    w/banner-ad-timer
+    (run-with-timer 60 nil #'w/run-banner-ad-timer)))
 
 (defun w/banner-ad-block ()
   "Toggle adblock."
   (setq w/banner-ad-block t)
   (w/render-banner-ad)
-  (w/model-toggle-set "adblock") 
+  (w/model-toggle-set "adblock")
   (run-with-timer 10 nil
     (lambda ()
       (setq w/banner-ad-block nil)
-      (w/model-toggle-unset "adblock") 
+      (w/model-toggle-unset "adblock")
       (w/render-banner-ad)))
   nil)
 

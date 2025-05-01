@@ -14,12 +14,17 @@
   w/twitch-chat-commands
   (list
     (cons
+      "!getpaid"
+      (lambda (_ _)
+        (w/pub '(monitor lamulana msg))))
+    (cons
       "!commands"
       (lambda (_ _)
         (w/twitch-say
-          (s-concat
-            "Available commands: "
-            (s-join " " (--filter (s-contains? "!" it) (-map #'car w/twitch-chat-commands)))))))
+          (s-truncate 500
+            (s-concat
+              "Available commands: "
+              (s-join " " (--filter (s-contains? "!" it) (-map #'car w/twitch-chat-commands))))))))
     (cons "MRBEAST" (lambda (_ _) (soundboard//play-clip "mrbeast.mp3")))
     (cons "NICECOCK" (lambda (_ _) (soundboard//play-clip "pantsintoashes.mp3")))
     (cons "hexadiCoding" (lambda (_ _) (soundboard//play-clip "developers.ogg")))
@@ -76,6 +81,7 @@
     (cons "!pronunciation" (lambda (_ _) (w/twitch-say (w/pronuciation))))
     ;; (cons "!jetsWave" (lambda (_ _) (fig//twitch-say (fig/slurp "jetsWave.txt"))))
     ;; (cons "!forth" (lambda (_ _) (fig//twitch-say "https://github.com/lcolonq/giving")))
+    (cons "!news" (lambda (_ _) (w/twitch-say "https://news.colonq.computer")))
     (cons "!oub" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
     (cons "!cellar" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~llll/cellar/index.html")))
     (cons "!game" (lambda (_ _) (w/twitch-say "https://oub.colonq.computer")))
@@ -103,6 +109,10 @@
     (cons "!help" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~prod/toy/glossary/")))
     (cons
       "!boost"
+      (lambda (user _)
+        (w/twitch-say (format "boost power for @%s: %s" user (alist-get :boost w/user-current)))))
+    (cons
+      "!tsoob"
       (lambda (user _)
         (w/twitch-say (format "boost power for @%s: %s" user (alist-get :boost w/user-current)))))
     (cons

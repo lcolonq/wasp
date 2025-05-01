@@ -237,6 +237,9 @@
       "quackthatsmackyo"
       "thelinuxdeveloper"
       "hrrawr"
+      "taske666"
+      "rat_not_like_noah"
+      "RealNaesten"
       )))
 
 (setq

@@ -26,16 +26,16 @@
 (defun w/update-chatsummary ()
   "Update the chat summary."
   (w/ai
-   (w/friend-journalism-input)
-   (lambda (d)
-     (when-let* ((d)
-                 (resp (s-trim d)))
-       (with-current-buffer (w/chatsummary-get-buffer)
-         (let ((inhibit-read-only t))
-           (erase-buffer)
-           (w/write-line "Chat summary" 'bold)
-           (w/write-line resp)))))
-   "Given a list of recent YouTube chatter activity, produce a summary of the topics discussed. The summary should be very short, maximum two sentences total. Do not introduce yourself. Simply provide a short summary of the chat. Do not mention specific names of chatters. Keep it succinct. Do not mention that you are summarizing YouTube activity. Be laconic."))
+    (w/friend-journalism-input)
+    (lambda (d)
+      (when-let* ((d)
+                   (resp (s-trim d)))
+        (with-current-buffer (w/chatsummary-get-buffer)
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (w/write-line "Chat summary" 'bold)
+            (w/write-line resp)))))
+    "Given a list of recent YouTube chatter activity, produce a summary of the topics discussed. The summary should be very short, maximum two sentences total. Do not introduce yourself. Simply provide a short summary of the chat. Do not mention specific names of chatters. Keep it succinct. Do not mention that you are summarizing YouTube activity. Be laconic."))
 
 (defvar w/chatsummary-timer nil)
 (defun w/run-chatsummary-timer ()
@@ -44,8 +44,8 @@
     (cancel-timer w/chatsummary-timer))
   (w/update-chatsummary)
   (setq
-   w/chatsummary-timer
-   (run-with-timer 120 nil #'w/run-chatsummary-timer)))
+    w/chatsummary-timer
+    (run-with-timer 120 nil #'w/run-chatsummary-timer)))
 
 (defun w/start-chatsummary ()
   "Enable fake chatters."

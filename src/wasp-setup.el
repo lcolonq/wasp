@@ -43,11 +43,12 @@
   (w/run-audio-record-end-timer)
   (w/populate-bible-table)
   (w/user-cache-populate)
+  (w/run-banner-ad-timer)
 
   (w/start-audio-record)
   (w/start-chatsummary)
   (w/start-fake-chatters)
-  (w/start-friend)
+  (w/friend-start)
 
   ;; layout
   (eyebrowse-switch-to-window-config 0)
