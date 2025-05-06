@@ -18,6 +18,7 @@
     w/alert-message-buffer
     w/fake-chatter-enclosure-buffer
     w/banner-ad-buffer
+    w/chat-event-buffer
     ))
 
 (defvar w/gizmo-windows (list))

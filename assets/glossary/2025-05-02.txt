@@ -1,0 +1,1 @@
+looks like we tackled the gba project again, making some progress on a new tool for map editing and worked on integrating the wave function collapse algorithm for better level generation, also discussed various updates for oub mode.

@@ -14,6 +14,11 @@
   :type '(string)
   :group 'wasp)
 
+(defcustom w/chat-event-buffer "*wasp-chat-events*"
+  "Name of buffer used to store the chat event log."
+  :type '(string)
+  :group 'wasp)
+
 (defvar w/chat-joel-count 0)
 (defvar w/chat-plus2-count 0)
 (defvar w/chat-minus2-count 0)
@@ -201,6 +206,18 @@ Optionally, return the buffer NM in chat mode."
         (w/chat-mode)))
     (get-buffer bufnm)))
 
+(define-derived-mode w/chat-event-mode special-mode "Chat Events"
+  "Major mode for displaying chat."
+  :group 'wasp)
+
+(defun w/get-chat-event-buffer ()
+  "Return the chat event buffer."
+  (let ((bufnm w/chat-event-buffer))
+    (unless (get-buffer bufnm)
+      (with-current-buffer (get-buffer-create bufnm)
+        (w/chat-event-mode)))
+    (get-buffer bufnm)))
+
 (defun w/clear-chat ()
   "Clear the chat buffer."
   (interactive)
@@ -216,10 +233,11 @@ Optionally, return the buffer NM in chat mode."
 (defun w/write-chat-event (ev)
   "Write the string EV to the chat buffer as an event (italicized)."
   (let ((inhibit-read-only t))
-    (with-current-buffer (w/get-chat-buffer)
+    (with-current-buffer (w/get-chat-event-buffer)
       (goto-char (point-max))
       (insert (propertize ev 'face 'italic))
-      (insert "\n"))))
+      (insert "\n"))
+    (w/gizmo-upload (w/get-chat-event-buffer))))
 
 (w/defstruct
  w/chat-message
