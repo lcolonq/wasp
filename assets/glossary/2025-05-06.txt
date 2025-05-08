@@ -1,0 +1,1 @@
+there was a guest appearance by a clonkhead, discussions about emacs debugging, and we continued making progress on the gba system while testing some new features.

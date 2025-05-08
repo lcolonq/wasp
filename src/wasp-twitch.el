@@ -538,48 +538,48 @@ CALLBACK will be passed the winner when the poll concludes."
        (when (-contains? badges "subscriber/0") "💻")
        (when (-contains? badges "founder/0") "🖥️"))))))
 
-(defun w/twitch-handle-incoming-chat (msg)
-  "Write MSG to the chat buffer, processing any commands."
-  ;; (w/write-log (format "%s" msg))
-  (let ((user (w/decode-string (car msg))))
-    (w/user-bind
-     user
-     (lambda ()
-       (let* ((tags (cadr msg))
-              (userid (car (w/saget "user-id" tags)))
+(defun w/twitch-handle-incoming-chat (user tags text)
+  "Write the message TEXT from USER with TAGS to the chat buffer.
+Process any commands included."
+  (w/user-bind
+    user
+    (lambda ()
+      (let* ( (userid (car (w/saget "user-id" tags)))
               (color (car (w/saget "color" tags)))
               (emotes (car (w/saget "emotes" tags)))
               (badges (s-split "," (car (w/saget "badges" tags))))
-              (text (w/decode-string (caddr msg)))
               (biblicality (w/bible-colorize-sentence text))
               (text-colored-bible (car biblicality))
               (text-with-emotes
-               (w/twitch-add-7tv-emotes
-                (w/twitch-process-emote-ranges
-                 (s-split "/" emotes)
-                 text-colored-bible))))
-         (push (cons user text) w/twitch-chat-history)
-
-         (w/user-stats-update)
-         (w/hexamedia-update-user user)
-         (w/shindaggers-update-user user)
-         (w/copfish-update-user user)
-         (when (s-equals? (s-downcase user) "modclonk")
-           (w/obs-activate-toggle 'modclonk))
-         (w/resolve-record-user user)
-         (w/hex-tick user)
-         (w/hex-transform
+                (w/twitch-add-7tv-emotes
+                  (w/twitch-process-emote-ranges
+                    (s-split "/" emotes)
+                    text-colored-bible))))
+        (push (cons user text) w/twitch-chat-history)
+        (w/user-stats-update)
+        (w/hexamedia-update-user user)
+        (w/shindaggers-update-user user)
+        (w/copfish-update-user user)
+        (when (s-equals? (s-downcase user) "modclonk")
+          (w/obs-activate-toggle 'modclonk))
+        (w/resolve-record-user user)
+        (w/hex-tick user)
+        (w/hex-transform
           user
           (w/make-chat-message
-           :user user
-           :id userid
-           :text text-with-emotes
-           :user-color (when (s-present? color) color)
-           :biblicality (cdr biblicality)
-           :sigil (w/twitch-badges-sigil badges)))
-         (--each w/twitch-chat-commands
-           (when (s-contains? (car it) text)
-             (funcall (cdr it) user text))))))))
+            :user user
+            :id userid
+            :text text-with-emotes
+            :user-color (when (s-present? color) color)
+            :biblicality (cdr biblicality)
+            :sigil (w/twitch-badges-sigil badges)))
+        (--each w/twitch-chat-commands
+          (when (s-contains? (car it) text)
+            (funcall (cdr it) user text)))))))
+
+(defun w/twitch-handle-incoming-chat-sexp (msg)
+  "Write MSG to the chat buffer, processing any commands."
+  (w/twitch-handle-incoming-chat (w/decode-string (car msg)) (cadr msg) (w/decode-string (caddr msg))))
 
 (defun w/twitch-handle-redeem-helper (user redeem input &optional limit)
   "Handle the channel point redeem REDEEM from USER with INPUT.
@@ -587,35 +587,35 @@ Optionally, only apply redeems with point costs less than LIMIT."
   (unless (-contains? w/user-hell (s-downcase user))
     (let ((handler (alist-get redeem w/twitch-redeems nil nil #'cl-equalp)))
       (if handler
-          (if (or (not limit) (< (car handler) limit))
-              (w/user-bind
-               user
-               (lambda ()
-                 (condition-case err
-                     (funcall (cadr handler) user input)
-                   (error
-                    (w/write-chat-event (format "Error during redeem: %s" err))))))
-            (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
+        (if (or (not limit) (< (car handler) limit))
+          (w/user-bind
+            user
+            (lambda ()
+              (condition-case err
+                (funcall (cadr handler) user input)
+                (error
+                  (w/write-chat-event (format "Error during redeem: %s" err))))))
+          (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
         (w/write-chat-event (format "Unknown channel point redeem: %S" redeem))))))
 
 (defun w/twitch-handle-redeem (r)
   "Handle the channel point redeem R."
   ;; (w/write-log r)
   (let* ((user (car r))
-         (redeem (cadr r))
-         (encoded-input (caddr r))
-         (input (when encoded-input (w/decode-string encoded-input))))
+          (redeem (cadr r))
+          (encoded-input (caddr r))
+          (input (when encoded-input (w/decode-string encoded-input))))
     (w/twitch-handle-redeem-helper user redeem input)))
 
 (defun w/twitch-handle-redeem-api (r)
   "Handle a channel point redeem R coming from the API."
   (w/write-log r)
   (let* ((encoded-user (car r))
-         (encoded-redeem (cadr r))
-         (encoded-input (caddr r))
-         (user (when encoded-user (w/decode-string encoded-user)))
-         (redeem (when encoded-redeem (w/decode-string encoded-redeem)))
-         (input (when encoded-input (w/decode-string encoded-input))))
+          (encoded-redeem (cadr r))
+          (encoded-input (caddr r))
+          (user (when encoded-user (w/decode-string encoded-user)))
+          (redeem (when encoded-redeem (w/decode-string encoded-redeem)))
+          (input (when encoded-input (w/decode-string encoded-input))))
     (w/twitch-handle-redeem-helper user redeem input 1000)))
 
 (provide 'wasp-twitch)

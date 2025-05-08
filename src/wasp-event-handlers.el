@@ -39,7 +39,7 @@
           ((s-equals? (car msg) "won") (w/write-chat-event "Fufufu... I win..."))
           (t (w/write-chat-event "that it's over")))
         (setf w/overlay-barrage-active nil)))
-    (cons '(monitor twitch chat incoming) #'w/twitch-handle-incoming-chat)
+    (cons '(monitor twitch chat incoming) #'w/twitch-handle-incoming-chat-sexp)
     (cons '(monitor twitch redeem incoming) #'w/twitch-handle-redeem)
     (cons
       '(frontend redeem incoming)

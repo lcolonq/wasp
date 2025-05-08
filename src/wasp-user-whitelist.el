@@ -240,6 +240,8 @@
       "taske666"
       "rat_not_like_noah"
       "RealNaesten"
+      "Wh4i3"
+      "kamszee"
       )))
 
 (setq
