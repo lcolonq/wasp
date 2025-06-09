@@ -48,8 +48,8 @@ Return nil on error."
   "Define a structure with NAME (with the constructor under the w/ namespace).
 BODY is passed directly to `cl-defstruct'."
   `(cl-defstruct
-       (,name (:constructor ,(intern (s-concat "w/make-" (s-chop-prefix "w/" (symbol-name name)))))
-              (:copier nil))
+     (,name (:constructor ,(intern (s-concat "w/make-" (s-chop-prefix "w/" (symbol-name name)))))
+       (:copier nil))
      ,@body))
 
 (defmacro w/. (slot s)
@@ -63,7 +63,7 @@ BODY is passed directly to `cl-defstruct'."
 (defun w/shuffle (s)
   "Shuffle S."
   (if (seq-empty-p s)
-      nil
+    nil
     (let ((elt (seq-elt s (random (seq-length s)))))
       (cons elt (w/shuffle (remove elt s))))))
 
@@ -113,8 +113,8 @@ Optionally append EXT to the path."
 (defun w/daily-log (msg)
   "Write MSG to today's daily log file."
   (write-region
-   (s-concat (format-time-string "[%H:%M:%S]" (current-time)) "\t" msg "\n")
-   nil (w/daily-log-path) t 'donotprintmessagety))
+    (s-concat (format-time-string "[%H:%M:%S]" (current-time)) "\t" msg "\n")
+    nil (w/daily-log-path) t 'donotprintmessagety))
 
 (defvar w/fetch-last-response nil)
 (defun w/fetch (url &optional k)
@@ -124,27 +124,27 @@ Optionally append EXT to the path."
     :type "GET"
     :success
     (cl-function
-     (lambda (&key data &allow-other-keys)
-       (setq w/fetch-last-response data)
-       (when k
-         (funcall k data)))))
+      (lambda (&key data &allow-other-keys)
+        (setq w/fetch-last-response data)
+        (when k
+          (funcall k data)))))
   t)
 (defun w/fetch-html (url &optional k)
   "Get URL, passing the returned HTML to K."
   (w/fetch
-   url
-   (lambda (data)
-     (funcall
-      k
-      (with-temp-buffer
-        (insert data)
-        (libxml-parse-html-region (point-min) (point-max)))))))
+    url
+    (lambda (data)
+      (funcall
+        k
+        (with-temp-buffer
+          (insert data)
+          (libxml-parse-html-region (point-min) (point-max)))))))
 (defun w/fetch-json (url &optional k)
   "Get URL, passing the returned JSON to K."
   (w/fetch
-   url
-   (lambda (data)
-     (funcall k (json-parse-string data)))))
+    url
+    (lambda (data)
+      (funcall k (json-parse-string data)))))
 
 (defun w/devour (start end)
   "Delete and return the region from START to END."
@@ -158,15 +158,15 @@ Optionally append EXT to the path."
 Return the consumed string."
   (let ((start (point)))
     (while-let ((char (char-after))
-                (cont (funcall p char)))
+                 (cont (funcall p char)))
       (forward-char 1))
     (w/devour start (point))))
 
 (defun w/peek (c)
   "Look at the character at point in the current buffer.
 If it is C, consume it and return non-nil."
-  (when-let ((char (char-after))
-             (cont (= char c)))
+  (when-let* ( (char (char-after))
+               (cont (= char c)))
     (delete-char 1)
     t))
 
@@ -176,9 +176,9 @@ If it is C, consume it.
 Otherwise, throw an error."
   (if-let* ( (char (char-after))
              (cont (= char c)))
-      (progn
-        (delete-char 1)
-        t)
+    (progn
+      (delete-char 1)
+      t)
     (error (format "While parsing, expected %c but found %c" c char))))
 
 (defun w/get-stream-primary-window ()
@@ -205,10 +205,10 @@ Otherwise, throw an error."
   "Return TEXT propertized with the image at PATH.
 If TEXT is nil, use the empty string instead."
   (propertize
-   (or text "i")
-   'display
-   (apply #'create-image path nil nil props)
-   'rear-nonsticky t))
+    (or text "i")
+    'display
+    (apply #'create-image path nil nil props)
+    'rear-nonsticky t))
 
 (defsubst w/saget (k a)
   "Retrieve the value for string key K in alist A."
@@ -220,20 +220,20 @@ If TEXT is nil, use the empty string instead."
   (ef-themes-with-colors
     (setenv "COLONQ_BGCOLOR" bg-main)
     (set-face-attribute
-     'vertical-border nil
-     :foreground bg-alt
-     :background bg-alt)
+      'vertical-border nil
+      :foreground bg-alt
+      :background bg-alt)
     (set-face-attribute
-     'fringe nil
-     :foreground bg-alt
-     :background bg-alt))
+      'fringe nil
+      :foreground bg-alt
+      :background bg-alt))
   (ef-themes-with-colors
     (set-face-attribute
-     'eshell-prompt nil
-     :foreground fg-main
-     :background bg-alt
-     :weight 'bold
-     :extend t)))
+      'eshell-prompt nil
+      :foreground fg-main
+      :background bg-alt
+      :weight 'bold
+      :extend t)))
 
 (provide 'wasp-utils)
 ;;; wasp-utils.el ends here
