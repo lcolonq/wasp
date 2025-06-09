@@ -21,8 +21,7 @@
 (defun w/populate-bible-table ()
   "Populate `w/bible-table' from the Bible text file."
   (unless w/bible-table
-    ;; (let* ((bible-string (s-downcase (w/slurp (w/asset "bible.txt"))))
-    (let* ((bible-string (s-downcase (w/slurp (w/asset "medical.txt"))))
+    (let* ((bible-string (s-downcase (w/slurp (w/asset "bible.txt"))))
             (bible-string-nosyms (replace-regexp-in-string "[^[:alpha:]]" " " bible-string))
             (bible-words (s-split-words bible-string-nosyms))
             (ret (ht-create)))

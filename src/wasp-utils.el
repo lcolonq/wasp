@@ -82,6 +82,10 @@ Optionally append EXT to the path."
   "Given MSG, extract a user pinged."
   (cadr (s-match (rx "@" (group (one-or-more (any alnum "_")))) msg)))
 
+(defun w/utf8 (s)
+  "Decode the unibyte string S as UTF-8."
+  (decode-coding-string s 'utf-8))
+
 (defun w/decode-string (s)
   "Decode the base64 UTF-8 string S."
   (decode-coding-string (base64-decode-string s) 'utf-8))

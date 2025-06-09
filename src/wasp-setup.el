@@ -5,6 +5,7 @@
 (require 'eyebrowse)
 (require 'wasp-utils)
 (require 'wasp-bus)
+(require 'wasp-bus-binary)
 (require 'wasp-db)
 (require 'wasp-chat)
 (require 'wasp-twitch)
@@ -31,6 +32,7 @@
   (interactive)
   ;; initialization
   (w/connect)
+  (w/bus-binary-connect)
   (w/db-connect)
   (w/create-chat-overlay-frame)
   (w/show-chat-overlay-frame nil)

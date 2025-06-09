@@ -31,7 +31,7 @@
   "Queue of callbacks to handle incoming responses.")
 
 (defun w/db-parse-rest ()
-  "Parse everything before the \r\n terminator (and consume the terminator)."
+  "Parse everything before the \\r\\n terminator (and consume the terminator)."
   (let ((res (w/eat (lambda (c) (/= c ?\r)))))
     (w/munch ?\r)
     (w/munch ?\n)
@@ -62,8 +62,8 @@
   "Try to parse a single RESP value from the current process buffer.
 If successful, pass the value to the queued callback and return non-nil.
 If not, return nil."
-  (when-let ((v (w/db-parse-value)))
-    (when-let ((cb (queue-dequeue w/db-callback-queue)))
+  (when-let* ((v (w/db-parse-value)))
+    (when-let* ((cb (queue-dequeue w/db-callback-queue)))
       (funcall cb v))
     t))
 

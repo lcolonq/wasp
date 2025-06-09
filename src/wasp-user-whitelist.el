@@ -242,11 +242,13 @@
       "RealNaesten"
       "Wh4i3"
       "kamszee"
+      "gtfrvz"
+      "pengowray"
       )))
 
 (setq
   w/user-hell
-  '(
+  '( "machka6"
      ))
 
 (provide 'wasp-user-whitelist)

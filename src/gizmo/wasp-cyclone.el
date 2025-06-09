@@ -48,7 +48,8 @@
 (defun w/gizmo-ensure-shown (buf)
   "Ensure that BUF is shown in one of the windows."
   (unless (--any (s-equals? (buffer-name (window-buffer it)) (buffer-name (get-buffer buf))) w/gizmo-windows)
-    (set-window-buffer (car w/gizmo-windows) buf)))
+    (when (window-live-p (car w/gizmo-windows))
+      (set-window-buffer (car w/gizmo-windows) buf))))
 
 (defvar w/gizmo-cycle-timer nil)
 (defun w/run-gizmo-cycle-timer ()

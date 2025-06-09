@@ -118,6 +118,7 @@ USER it's your birthday today."
           (w/ai-transcribe
            tmp
            (lambda (msg)
+             (f-delete tmp)
              (w/daily-log (format "[VOICE]: %s" msg))
              (setq w/last-stream-transcription msg)
              (--each w/audio-voice-commands

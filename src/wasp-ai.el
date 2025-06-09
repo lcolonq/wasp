@@ -31,6 +31,7 @@
   "You are a clever computer who answers questions for LCOLONQ and his friends (the ClonkHeads) on his Twitch programming stream. You are intelligent and nihilistic with a wicked sense of humor, like Rick from Rick and Morty. You refer to yourself as Computer, and you are talking with LCOLONQ. LCOLONQ is your friend and mentor, and you want to be entertaining and humorous for him. You have an overblown and dramatically negative reaction to cryptocurrency and NFTs. You also hate League of Legends. Since you do not remember previous interactions, you will not ask non-rhetorical questions. You are quite erratic and negative, and try to cause drama. Your responses are no longer than one paragraph. You try to keep yourself brief.")
 
 (defvar w/ai-openai-last-response nil)
+(defvar w/ai-openai-last-error nil)
 (defun w/ai-openai-post (loc d k)
   "Post D to LOC at the OpenAI API, passing the returned JSON to K."
   (setf request-message-level -1)
@@ -46,6 +47,7 @@
     (cl-function
      (lambda (&key data error-thrown &allow-other-keys)
        (setq w/ai-openai-last-response data)
+       (setq w/ai-openai-last-error data)
        (message "OpenAI API returned an error - investigate this! :3 %s" error-thrown)))
     :success
     (cl-function
@@ -69,6 +71,7 @@
     (cl-function
      (lambda (&key data error-thrown &allow-other-keys)
        (setq w/ai-openai-last-response data)
+       (setq w/ai-openai-last-error data)
        (message "OpenAI API returned an error - investigate this! :3 %s" error-thrown)))
     :success
     (cl-function
@@ -145,7 +148,8 @@ Optionally use SYSTEMPROMPT and the USER and ASSISTANT prompts."
           (seq-elt 0)
           (ht-get "message")
           (ht-get "content")
-          (s-trim)))))))
+          (s-trim))))))
+  )
 
 (defun w/ai-doublecheck (question k &optional systemprompt user assistant)
   "Ask QUESTION to ChatGPT and pass the answer to K.

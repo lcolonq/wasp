@@ -303,7 +303,7 @@
         (w/write-chat-event (s-concat user " established spatiotemporal clarity"))
         (w/obs-activate-toggle 'spatiotemporal-clarity)))
     (list
-      "nasal clarity" 5000
+      "total clarity" 5000
       (lambda (user _)
         (w/stop-all-audio)
         (run-with-timer

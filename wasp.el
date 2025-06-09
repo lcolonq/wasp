@@ -21,6 +21,7 @@
 (require 'wasp-utils)
 (require 'wasp-hooks)
 (require 'wasp-bus)
+(require 'wasp-bus-binary)
 (require 'wasp-db)
 (require 'wasp-user)
 (require 'wasp-user-stats)
@@ -74,6 +75,7 @@
 (require 'wasp-twitch-redeems)
 (require 'wasp-voice-commands)
 (require 'wasp-event-handlers)
+(require 'wasp-event-handlers-binary)
 
 ;; user contrib
 ;; (require 'muzak)

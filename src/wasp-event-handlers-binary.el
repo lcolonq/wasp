@@ -13,11 +13,15 @@
   (list
     (cons "monitor twitch chat incoming"
       (lambda (d)
-        (-let [(user stags msg) (s-split-up-to " " d 2)]
+        (-let [(user stags msg) (s-split-up-to " " (w/utf8 d) 2)]
           (w/twitch-handle-incoming-chat
             user
             (--map (s-split "\t" it) (s-split "\n" stags))
-            msg)))))
+            msg))))
+    (cons "frontend redeem incoming"
+      (lambda (d)
+        (-let [(user redeem input) (s-split-up-to "\t" (w/utf8 d) 2)]
+          (w/twitch-handle-redeem-helper user redeem input 1000))))
     ))
 
 (provide 'wasp-event-handlers-binary)

@@ -71,7 +71,6 @@ Return non-nil if a message was successfully parsed."
 Return non-nil if a message was successfully parsed."
   (when-let* ((msg (w/bus-binary-read-message)))
     (-let [(ev . d) msg]
-      (print (cons ev d))
       (when-let* ((handler (w/saget ev w/bus-binary-event-handlers)))
         (funcall handler d))
       t)))
@@ -113,6 +112,12 @@ Return non-nil if a message was successfully parsed."
     (s-concat "s"
       (w/bus-binary-build-length-prefixed (w/bus-binary-convert-event ev)))))
 
+(defun w/binary-sub-all ()
+  "Subscribe to all events in `w/bus-binary-event-handlers'."
+  (--each w/bus-binary-event-handlers
+    (message (format "Subscribing to: %S" (car it)))
+    (w/binary-sub (car it))))
+
 (defun w/binary-pub (ev &optional d)
   "Publish the data D to the event EV."
   (process-send-string
@@ -138,7 +143,8 @@ Return non-nil if a message was successfully parsed."
    :buffer nil
    :host w/bus-binary-host
    :service w/bus-binary-port
-   :filter #'w/bus-binary-process-filter))
+    :filter #'w/bus-binary-process-filter)
+  (w/binary-sub-all))
 
 (provide 'wasp-bus-binary)
 ;;; wasp-bus-binary.el ends here

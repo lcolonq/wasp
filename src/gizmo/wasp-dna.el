@@ -30,6 +30,12 @@
          (log (--map (w/list-to-pair (s-split ": " it)) (-non-nil (--map (cadr (s-split "\t" it)) (s-lines logstr))))))
     log))
 
+(defun w/dna-user-log (user)
+  "Return a complete log of every message sent by USER."
+  (--filter
+    (s-equals? (s-downcase (car it)) user)
+    (w/dna-complete-log)))
+
 (defun w/dna-generate-from-logs (user)
   "Generate DNA from historical logs for USER.
 You probably want to use this interactively and then save the result here."
