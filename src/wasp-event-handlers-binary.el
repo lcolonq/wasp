@@ -22,6 +22,9 @@
       (lambda (d)
         (-let [(user redeem input) (s-split-up-to "\t" (w/utf8 d) 2)]
           (w/twitch-handle-redeem-helper user redeem input 1000))))
+    ;; (cons "test event 2"
+    ;;   (lambda (d)
+    ;;     (message "incoming: %s" d)))
     ))
 
 (provide 'wasp-event-handlers-binary)

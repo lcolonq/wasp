@@ -244,11 +244,36 @@
       "kamszee"
       "gtfrvz"
       "pengowray"
+      "MTW_Insignio"
+      "thurrak"
+      "stiegr"
+      "exceptionerroralex"
+      "theodore1005"
+      "tak0danchik"
+      "hanscct"
+      "maxsilvester"
+      "penguin_operat0r"
+      "ubercreeperest"
+      "bvector"
+      "amedoeyes"
+      "sakrymo"
+      "loweffortzzz"
+      "cortexmancer"
+      "christophermolti"
+      "toppocatto"
+      "datharryguy"
+      "allhaildearleader"
+      "rubashko"
+      "alex_s168"
+      "semaphriend"
+      "rpc2dot0"
+      "thejj1001001"
+      "zeroengl"
       )))
 
 (setq
   w/user-hell
-  '( "machka6"
+  '( ;; "machka6"
      ))
 
 (provide 'wasp-user-whitelist)

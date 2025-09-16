@@ -57,6 +57,8 @@
   "Reset the model palette."
   (interactive)
   (w/pub '(avatar reset))
+  ;; (w/model-region-video "hair" "https://www.youtube.com/watch?v=PruiY9BJi84")
+  (w/irish-reset)
   (w/model-get-default-backgrounds
     (lambda (bgs)
       (when bgs
@@ -90,6 +92,15 @@
  type ;; 'color or 'twitch-emote or '7tv-emote or 'video-url
  value)
 
+(defconst w/allowed-video-sites
+  '("www.youtube.com" "youtube.com" "youtu.be" "www.twitch.tv" "twitch.tv" "clips.twitch.tv" "tiktok.com" "www.tiktok.com"))
+
+(defun w/allowed-video-url (url)
+  "Return non-nil if URL is a permissible video URL."
+  (-contains?
+    w/allowed-video-sites
+    (url-host (url-generic-parse-url url))))
+
 (defun w/string-to-color-source (s k)
   "Convert S to a color source and pass it to K."
   (w/twitch-get-emote
@@ -97,10 +108,7 @@
    (lambda (emote)
      (let ((7tv-emote (w/twitch-get-7tv-emote s))
            (color (color-values s))
-           (url
-            (-contains?
-             '("www.youtube.com" "youtube.com" "youtu.be" "www.twitch.tv" "twitch.tv" "clips.twitch.tv")
-             (url-host (url-generic-parse-url s)))))
+           (url (w/allowed-video-url s)))
        (funcall
         k
         (cond
@@ -195,17 +203,32 @@ If the color is unspecified, use DEFCOLOR."
   "Run the model timer."
   (when w/model-timer
     (cancel-timer w/model-timer))
-
   (when w/model-palette-counter
     (cl-decf w/model-palette-counter)
     (when (<= w/model-palette-counter 0)
       (setf w/model-palette-counter nil)
       (w/model-reset)
       ))
-
   (setq
    w/model-timer
    (run-with-timer 1 nil #'w/run-model-timer)))
+
+(defun w/test-length-prefixed (s)
+  (let ((bytes (seq-into s 'list)))
+    (-concat
+      (seq-into (w/bus-binary-build-int32le (length bytes)) 'list)
+      bytes)))
+(defun w/test-background-drawing ()
+  (-let [(w h pixels) (w/load-image-png "/home/llll/irish.png")]
+    (w/binary-pub "background frame"
+      (apply #'unibyte-string
+        (-concat
+          (w/test-length-prefixed "foobar") ;; tag
+          (seq-into (w/bus-binary-build-int32le w) 'list)
+          (seq-into (w/bus-binary-build-int32le h) 'list)
+          (--mapcat
+            (-concat it '(255))
+            (seq-into pixels 'list)))))))
 
 (provide 'wasp-model)
 ;;; wasp-model.el ends here

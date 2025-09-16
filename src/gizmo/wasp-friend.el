@@ -54,8 +54,8 @@
   (w/daily-log (format "[FRIEND]: %s" msg))
   (w/gizmo-ensure-shown (w/friend-get-buffer))
   (w/friend-pronounce-phonemes (w/friend-replace-graphemes msg))
-  (w/friend-set-speech msg 10)
-  (w/friend-set-state 'chatting 10))
+  (w/friend-set-speech msg 30)
+  (w/friend-set-state 'chatting 30))
 
 ;;;; Core
 (defun w/friend-personality (msg k &optional extra)

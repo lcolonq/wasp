@@ -59,25 +59,25 @@
 (defun w/ai-openai-post-form (loc files k)
   "Post FILES to LOC at the OpenAI API, passing the returned JSON to K."
   (setf request-message-level -1)
-  (request
-    (s-concat w/ai-openai-server loc)
-    :type "POST"
-    :files files
-    :headers
-    `(("Authorization" . ,(s-concat "Bearer " w/sensitive-openai-api-key))
-      ("Content-Type" . "multipart/form-data"))
-    :parser #'json-parse-buffer
-    :error
-    (cl-function
-     (lambda (&key data error-thrown &allow-other-keys)
-       (setq w/ai-openai-last-response data)
-       (setq w/ai-openai-last-error data)
-       (message "OpenAI API returned an error - investigate this! :3 %s" error-thrown)))
-    :success
-    (cl-function
-     (lambda (&key data &allow-other-keys)
-       (setq w/ai-openai-last-response data)
-       (funcall k data))))
+  ;; (request
+  ;;   (s-concat w/ai-openai-server loc)
+  ;;   :type "POST"
+  ;;   :files files
+  ;;   :headers
+  ;;   `(("Authorization" . ,(s-concat "Bearer " w/sensitive-openai-api-key))
+  ;;     ("Content-Type" . "multipart/form-data"))
+  ;;   :parser #'json-parse-buffer
+  ;;   :error
+  ;;   (cl-function
+  ;;    (lambda (&key data error-thrown &allow-other-keys)
+  ;;      (setq w/ai-openai-last-response data)
+  ;;      (setq w/ai-openai-last-error data)
+  ;;      (message "OpenAI API returned an error - investigate this! :3 %s" error-thrown)))
+  ;;   :success
+  ;;   (cl-function
+  ;;    (lambda (&key data &allow-other-keys)
+  ;;      (setq w/ai-openai-last-response data)
+  ;;      (funcall k data))))
   t)
 
 (defvar-local w/ai-callback nil)

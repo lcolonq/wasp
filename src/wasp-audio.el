@@ -48,7 +48,8 @@ If VOLUME is specified, use it to adjust the volume (100 is default)."
   (interactive)
   (setq w/audio-muzak-queue nil)
   (start-process "pkill" nil "pkill" "mpv")
-  (start-process "pkill" nil "pkill" "muzak"))
+  (start-process "pkill" nil "pkill" "muzak")
+  (start-process "pkill" nil "pkill" "ffplay"))
 
 (defun w/recorded-chatter-name? (user)
   "Return non-nil if we've recorded USER's name."
@@ -153,7 +154,7 @@ USER it's your birthday today."
   (setq w/audio-keep-recording nil)
   (w/audio-record-end))
 
-(defconst w/audio-muzak-path "/home/llll/src/muzak-rs/target/release/muzak")
+(defconst w/audio-muzak-path "/home/llll/src/muzak/target/release/muzak")
 (defvar w/audio-muzak-now-playing nil)
 (defvar w/audio-muzak-queue nil)
 
@@ -166,7 +167,7 @@ USER it's your birthday today."
             :name "wasp-muzak"
             :connection-type '(pipe . pty)
             :buffer " *wasp-muzak-log*"
-            :command (list w/audio-muzak-path "play")
+            :command (list w/audio-muzak-path "play" "--volume" "0.3")
             :sentinel
             (lambda (_ _)
               (w/overlay-muzak-clear)

@@ -27,6 +27,7 @@
 (require 'wasp-user-stats)
 (require 'wasp-ai)
 (require 'wasp-audio)
+(require 'wasp-soundboard)
 (require 'wasp-model)
 (require 'wasp-obs)
 (require 'wasp-chat)
@@ -67,6 +68,9 @@
 (require 'wasp-bannerads)
 (require 'wasp-aoc)
 (require 'wasp-cyclone)
+(require 'wasp-flymake)
+(require 'wasp-genealogy)
+(require 'wasp-irish)
 
 ;; configuration
 (require 'wasp-user-whitelist)

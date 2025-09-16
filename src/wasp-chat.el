@@ -233,7 +233,8 @@ Optionally, return the buffer NM in chat mode."
 (defun w/write-chat-event (ev)
   "Write the string EV to the chat buffer as an event (italicized)."
   (let ((inhibit-read-only t))
-    (with-current-buffer (w/get-chat-event-buffer)
+    ;; (with-current-buffer (w/get-chat-event-buffer)
+    (with-current-buffer (w/get-chat-buffer)
       (goto-char (point-max))
       (insert (propertize ev 'face 'italic))
       (insert "\n"))
@@ -277,7 +278,7 @@ Optionally, return the buffer NM in chat mode."
     ("*******" . "hunter2")))
 
 (defun w/write-chat-message (msg &optional buf)
-  "Write MSG to the chat buffer as USER with USERID and COLOR."
+  "Write MSG to BUF as USER with USERID and COLOR."
   (w/daily-log (format "%s: %s" (w/. user msg) (w/. text msg)))
   (let ((inhibit-read-only t))
     (with-current-buffer (w/get-chat-buffer buf)
@@ -328,7 +329,7 @@ Optionally, return the buffer NM in chat mode."
             bible-button-text
            'face '(:foreground "#bbbbbb")))))
       (insert "\n"))
-    (when-let ((win (get-buffer-window (w/get-chat-buffer))))
+    (when-let* ((win (get-buffer-window (w/get-chat-buffer))))
       (with-selected-window win
         (goto-char (point-max))))))
 

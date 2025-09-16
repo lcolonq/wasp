@@ -71,5 +71,9 @@
   (w/user-ensure-faction)
   (w/user-ensure-element))
 
+(defun w/user-stats-update-color (color)
+  "Ensure that COLOR is set for the current user."
+  (setf (alist-get :color w/user-current) color))
+
 (provide 'wasp-user-stats)
 ;;; wasp-user-stats.el ends here

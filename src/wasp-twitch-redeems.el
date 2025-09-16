@@ -16,6 +16,9 @@
 (require 'wasp-overlay)
 (require 'wasp-cyclone)
 (require 'wasp-bless)
+(require 'wasp-flymake)
+(require 'wasp-irish)
+(require 'wasp-soundboard)
 
 (defvar w/twitch-redeem-sound-last 0)
 
@@ -23,12 +26,28 @@
   w/twitch-redeems
   (list
     (list
+      "submit quote" 1
+      (lambda (user quote)
+        (ignore user)
+        (w/irish-contribute quote)))
+    (list
       "throw shade" 1
       (lambda (user shader)
         (w/write-chat-event (format "%s threw shade" user))
         (w/db-set "shader" shader)
         (w/model-record-change)
         (w/overlay-shader user shader)))
+    (list
+      "spawn" 1
+      (lambda (user pattern)
+        (w/write-chat-event (format "%s created life" user))
+        (w/model-record-change)
+        (w/overlay-automata user pattern (alist-get :color w/user-current))))
+    (list
+      "sound board" 1
+      (lambda (user cmd)
+        (w/write-chat-event (format "%s played sound: %s" user cmd))
+        (w/sfx cmd)))
     (list
       "lurker check in" 1
       (lambda (user _)
@@ -161,8 +180,17 @@
     (list "palette swap (hair)" 5 (w/handle-redeem-region-swap "hair"))
     (list "palette swap (highlight)" 5 (w/handle-redeem-region-swap "highlight"))
     (list "palette swap (eyes)" 5 (w/handle-redeem-region-swap "eyes"))
-    ;; (list "palette swap (hat)" 5 (w/handle-redeem-region-swap "hat"))
+    (list "palette swap (hat)" 5 (w/handle-redeem-region-swap "hat"))
     (list "palette swap (hands)" 5 (w/handle-redeem-region-swap "hands"))
+    (list "background swap (drawing)" 5
+      (lambda (user inp)
+        (if (w/user-authorized)
+          (progn
+            (w/write-chat-event (s-concat user " changes the drawing background: " inp))
+            (if (w/allowed-video-url inp)
+              (w/binary-pub "background url" inp)
+              (w/write-chat-event (format "%s is not a recognized video site" inp))))
+          (w/write-chat-event (format "%s is not authorized to change video" user)))))
     (list
       "run program" 6
       (lambda (user inp)
@@ -173,8 +201,10 @@
           (w/write-chat-event (format "%s is not authorized to run code" user)))))
     (list
       "encoded clarity" 7
-      (lambda (user _)
-        (w/write-chat-event (format "%s allowed the streamer to \"drink\"" user))))
+      (lambda (user msg)
+        (w/write-chat-event (format "%s demands greater program clarity: %s" user msg))
+        (with-current-buffer (window-buffer)
+          (w/flymake-error user msg))))
     (list
       "feed friend" 10
       (lambda (user inp)
@@ -262,7 +292,7 @@
         (let ((cur (float-time)))
           (when (> (- cur w/twitch-redeem-sound-last) 2)
             (w/write-chat-event "SuperIdoldexiaorongdoumeinidetianbayuezhengwudeyangguangdoumeiniyaoyanreai105Cdenididiqingchundezhen")
-            (soundboard//play-clip "superidololdshortstyle.ogg")
+            (soundboard//play-clip "superidololdshortstyle.ogg" 0.5)
             (setq w/twitch-redeem-sound-last cur)))))
     (list
       "enable ad block" 500

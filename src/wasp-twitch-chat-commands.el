@@ -25,6 +25,7 @@
             (s-concat
               "Available commands: "
               (s-join " " (--filter (s-contains? "!" it) (-map #'car w/twitch-chat-commands))))))))
+    (cons "!youtube" (lambda (_ _) (w/twitch-say "https://youtube.com/@LCOLONQ")))
     (cons "MRBEAST" (lambda (_ _) (soundboard//play-clip "mrbeast.mp3")))
     (cons "NICECOCK" (lambda (_ _) (soundboard//play-clip "pantsintoashes.mp3")))
     (cons "hexadiCoding" (lambda (_ _) (soundboard//play-clip "developers.ogg")))
@@ -37,6 +38,7 @@
             (format "@%s that is a roguelike :3" user)
             (format "@%s that's not a roguelike" user)))))
     (cons "arch btw" (lambda (_ _) (w/twitch-say "I use nix btw")))
+    (cons "!life" (lambda (_ _) (w/twitch-say "https://conwaylife.com/patterns")))
     (cons "!advent" (lambda (_ _) (w/twitch-say "Join our private leaderboard: 3307583-b61f237c")))
     (cons "!discord" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
     ;; (cons "discord IRC" (lambda (_ _) (w/twitch-say "https://discord.gg/f4JTbgN7St")))
@@ -95,7 +97,7 @@
     (cons "!doujincircle" (lambda (_ _) (w/twitch-say "https://greencircle.live")))
     (cons "!tsuki" (lambda (_ _) (w/twitch-say "https://forum.tsuki.games")))
     (cons "!sponsor" (lambda (_ _) (w/twitch-say "Like what you see? Don't forget to download GNU Emacs at https://www.gnu.org/software/emacs/?code=LCOLONQ")))
-    (cons "!specs" (lambda (_ _) (w/twitch-say "Editor: evil-mode, WM: EXWM, OS: NixOS, hardware: shit laptop")))
+    (cons "!specs" (lambda (_ _) (w/twitch-say "Editor: evil-mode, WM: EXWM, OS: NixOS, hardware: steam deck")))
     (cons "!coverage" (lambda (_ _) (w/twitch-say (format "Test coverage: %s%%" (random 100)))))
     (cons "!learnprogramming" (lambda (_ _) (w/twitch-say "1) program")))
     (cons "!github" (lambda (_ _) (w/twitch-say "https://github.com/lcolonq")))

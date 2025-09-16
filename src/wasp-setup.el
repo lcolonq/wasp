@@ -44,7 +44,7 @@
   (w/run-obs-timer)
   (w/run-audio-record-end-timer)
   (w/populate-bible-table)
-  (w/user-cache-populate)
+  ;; (w/user-cache-populate)
   (w/run-banner-ad-timer)
 
   (w/start-audio-record)

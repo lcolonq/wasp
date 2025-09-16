@@ -45,5 +45,14 @@
       (w/get-heartrate)
       )))
 
+(defun w/overlay-automata (user s &optional color)
+  "Send a cellular automata S from USER in RLE format to the overlay.
+Optionally, make the cells be COLOR."
+  (w/pub '(avatar automata spawn)
+    (list
+      (w/encode-string s)
+      (w/encode-string user)
+      (w/encode-string (or color (w/random-color))))))
+
 (provide 'wasp-overlay)
 ;;; wasp-overlay.el ends here

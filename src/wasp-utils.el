@@ -1,4 +1,4 @@
-;;; wasp-utils --- Miscellaneous utilities -*- lexical-binding: t; -*-
+;;; wasp-utils --- Miscellaneous utilities -*- lexical-binding: t; byte-compile-warnings: (not suspicious); -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -234,6 +234,51 @@ If TEXT is nil, use the empty string instead."
       :background bg-alt
       :weight 'bold
       :extend t)))
+
+(defun w/random-color ()
+  "Return a random color string."
+  (let ( (r (random 256))
+         (g (random 256))
+         (b (random 256)))
+    (format "#%02x%02x%02x" r g b)))
+
+(defun w/aref-u32-be (a idx)
+  "Read a big-endian 32-bit integer starting at IDX from A."
+  (logior
+   (lsh (aref a idx) 24)
+   (lsh (aref a (+ idx 1)) 16)
+   (lsh (aref a (+ idx 2)) 8)
+   (aref a (+ idx 3))))
+
+(defun w/aref-u16-be (a idx)
+  "Read a big-endian 16-bit integer starting at IDX from A."
+  (logior
+   (lsh (aref a idx) 8)
+   (aref a (+ idx 1))))
+
+(defun w/load-image-ff (path)
+  "Load the Farbfeld image at PATH.
+Return a list of the width, height, and pixels of the image."
+  (when-let*
+      ((data (f-read-bytes path))
+       ((s-prefix? "farbfeld" data))
+       (width (w/aref-u32-be data 8))
+       (height (w/aref-u32-be data 12))
+       (pixels
+        (--map
+         (let ((a (+ 16 (* it 8))))
+           (list
+            (lsh (w/aref-u16-be data a) -8)
+            (lsh (w/aref-u16-be data (+ a 2)) -8)
+            (lsh (w/aref-u16-be data (+ a 4)) -8)))
+         (-iota (* width height)))))
+    (list width height (seq-into pixels 'vector))))
+
+(defun w/load-image-png (path)
+  "Load the PNG image at PATH (by converting to Farbfeld first)."
+  (let ((tmp "/tmp/udcff.ff"))
+    (when (= 0 (call-process-shell-command (format "png2ff <'%s' >'%s'" path tmp) nil "*udc-png-error*"))
+      (w/load-image-ff tmp))))
 
 (provide 'wasp-utils)
 ;;; wasp-utils.el ends here
