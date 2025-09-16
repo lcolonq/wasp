@@ -32,9 +32,13 @@
 
 (defun w/dna-user-log (user)
   "Return a complete log of every message sent by USER."
-  (--filter
-    (s-equals? (s-downcase (car it)) user)
-    (w/dna-complete-log)))
+  (cond
+    ((s-equals? user "fake_test_user")
+      (-repeat 100 (cons "fake_test_user" "hello i'm the test user haha i love apples and oranges")))
+    (t
+      (--filter
+        (s-equals? (s-downcase (car it)) (s-downcase user))
+        (w/dna-complete-log)))))
 
 (defun w/dna-generate-from-logs (user)
   "Generate DNA from historical logs for USER.

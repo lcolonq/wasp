@@ -154,6 +154,10 @@ Afterward call K."
   (w/db-cmd `("HSET" ,key ,hkey ,val ,@vals) (lambda (_) nil)))
   ;; (w/db-hset-then key hkey val (lambda (_) nil) vals))
 
+(defun w/db-hmset (key &rest vals)
+  "Set many keys in hash KEY to VALS in Redis."
+  (w/db-cmd `("HMSET" ,key ,@vals) (lambda (_) nil)))
+
 (defun w/db-hget (key hkey k)
   "Get HKEY in hash KEY from Redis and pass the corresponding value to K."
   (w/db-cmd `("HGET" ,key ,hkey) k))

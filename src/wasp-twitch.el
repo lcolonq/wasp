@@ -185,11 +185,14 @@
 
 (defun w/twitch-get-user-id (user k)
   "Get the ID for USER and pass it to K."
-  (w/twitch-api-get
-   (s-concat "/users?login=" user)
-   (lambda (data)
-     (let ((id (ht-get (aref (ht-get data "data") 0) "id")))
-       (funcall k id)))))
+  (cond
+    ((s-equals? user "fake_test_user") (funcall k "69"))
+    (t
+      (w/twitch-api-get
+        (s-concat "/users?login=" user)
+        (lambda (data)
+          (let ((id (-some-> data (ht-get "data") (w/safe-elt 0) (ht-get "id"))))
+            (funcall k id)))))))
 
 (defun w/twitch-get-recent-clips (userid k)
   "Get clips from the last week for USERID and pass them to K."

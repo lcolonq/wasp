@@ -15,6 +15,11 @@
   :type '(string)
   :group 'wasp)
 
+(defun w/safe-elt (seq idx)
+  "Return the IDXth element of SEQ."
+  (when (< idx (seq-length seq))
+    (seq-elt seq idx)))
+
 (defun w/read-sexp (s)
   "Read string S into a Lisp form.
 Return nil on error."
@@ -66,6 +71,14 @@ BODY is passed directly to `cl-defstruct'."
     nil
     (let ((elt (seq-elt s (random (seq-length s)))))
       (cons elt (w/shuffle (remove elt s))))))
+
+(defun w/random-probability ()
+  "Return a random float between 0.0 and 1.0."
+  (/ (float (random most-positive-fixnum)) most-positive-fixnum))
+
+(defun w/random-color ()
+  "Return a random color string."
+  (format "#%02x%02x%02x" (random 256) (random 256) (random 256)))
 
 (defun w/list-to-pair (xs)
   "Turn the first two elements of XS into a pair."
