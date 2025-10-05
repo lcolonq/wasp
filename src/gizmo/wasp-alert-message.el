@@ -51,7 +51,6 @@
   (setq
     w/alert-message-timer
     (run-with-timer 10 nil #'w/run-alert-message-timer)))
-(w/run-alert-message-timer)
 
 (provide 'wasp-alert-message)
 ;;; wasp-alert-message.el ends here

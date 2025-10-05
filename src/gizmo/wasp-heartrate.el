@@ -78,7 +78,6 @@
   (setq
    w/heartrate-timer
    (run-with-timer 1 nil #'w/run-heartrate-timer)))
-(w/run-heartrate-timer)
 
 (provide 'wasp-heartrate)
 ;;; wasp-heartrate.el ends here

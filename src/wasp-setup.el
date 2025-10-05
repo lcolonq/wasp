@@ -38,15 +38,19 @@
   (w/show-chat-overlay-frame nil)
   (w/twitch-7tv-update-emotes)
   (w/twitch-update-title)
+  (w/populate-bible-table)
+  ;; (w/user-cache-populate)
+
+  ;; timers
   (w/twitch-run-shoutout-timer)
   (w/twitch-run-emote-frame-timer)
   (w/run-model-timer)
   (w/run-obs-timer)
   (w/run-audio-record-end-timer)
-  (w/populate-bible-table)
-  ;; (w/user-cache-populate)
   (w/run-banner-ad-timer)
-
+  (w/run-telemetry-timer)
+  (w/run-heartrate-timer)
+  (w/run-alert-message-timer)
   (w/start-audio-record)
   (w/start-chatsummary)
   (w/start-fake-chatters)

@@ -53,7 +53,6 @@
   (setq
    w/telemetry-timer
    (run-with-timer 10 nil #'w/run-telemetry-timer)))
-(w/run-telemetry-timer)
 
 (provide 'wasp-telemetry)
 ;;; wasp-telemetry.el ends here
