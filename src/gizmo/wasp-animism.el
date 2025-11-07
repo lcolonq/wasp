@@ -51,7 +51,7 @@ Pass the resulting BulletML XML string to K."
                ((bml/barrage-toplevel b)))
          (progn
            (funcall k data))
-       (w/write-chat-event "That spell card is too powerful... ")))))
+       (w/chat-write-event "That spell card is too powerful... ")))))
 
 (provide 'wasp-animism)
 ;;; wasp-animism.el ends here

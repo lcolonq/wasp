@@ -8,6 +8,7 @@
 (require 'evil)
 (require 'wasp-utils)
 (require 'wasp-bus)
+(require 'wasp-bus-binary)
 (require 'wasp-chat)
 (require 'wasp-user)
 (require 'wasp-hexamedia)
@@ -249,24 +250,29 @@ K is called when the download is finished."
 
 (defun w/twitch-add-vip (user)
   "Give VIP status to USER."
-  (w/pub '(monitor twitch vip add) (list user))
+  (w/binary-pub "fig monitor twitch vip add" user)
   (when (> (length w/twitch-vip-list) w/twitch-vip-max)
     (w/twitch-remove-random-vip)))
 
 (defun w/twitch-remove-vip (user)
   "Remove VIP status from USER."
-  (w/pub '(monitor twitch vip remove) (list user))
+  (w/binary-pub "fig monitor twitch vip remove" user)
   (w/twitch-get-vip-list))
 
 (defun w/twitch-remove-random-vip ()
   "Remove VIP status from a random user."
-  (let ((user (w/pick-random w/twitch-vip-list)))
-    (w/write-chat-event (format "Randomly removed VIP from %s - autofloor" user))
+  (let
+    ((user
+       (w/pick-random
+         (-difference
+           w/twitch-vip-list
+           '("a_tension_span" "fighting_annelids")))))
+    (w/chat-write-event (format "Randomly removed VIP from %s - autofloor" user))
     (w/twitch-remove-vip user)))
 
 (defun w/twitch-shoutout (user)
   "Shoutout USER."
-  (w/pub '(monitor twitch shoutout) (list user)))
+  (w/binary-pub "monitor twitch shoutout" user))
 (defvar w/twitch-shoutout-queue nil)
 (defun w/twitch-enqueue-shoutout (user)
   "Queue up a shoutout for USER."
@@ -293,33 +299,43 @@ K is called when the download is finished."
 CALLBACK will be passed the winner when the poll concludes."
   (unless w/twitch-current-poll-callback
     (setq w/twitch-current-poll-callback callback)
-    (w/pub
-     '(monitor twitch poll create)
-     (list (s-truncate 60 (s-trim title)) options))))
+    (w/binary-pub
+      "fig monitor twitch poll create"
+      (s-concat
+        (s-truncate 60 (s-trim title))
+        "\t"
+        (s-join "\n" options)))))
 
 (defun w/twitch-create-prediction (title options)
   "Create a prediction with TITLE and OPTIONS."
   (unless w/twitch-current-prediction-ids
-    (w/pub '(monitor twitch prediction create) (list title options))))
+    (w/binary-pub
+      "fig monitor twitch prediction create"
+      (s-concat
+        (s-truncate 60 (s-trim title))
+        "\t"
+        (s-join "\n" options)))))
 
 (defun w/twitch-finish-prediction (outcome)
   "Finish the current prediction with winning OUTCOME."
   (when w/twitch-current-prediction-ids
-    (w/pub
-     '(monitor twitch prediction finish)
-     (list (car w/twitch-current-prediction-ids)
-           (car (alist-get outcome (cadr w/twitch-current-prediction-ids) nil nil #'s-equals?))))))
+    (w/binary-pub
+     "fig monitor twitch prediction finish"
+      (s-join "\t"
+        (list
+          (car w/twitch-current-prediction-ids)
+          (car (alist-get outcome (cadr w/twitch-current-prediction-ids) nil nil #'s-equals?)))))))
 
 (defun w/twitch-say (msg)
   "Write MSG to Twitch chat."
   (let ((trimmed (s-trim msg)))
-    (w/write-chat-message
+    (w/chat-write-message
      (w/make-chat-message
       :user "LCOLONQ"
       :id "866686220"
       :text trimmed
       :user-color "#616161"))
-    (w/pub '(monitor twitch chat outgoing) (list trimmed))))
+    (w/binary-pub "fig monitor twitch chat outgoing" trimmed)))
 
 (defun w/twitch-add-image-over (image msg start end)
   "Add IMAGE to MSG between START and END."
@@ -457,7 +473,7 @@ CALLBACK will be passed the winner when the poll concludes."
   "Advance all animated emotes in the (visible) chat buffer by 1 frame."
   (cl-incf w/twitch-emote-frame-counter)
   (save-excursion
-    (with-current-buffer (w/get-chat-buffer)
+    (with-current-buffer (w/chat-get-buffer)
       (goto-char (point-max))
       (forward-line -10)
       (goto-char (line-beginning-position))
@@ -537,8 +553,8 @@ CALLBACK will be passed the winner when the poll concludes."
           ;; ((s-equals? name "h_ingles") "")
           ;; ((s-equals? name "compilingjay") "")
           ;; ((s-equals? name "watchmakering") "")
-          ;; ((s-equals? name "the0x539") "")
-          ;; ((s-equals? name "colinahscopy_") "")
+          ((s-equals? name "the0x539") "︘")
+          ((s-equals? name "colinahscopy_") "⚜")
           ;; ((s-equals? name "eighteyedsixwingedseraph") "")
           ;; ((s-equals? name "a_tension_span") "")
           ;; ((s-equals? name "tomaterr") "")
@@ -547,7 +563,7 @@ CALLBACK will be passed the winner when the poll concludes."
           ;; ((s-equals? name "cr4zyk1tty") "")
           ;; ((s-equals? name "devts_de") "")
           ;; ((s-equals? name "physbuzz") "")
-          ;; ((s-equals? name "sundemoniac") "")
+          ((s-equals? name "sundemoniac") "🌞")
           (t "EL.")))
        (when (-contains? badges "vip/1") "💎")
        (when (-contains? badges "subscriber/0") "💻")
@@ -600,7 +616,7 @@ Process any commands included."
 (defun w/twitch-handle-redeem-helper (user redeem input &optional limit)
   "Handle the channel point redeem REDEEM from USER with INPUT.
 Optionally, only apply redeems with point costs less than LIMIT."
-  (unless (-contains? w/user-hell (s-downcase user))
+  (unless (or (-contains? w/user-hell (s-downcase user)) (-contains? (w/hex-get user) 'silence))
     (let ((handler (alist-get redeem w/twitch-redeems nil nil #'cl-equalp)))
       (if handler
         (if (or (not limit) (< (car handler) limit))
@@ -610,9 +626,9 @@ Optionally, only apply redeems with point costs less than LIMIT."
               (condition-case err
                 (funcall (cadr handler) user input)
                 (error
-                  (w/write-chat-event (format "Error during redeem: %s" err))))))
-          (w/write-chat-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
-        (w/write-chat-event (format "Unknown channel point redeem: %S" redeem))))))
+                  (w/chat-write-event (format "Error during redeem: %s" err))))))
+          (w/chat-write-event (format "User %s attempted to activate overly expensive redeem \"%s\" via API" user redeem)))
+        (w/chat-write-event (format "Unknown channel point redeem: %S" redeem))))))
 
 (defun w/twitch-handle-redeem (r)
   "Handle the channel point redeem R."

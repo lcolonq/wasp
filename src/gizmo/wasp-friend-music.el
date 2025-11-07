@@ -20,7 +20,7 @@
          (w/friend-respond
           (format "You just composed a song about %s called %s! Say something about it!" theme name)
           (lambda ()
-            (w/write-chat-event (format "The song is called %s: %s" name song))
+            (w/chat-write-event (format "The song is called %s: %s" name song))
             (w/add-song (s-concat "friend's " name) song)
             (w/audio-muzak-enqueue "\"friend\"" song))))))
    "Please compose a song about the provided theme. The format for the song is a sequence of characters with meanings as follows: / represents a rest, uppercase letters A through G indicate semitones, octaves are specified with a number following a semitone, ~ extends the duration of a note, square brackets like [] group notes together into a chord. The pipe character | separates tracks. Respond only with the song's name followed by a colon folowed by the song notes. Do not explain yourself. The song should ideally be 20 to 30 notes long."

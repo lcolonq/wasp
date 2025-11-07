@@ -27,30 +27,21 @@
   :group 'w
   (setq-local cursor-type nil))
 
-(defun w/get-alert-message-buffer ()
+(defun w/alert-message-get-buffer ()
   "Return the alert message buffer."
   (unless (get-buffer w/alert-message-buffer)
     (with-current-buffer (get-buffer-create w/alert-message-buffer)
       (w/alert-message-mode)))
   (get-buffer w/alert-message-buffer))
 
-(defun w/render-alert-message ()
+(defun w/alert-message-update ()
   "Render the heartrate buffer."
-  (with-current-buffer (w/get-alert-message-buffer)
+  (with-current-buffer (w/alert-message-get-buffer)
     (setq-local cursor-type nil)
     (let* ((inhibit-read-only t))
       (erase-buffer)
       (w/write (w/pick-random w/alert-message-phrases)))))
-
-(defvar w/alert-message-timer nil)
-(defun w/run-alert-message-timer ()
-  "Run the alert message timer."
-  (when w/alert-message-timer
-    (cancel-timer w/alert-message-timer))
-  (w/render-alert-message)
-  (setq
-    w/alert-message-timer
-    (run-with-timer 10 nil #'w/run-alert-message-timer)))
+(add-hook 'w/gizmo-update-hook #'w/alert-message-update)
 
 (provide 'wasp-alert-message)
 ;;; wasp-alert-message.el ends here

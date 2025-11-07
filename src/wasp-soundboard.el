@@ -15,6 +15,7 @@
   "Find soundboard paths matching PAT."
   (let ((base (w/asset "soundboard")))
     (cond
+      ((s-contains? ".." pat) nil)
       ((f-dir? (f-join base pat)) (f-entries (f-join base pat) #'f-file? t))
       (t (f-glob (s-concat pat "*") base)))))
 

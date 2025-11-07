@@ -26,12 +26,12 @@ AUTHOR was a contributing author btw."
     (w/friend-journalism-input))
    (lambda (resp)
      (when resp
-       (w/write-chat-event (format "\"friend\" finished writing about: %s" headline))
+       (w/chat-write-event (format "\"friend\" finished writing about: %s" headline))
        (funcall
         (if (= (random 5) 0) #'w/newspaper-screenshot (lambda (k) (funcall k nil)))
         (lambda (img)
           (when img
-            (w/write-chat-event "...and the article included some photojournalism"))
+            (w/chat-write-event "...and the article included some photojournalism"))
           (push
            (w/make-newspaper-article
             :headline headline

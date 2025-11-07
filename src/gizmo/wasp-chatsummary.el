@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'wasp-ai)
-(require 'wasp-friend)
+(require 'wasp-friend-journalism)
 
 (defcustom w/chatsummary-buffer "*wasp-chatsummary*"
   "Name of buffer used to display chat summary."
@@ -12,7 +12,7 @@
 
 (define-derived-mode w/chatsummary-mode special-mode "Chat Summary"
   "Major mode for displaying chat summary."
-  :group 'w
+  :group 'wasp
   (setq-local cursor-type nil)
   (visual-line-mode))
 
@@ -23,7 +23,7 @@
       (w/chatsummary-mode)))
   (get-buffer w/chatsummary-buffer))
 
-(defun w/update-chatsummary ()
+(defun w/chatsummary-update ()
   "Update the chat summary."
   (w/ai
     (w/friend-journalism-input)
@@ -38,21 +38,21 @@
     "Given a list of recent YouTube chatter activity, produce a summary of the topics discussed. The summary should be very short, maximum two sentences total. Do not introduce yourself. Simply provide a short summary of the chat. Do not mention specific names of chatters. Keep it succinct. Do not mention that you are summarizing YouTube activity. Be laconic."))
 
 (defvar w/chatsummary-timer nil)
-(defun w/run-chatsummary-timer ()
+(defun w/chatsummary-run-timer ()
   "Run the chat summary timer."
   (when w/chatsummary-timer
     (cancel-timer w/chatsummary-timer))
-  (w/update-chatsummary)
+  (w/chatsummary-update)
   (setq
     w/chatsummary-timer
-    (run-with-timer 120 nil #'w/run-chatsummary-timer)))
+    (run-with-timer 120 nil #'w/chatsummary-run-timer)))
 
-(defun w/start-chatsummary ()
+(defun w/chatsummary-start ()
   "Enable fake chatters."
   (interactive)
-  (w/run-chatsummary-timer))
+  (w/chatsummary-run-timer))
 
-(defun w/stop-chatsummary ()
+(defun w/chatsummary-stop ()
   "Disable fake chatters."
   (interactive)
   (cancel-timer w/chatsummary-timer)

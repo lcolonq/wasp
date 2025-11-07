@@ -40,7 +40,7 @@ Pass the resulting article summary to K."
                      (dom (with-temp-buffer (insert ext) (libxml-parse-html-region (point-min) (point-max))))
                      )
             (funcall k (s-trim (dom-texts dom)))
-            (w/write-chat-event (format "Could not find Wikipedia page: %s" pagename))))))
+            (w/chat-write-event (format "Could not find Wikipedia page: %s" pagename))))))
     nil))
 
 (defcustom w/wiki-buffer "*wasp-wiki*"

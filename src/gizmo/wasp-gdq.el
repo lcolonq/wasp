@@ -78,7 +78,7 @@
       user
       (lambda (s)
         (let ((sp (s-split "|" s)))
-          (w/write-chat-event (format "%s donated %s!" (car sp) (cadr sp)))
+          (w/chat-write-event (format "%s donated %s!" (car sp) (cadr sp)))
           (w/tts
            (format
             "%s donated %s with the message: %s"

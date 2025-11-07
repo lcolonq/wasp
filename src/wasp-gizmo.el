@@ -1,4 +1,4 @@
-;;; wasp-cyclone --- Gizmocycling -*- lexical-binding: t; -*-
+;;; wasp-gizmo --- Gizmo helper functions -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -22,6 +22,7 @@
     ))
 
 (defvar w/gizmo-windows (list))
+(defvar w/gizmo-update-hook nil)
 
 (defun w/gizmo-tag-window ()
   "Tag the current window as containing a gizmo."
@@ -52,15 +53,24 @@
       (set-window-buffer (car w/gizmo-windows) buf))))
 
 (defvar w/gizmo-cycle-timer nil)
-(defun w/run-gizmo-cycle-timer ()
+(defun w/gizmo-run-cycle-timer ()
   "Run the gizmo cycle timer."
   (when w/gizmo-cycle-timer
     (cancel-timer w/gizmo-cycle-timer))
   (w/gizmo-cycle)
   (setq
     w/gizmo-cycle-timer
-    (run-with-timer 300 nil #'w/run-gizmo-cycle-timer)))
-(w/run-gizmo-cycle-timer)
+    (run-with-timer 300 nil #'w/gizmo-run-cycle-timer)))
+
+(defvar w/gizmo-update-timer nil)
+(defun w/gizmo-run-update-timer ()
+  "Run the gizmo update timer."
+  (when w/gizmo-update-timer
+    (cancel-timer w/gizmo-update-timer))
+  (run-hooks 'w/gizmo-update-hook)
+  (setq
+    w/gizmo-update-timer
+    (run-with-timer 10 nil #'w/gizmo-run-update-timer)))
 
 (require 'htmlize)
 (defvar w/gizmo-html-cache (ht-create))
@@ -85,5 +95,5 @@
         (lambda (_)
           (w/pub '(gizmo buffer update) (list nm)))))))
 
-(provide 'wasp-cyclone)
-;;; wasp-cyclone.el ends here
+(provide 'wasp-gizmo)
+;;; wasp-gizmo.el ends here

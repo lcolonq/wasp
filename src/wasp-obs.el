@@ -138,14 +138,14 @@ Optionally, change text to MSG."
     ))
 
 (defvar w/obs-timer nil)
-(defun w/run-obs-timer ()
+(defun w/obs-run-timer ()
   "Run the obs timer."
   (when w/obs-timer
     (cancel-timer w/obs-timer))
   (w/obs-handle-toggles)
   (setq
    w/obs-timer
-   (run-with-timer 1 nil #'w/run-obs-timer)))
+   (run-with-timer 1 nil #'w/obs-run-timer)))
 
 (provide 'wasp-obs)
 ;;; wasp-obs.el ends here

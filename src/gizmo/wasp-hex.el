@@ -30,6 +30,8 @@
      ("ESUNA" . decurse)
      ("DECIMAL" . decimal)
      ("DROPBEAR" . upsidedown)
+     ("SOULBURN" . silence)
+     ("SPELLNAME" . spellname)
      ))
 
 (defconst w/hex-users (ht-create 'equal))
@@ -56,7 +58,7 @@
           (ht-set! w/hex-users key nil))
         (otherwise
           (if-let* ((defender (--find (eq 'counterspell (w/hex-type it)) cur)))
-            (w/write-chat-event (format "%s counterspelled %s's hex on %s!" (w/hex-caster defender) (w/hex-caster hex) user))
+            (w/chat-write-event (format "%s counterspelled %s's hex on %s!" (w/hex-caster defender) (w/hex-caster hex) user))
             (ht-set! w/hex-users key (cons hex cur))))))))
 
 (defun w/hex-clear (user)
@@ -231,6 +233,9 @@
             (w/chat-message-text msg)
             (ttf/flip (w/chat-message-text msg)))
           (w/hex-transform-helper msg (cdr hexes) k))
+        (spellname
+          (setf (w/chat-message-text msg) (w/pick-random (-map #'car w/hex-types)))
+          (w/hex-transform-helper msg (cdr hexes) k))
         (t (w/hex-transform-helper msg (cdr hexes) k))))
     (t (funcall k msg))))
 (defun w/hex-transform (user msg)
@@ -239,7 +244,7 @@
     msg (w/hex-get user)
     (lambda (msg)
       (when msg
-        (w/write-chat-message msg)))))
+        (w/chat-write-message msg)))))
 
 (defun w/hex-tick (user)
   "Decrement timers for all of USER's hexes."

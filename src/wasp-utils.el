@@ -293,5 +293,39 @@ Return a list of the width, height, and pixels of the image."
     (when (= 0 (call-process-shell-command (format "png2ff <'%s' >'%s'" path tmp) nil "*udc-png-error*"))
       (w/load-image-ff tmp))))
 
+(defun w/color-value-to-html-code (cval)
+  "Convert color value CVAL to an HTML color code."
+  (and
+   cval
+   (format
+    "#%02x%02x%02x"
+    (truncate (* 255 (/ (car cval) 65535.0)))
+    (truncate (* 255 (/ (cadr cval) 65535.0)))
+    (truncate (* 255 (/ (caddr cval) 65535.0)))
+    )))
+
+(defun w/color-to-html-code (cname)
+  "Convert color name CNAME to an HTML color code."
+  (w/color-value-to-html-code (color-values cname)))
+
+(defconst w/allowed-video-sites
+  '("www.youtube.com" "youtube.com" "youtu.be" "www.twitch.tv" "twitch.tv" "clips.twitch.tv" "tiktok.com" "www.tiktok.com"))
+
+(defun w/allowed-video-url (url)
+  "Return non-nil if URL is a permissible video URL."
+  (-contains?
+    w/allowed-video-sites
+    (url-host (url-generic-parse-url url))))
+
+(defun w/cpu-load ()
+  "Get the current CPU load."
+  (let ((res (shell-command-to-string "uptime")))
+    (string-to-number (s-trim (car (s-split "," (cadr (s-split "load average:" res))))))))
+
+(defun w/disk-usage (disk)
+  "Get the current usage percent for DISK."
+  (let ((res (shell-command-to-string (format "df %s" disk))))
+    (string-to-number (s-chop-suffix "%" (nth 4 (s-split " " (cadr (s-lines res)) t))))))
+
 (provide 'wasp-utils)
 ;;; wasp-utils.el ends here

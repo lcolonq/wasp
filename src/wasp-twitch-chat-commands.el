@@ -106,7 +106,7 @@
     (cons "!throne" (lambda (_ _) (w/twitch-say "xdding")))
     (cons "!vim" (lambda (_ _) (w/twitch-say "vi is the best text editor, emacs is the best operating system")))
     (cons "!emacs" (lambda (_ _) (w/twitch-say "i've tried everything else emacs is best girl")))
-    (cons "!bells" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~bezelea/bells/ and https://pub.colonq.computer/~prod/toy/dbkai/")))
+    (cons "!bells" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~the0x539/bells.html and https://pub.colonq.computer/~bezelea/bells/ and https://pub.colonq.computer/~prod/toy/dbkai/")))
     (cons "!shader" (lambda (_ _) (w/twitch-say "https://secure.colonq.computer/throwshade")))
     (cons "!help" (lambda (_ _) (w/twitch-say "https://pub.colonq.computer/~prod/toy/glossary/")))
     (cons
@@ -177,13 +177,13 @@
       (lambda (user inp)
         (let ((trimmed (s-trim (s-replace "!resolution" "" inp))))
           (if (string-empty-p trimmed)
-            (w/write-chat-event "You gotta put what your resolution is.")
-            (w/write-chat-event (format "%s RESOLVES: %s" (s-upcase user) trimmed))
+            (w/chat-write-event "You gotta put what your resolution is.")
+            (w/chat-write-event (format "%s RESOLVES: %s" (s-upcase user) trimmed))
             (setf (alist-get :resolution2025 w/user-current) trimmed)))))
     ;; (cons "!addbookrec"
     ;;       (lambda (user inp)
     ;;         (let ((trimmed (s-trim (s-replace "!addbookrec" "" inp))))
-    ;;           (fig//write-chat-event (format "%s recommends: %s" user trimmed))
+    ;;           (fig//chat-write-event (format "%s recommends: %s" user trimmed))
     ;;           (fig//add-recommended-book user trimmed))))
     ;; (cons "!quote"
     ;;       (lambda (_ _)
@@ -192,7 +192,7 @@
     ;; (cons "!addquote"
     ;;       (lambda (user inp)
     ;;         (let ((trimmed (s-trim (s-replace "!addquote" "" inp))))
-    ;;           (fig//write-chat-event (format "%s saves quote: %s" user trimmed))
+    ;;           (fig//chat-write-event (format "%s saves quote: %s" user trimmed))
     ;;           (fig//add-quote user trimmed))))
     ;; (cons "!twitter"
     ;;       (lambda (_ _)

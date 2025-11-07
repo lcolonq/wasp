@@ -269,11 +269,17 @@
       "rpc2dot0"
       "thejj1001001"
       "zeroengl"
+      "combatprogrammerdoll"
+      "a_idiotguy"
+      "whomstve340"
+      "adamantris"
+      "bussy_smasher"
       )))
 
 (setq
   w/user-hell
   '( ;; "machka6"
+     "goofyhornguy"
      ))
 
 (provide 'wasp-user-whitelist)

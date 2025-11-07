@@ -49,7 +49,7 @@
   :group 'wasp
   (setq mode-line-format nil))
 
-(defun w/get-chat-overlay-buffer (user)
+(defun w/chat-get-overlay-buffer (user)
   "Return the stats buffer for USER."
   (let ((name (format "*wasp-chatter %s*" user)))
     (unless (get-buffer name)
@@ -74,7 +74,7 @@
 
 (defun w/chat-overlay-display-element (e)
   "Return a propertized string representing E."
-  (if-let ((dinfo (alist-get e w/user-elements nil nil #'s-equals?)))
+  (if-let* ((dinfo (alist-get e w/user-elements nil nil #'s-equals?)))
       (propertize
        (format "%s %s" (car dinfo) e)
        'face (list :foreground (cadr dinfo)))
@@ -84,7 +84,7 @@
   (w/user-get
    user
    (lambda (db)
-     (with-current-buffer (w/get-chat-overlay-buffer user)
+     (with-current-buffer (w/chat-get-overlay-buffer user)
        (let* ((inhibit-read-only t)
               (faction (alist-get :faction db))
               (element (alist-get :element db))
@@ -117,7 +117,7 @@
 
 (defvar w/chat-overlay-frame nil)
 (defvar w/chat-overlay-cur nil)
-(defun w/create-chat-overlay-frame ()
+(defun w/chat-create-overlay-frame ()
   "Build a frame for displaying chatter stats on mouseover."
   (when (framep w/chat-overlay-frame)
     (delete-frame w/chat-overlay-frame))
@@ -145,59 +145,59 @@
        (cursor-type . nil)
        (background-color . "black"))))))
 
-(defun w/show-chat-overlay-frame (vis)
+(defun w/chat-show-overlay-frame (vis)
   "If VIS is non-nil, make the chat overlay frame visible.
 Otherwise make it invisible."
   (if vis
       (make-frame-visible w/chat-overlay-frame)
     (setq w/chat-overlay-cur nil)
     (make-frame-invisible w/chat-overlay-frame)))
-(defun w/move-chat-overlay-frame (x y)
+(defun w/chat-move-overlay-frame (x y)
   "Move the chat overlay frame to X, Y."
   (modify-frame-parameters
    w/chat-overlay-frame
    (list
     (cons 'top y)
     (cons 'left x))))
-(defun w/display-chat-overlay (user &optional x y)
+(defun w/chat-display-overlay (user &optional x y)
   "Display the chat overlay buffer for USER.
 Optionally display the window at X, Y"
   (unless w/chat-overlay-frame
-    (w/create-chat-overlay-frame))
+    (w/chat-create-overlay-frame))
   (let ((window (frame-selected-window w/chat-overlay-frame)))
     (if (and x y)
-        (w/move-chat-overlay-frame x y)
-      (w/move-chat-overlay-frame -1 -1))
+        (w/chat-move-overlay-frame x y)
+      (w/chat-move-overlay-frame -1 -1))
     (w/chat-overlay-render user)
     (setq w/chat-overlay-cur user)
-    (set-window-buffer window (w/get-chat-overlay-buffer user))
-    (w/show-chat-overlay-frame t)))
-(defun w/update-chat-overlay (user pos)
+    (set-window-buffer window (w/chat-get-overlay-buffer user))
+    (w/chat-show-overlay-frame t)))
+(defun w/chat-update-overlay (user pos)
   "Update the chat overlay frame for USER based on POS."
   (if (and user pos)
       (progn
         (unless (equal (cons user pos) w/chat-overlay-cur)
-          (w/display-chat-overlay user (car pos) (cdr pos)))
+          (w/chat-display-overlay user (car pos) (cdr pos)))
         )
-    (w/show-chat-overlay-frame nil)))
-(defun w/handle-chat-overlay ()
+    (w/chat-show-overlay-frame nil)))
+(defun w/chat-handle-overlay ()
   "Handle point movement for chat overlay popup."
-  (with-current-buffer (w/get-chat-buffer)
-    (w/update-chat-overlay
+  (with-current-buffer (w/chat-get-buffer)
+    (w/chat-update-overlay
      (get-text-property (point) 'wasp-user)
      (window-absolute-pixel-position (point)))))
 
 (define-derived-mode w/chat-mode special-mode "Chat"
   "Major mode for displaying chat."
   :group 'wasp
-  (add-hook 'post-command-hook #'w/handle-chat-overlay nil t)
+  (add-hook 'post-command-hook #'w/chat-handle-overlay nil t)
   (advice-add 'handle-switch-frame :before-while #'w/prevent-focus-frame)
   (setq-local window-point-insertion-type t)
   (setq-local cursor-type nil)
   (cond
    (t (setq-local header-line-format '(:eval w/chat-header-line)))))
 
-(defun w/get-chat-buffer (&optional nm)
+(defun w/chat-get-buffer (&optional nm)
   "Return the chat buffer.
 Optionally, return the buffer NM in chat mode."
   (let ((bufnm (or nm w/chat-buffer)))
@@ -210,7 +210,7 @@ Optionally, return the buffer NM in chat mode."
   "Major mode for displaying chat."
   :group 'wasp)
 
-(defun w/get-chat-event-buffer ()
+(defun w/chat-get-event-buffer ()
   "Return the chat event buffer."
   (let ((bufnm w/chat-event-buffer))
     (unless (get-buffer bufnm)
@@ -218,27 +218,30 @@ Optionally, return the buffer NM in chat mode."
         (w/chat-event-mode)))
     (get-buffer bufnm)))
 
-(defun w/clear-chat ()
+(defun w/chat-clear ()
   "Clear the chat buffer."
   (interactive)
-  (with-current-buffer (w/get-chat-buffer)
+  (with-current-buffer (w/chat-get-buffer)
     (let ((inhibit-read-only t))
       (erase-buffer))))
 
 (defvar-keymap w/chat-mode-map
   :suppress t
-  "C-l" #'w/clear-chat)
+  "C-l" #'w/chat-clear)
 (evil-define-key 'motion w/chat-mode-map (kbd "<return>") #'w/open-link)
 
-(defun w/write-chat-event (ev)
+(defun w/chat-write-event (ev)
   "Write the string EV to the chat buffer as an event (italicized)."
   (let ((inhibit-read-only t))
-    ;; (with-current-buffer (w/get-chat-event-buffer)
-    (with-current-buffer (w/get-chat-buffer)
+    (with-current-buffer (w/chat-get-buffer)
       (goto-char (point-max))
       (insert (propertize ev 'face 'italic))
       (insert "\n"))
-    (w/gizmo-upload (w/get-chat-event-buffer))))
+    (with-current-buffer (w/chat-get-event-buffer)
+      (goto-char (point-max))
+      (insert (propertize ev 'face 'italic))
+      (insert "\n"))
+    (w/gizmo-upload (w/chat-get-event-buffer))))
 
 (w/defstruct
  w/chat-message
@@ -277,11 +280,11 @@ Optionally, return the buffer NM in chat mode."
     ("hunter2" . "*******")
     ("*******" . "hunter2")))
 
-(defun w/write-chat-message (msg &optional buf)
+(defun w/chat-write-message (msg &optional buf)
   "Write MSG to BUF as USER with USERID and COLOR."
   (w/daily-log (format "%s: %s" (w/. user msg) (w/. text msg)))
   (let ((inhibit-read-only t))
-    (with-current-buffer (w/get-chat-buffer buf)
+    (with-current-buffer (w/chat-get-buffer buf)
       (setq-local cursor-type nil)
       (goto-char (point-max))
       (insert-text-button
@@ -313,9 +316,7 @@ Optionally, return the buffer NM in chat mode."
                ;; (bible-button-text (format "[pollicality %.2f]" (w/. biblicality msg)))
                (msgwidth (line-beginning-position))
                (lines (+ 1 (/ msgwidth wwidth))))
-
           (w/overlay-chat msg)
-
           (insert
            (propertize
             " " 'display
@@ -329,7 +330,7 @@ Optionally, return the buffer NM in chat mode."
             bible-button-text
            'face '(:foreground "#bbbbbb")))))
       (insert "\n"))
-    (when-let* ((win (get-buffer-window (w/get-chat-buffer))))
+    (when-let* ((win (get-buffer-window (w/chat-get-buffer))))
       (with-selected-window win
         (goto-char (point-max))))))
 

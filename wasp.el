@@ -34,6 +34,7 @@
 (require 'wasp-twitch)
 (require 'wasp-overlay)
 (require 'wasp-auth)
+(require 'wasp-gizmo)
 (require 'wasp-setup)
 
 ;; gizmos
@@ -67,10 +68,10 @@
 (require 'wasp-hex)
 (require 'wasp-bannerads)
 (require 'wasp-aoc)
-(require 'wasp-cyclone)
 (require 'wasp-flymake)
 (require 'wasp-genealogy)
 (require 'wasp-irish)
+(require 'wasp-tcg)
 
 ;; configuration
 (require 'wasp-user-whitelist)

@@ -45,7 +45,7 @@
 
 (defun w/friend-set-speech (msg &optional time)
   "Have \"friend\" say MSG for TIME."
-  (w/write-chat-event (s-concat "Friend says: " msg))
+  (w/chat-write-event (s-concat "Friend says: " msg))
   (setf w/friend-speech msg)
   (setf w/friend-speech-timer (or time 5)))
 
@@ -158,11 +158,18 @@ If K is specified, call it after the response."
         (w/write
           (format-spec
             "%a\
-  /----\\  
+  /\\  /\\   
+  \\----/ 
  / %l  %r \\ 
  \\  %m  /
   +----+\
 "
+;;             "%a\
+;;   /----\\  
+;;  / %l  %r \\ 
+;;  \\  %m  /
+;;   +----+\
+;; "
             `((?a . ,(s-repeat (w/friend-get-offset) "          \n"))
                (?l . ,(car face))
                (?r . ,(cadr face))

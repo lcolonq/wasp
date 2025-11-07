@@ -18,7 +18,7 @@
     (w/asset "bible.txt"))
   (ht-set! w/bible-table user 1000))
 
-(defun w/populate-bible-table ()
+(defun w/bible-table-populate ()
   "Populate `w/bible-table' from the Bible text file."
   (unless w/bible-table
     (let* ((bible-string (s-downcase (w/slurp (w/asset "bible.txt"))))

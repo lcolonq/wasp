@@ -49,8 +49,8 @@
 (defun w/bless-apply-effect (e)
   "Apply the list of side effects E."
   (cl-case (car e)
-    (print (w/write-chat-event (format "%s" (cadr e))))
-    (print-backwards (w/write-chat-event (reverse (format "%s" (cadr e)))))
+    (print (w/chat-write-event (format "%s" (cadr e))))
+    (print-backwards (w/chat-write-event (reverse (format "%s" (cadr e)))))
     (soundboard (soundboard//play-clip (cadr e)))
     (model-toggle (w/model-toggle (cadr e)))
     (t (message "Unknown effect tag: %s" (car e)))))

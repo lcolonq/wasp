@@ -80,7 +80,7 @@ If not, return nil."
       (condition-case err
           (while (w/db-parse-response))
         (error
-         (w/write-chat-event (format "Database crashed, error: %s" err))
+         (w/chat-write-event (format "Database crashed, error: %s" err))
          (w/db-disconnect))))))
 
 (defun w/db-encode (x)

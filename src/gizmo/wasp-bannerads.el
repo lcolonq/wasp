@@ -8,6 +8,7 @@
 (require 'ht)
 (require 'wasp-utils)
 (require 'wasp-chat)
+(require 'wasp-model)
 
 (defvar w/banner-ad-block nil)
 
@@ -21,16 +22,16 @@
   :group 'w
   (setq-local cursor-type nil))
 
-(defun w/get-banner-ad-buffer ()
+(defun w/banner-ad-get-buffer ()
   "Return the banner ad buffer."
   (unless (get-buffer w/banner-ad-buffer)
     (with-current-buffer (get-buffer-create w/banner-ad-buffer)
       (w/banner-ad-mode)))
   (get-buffer w/banner-ad-buffer))
 
-(defun w/render-banner-ad ()
+(defun w/banner-ad-update ()
   "Render the banner ad buffer."
-  (with-current-buffer (w/get-banner-ad-buffer)
+  (with-current-buffer (w/banner-ad-get-buffer)
     (setq-local cursor-type nil)
     (let* ((inhibit-read-only t))
       (erase-buffer)
@@ -41,27 +42,18 @@
                 (img (create-image path nil nil :max-width 555 :max-height 175)))
           (image-animate img nil t)
           (w/write (propertize "bannerad" 'display img)))))))
-
-(defvar w/banner-ad-timer nil)
-(defun w/run-banner-ad-timer ()
-  "Run the banner ad timer."
-  (when w/banner-ad-timer
-    (cancel-timer w/banner-ad-timer))
-  (w/render-banner-ad)
-  (setq
-    w/banner-ad-timer
-    (run-with-timer 60 nil #'w/run-banner-ad-timer)))
+(add-hook 'w/gizmo-update-hook #'w/banner-ad-update)
 
 (defun w/banner-ad-block ()
   "Toggle adblock."
   (setq w/banner-ad-block t)
-  (w/render-banner-ad)
+  (w/banner-ad-update)
   (w/model-toggle-set "adblock")
   (run-with-timer 10 nil
     (lambda ()
       (setq w/banner-ad-block nil)
       (w/model-toggle-unset "adblock")
-      (w/render-banner-ad)))
+      (w/banner-ad-update)))
   nil)
 
 (provide 'wasp-bannerads)

@@ -51,7 +51,7 @@
     (unless (string-empty-p text-colored-bible)
       (when (s-contains? "hexadiCoding" trimmed)
         (soundboard//play-clip "developers.ogg"))
-      (w/write-chat-message
+      (w/chat-write-message
         (w/make-chat-message
           :user (w/fake-chatter-profile-username prof)
           :id ""
@@ -87,21 +87,21 @@
     (w/fake-chatter-run st)))
 
 (defvar w/fake-chatter-timer nil)
-(defun w/run-fake-chatter-timer ()
+(defun w/fake-chatters-run-timer ()
   "Run the fake chatter timer."
   (when w/fake-chatter-timer
     (cancel-timer w/fake-chatter-timer))
   (w/fake-chatters-handle)
   (setq
     w/fake-chatter-timer
-    (run-with-timer 30 nil #'w/run-fake-chatter-timer)))
+    (run-with-timer 30 nil #'w/fake-chatters-run-timer)))
 
-(defun w/start-fake-chatters ()
+(defun w/fake-chatters-start ()
   "Enable fake chatters."
   (interactive)
-  (w/run-fake-chatter-timer))
+  (w/fake-chatters-run-timer))
 
-(defun w/stop-fake-chatters ()
+(defun w/fake-chatters-stop ()
   "Disable fake chatters."
   (interactive)
   (cancel-timer w/fake-chatter-timer)
@@ -147,6 +147,7 @@
 
 (defun w/fake-chatter-elevated-likeliness (st)
   "Compute the elevated likeliness for ST to chat."
+  (ignore st)
   0.1)
 
 (defconst w/fake-chatter-profile-prodzpod
@@ -179,7 +180,7 @@
     :compute-likeliness #'w/fake-chatter-standard-likeliness
     :send-message
     (lambda (_)
-      (w/write-chat-event "eighteyedsixwingedseraph is lurking"))))
+      (w/chat-write-event "eighteyedsixwingedseraph is lurking"))))
 
 (defconst w/fake-chatter-profile-quasiconformal
   (w/make-fake-chatter-profile
@@ -188,7 +189,7 @@
     :compute-likeliness #'w/fake-chatter-standard-likeliness
     :send-message
     (lambda (_)
-      (w/write-chat-event "quasiconformal is lurking"))))
+      (w/chat-write-event "quasiconformal is lurking"))))
 
 (defconst w/fake-chatter-profile-nefrayu
   (w/make-fake-chatter-profile

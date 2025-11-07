@@ -68,7 +68,7 @@
          (unless (string-empty-p text-colored-bible)
            (when (s-contains? "hexadiCoding" trimmed)
              (soundboard//play-clip "developers.ogg"))
-             (w/write-chat-message
+             (w/chat-write-message
               (w/make-chat-message
                :user name
                :text (w/twitch-add-7tv-emotes text-colored-bible)

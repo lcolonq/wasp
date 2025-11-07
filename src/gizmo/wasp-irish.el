@@ -358,7 +358,7 @@ Pass the path to the downloaded image to K."
             :command `("convert" ,p "-scale" "100x140!" ,p)
             :sentinel
             (lambda (_ _)
-              (w/write-chat-event "Uploading image to poster!")
+              (w/chat-write-event "Uploading image to poster!")
               (make-process
                 :name "*wasp-irish-dough*"
                 :buffer nil
